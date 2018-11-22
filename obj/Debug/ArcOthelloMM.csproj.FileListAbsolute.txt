@@ -1,11 +1,10 @@
-C:\git\ArcOthelloMM\bin\Debug\ArcOthelloMM.exe.config
-C:\git\ArcOthelloMM\bin\Debug\ArcOthelloMM.exe
-C:\git\ArcOthelloMM\bin\Debug\ArcOthelloMM.pdb
-C:\git\ArcOthelloMM\obj\Debug\ArcOthelloMM.csprojAssemblyReference.cache
 C:\git\ArcOthelloMM\obj\Debug\MainWindow.g.cs
 C:\git\ArcOthelloMM\obj\Debug\App.g.cs
 C:\git\ArcOthelloMM\obj\Debug\ArcOthelloMM_MarkupCompile.cache
 C:\git\ArcOthelloMM\obj\Debug\ArcOthelloMM_MarkupCompile.lref
+C:\git\ArcOthelloMM\bin\Debug\ArcOthelloMM.exe.config
+C:\git\ArcOthelloMM\bin\Debug\ArcOthelloMM.exe
+C:\git\ArcOthelloMM\bin\Debug\ArcOthelloMM.pdb
 C:\git\ArcOthelloMM\obj\Debug\MainWindow.baml
 C:\git\ArcOthelloMM\obj\Debug\ArcOthelloMM.g.resources
 C:\git\ArcOthelloMM\obj\Debug\ArcOthelloMM.Properties.Resources.resources
@@ -13,3 +12,4 @@ C:\git\ArcOthelloMM\obj\Debug\ArcOthelloMM.csproj.GenerateResource.cache
 C:\git\ArcOthelloMM\obj\Debug\ArcOthelloMM.csproj.CoreCompileInputs.cache
 C:\git\ArcOthelloMM\obj\Debug\ArcOthelloMM.exe
 C:\git\ArcOthelloMM\obj\Debug\ArcOthelloMM.pdb
+C:\git\ArcOthelloMM\obj\Debug\ArcOthelloMM.csprojAssemblyReference.cache
