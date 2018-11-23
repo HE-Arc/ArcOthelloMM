@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
@@ -12,84 +13,380 @@ namespace ArcOthelloMM
         private const int ROW = 7;
         private const int COLUMN = 9;
         private const int SIZE_PIECE = 30;
+        private const int PLAYER_ONE = 1;
+        private const int PLAYER_TWO = -1;
+
+        private int currentPlayer;
         private int[,] board;
+
+        private List<Ellipse> lstPiece;
+        private List<Ellipse> cirPlayable;
+        private List<Rectangle> recPlayable;
+        private Dictionary<string, HashSet<int[]>> lstMove;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            initBoard();
-            initGame();
-        }
-
-        private void initBoard()
-        {
+            lstPiece = new List<Ellipse>();
+            cirPlayable = new List<Ellipse>();
+            recPlayable = new List<Rectangle>();
+            lstMove = new Dictionary<string, HashSet<int[]>>();
             board = new int[ROW, COLUMN];
 
-            for (int i = 0; i < ROW; ++i)
-            {
-                for (int j = 0; j < COLUMN; ++j)
-                {
-
-                    board[i, j] = 0;
-                }
-            }
+            initGame();
         }
 
         private void initGame()
         {
-            addPiece(r33, false);
-            addPiece(r34, true);
-            addPiece(r43, true);
-            addPiece(r44, false);
+            currentPlayer = PLAYER_ONE;
+            setPiece(3, 3);
+            setPiece(4, 4);
+            currentPlayer = PLAYER_TWO;
+            setPiece(3, 4);
+            setPiece(4, 3);
+            currentPlayer = PLAYER_ONE;
+            getCasePlayable();
         }
 
-        private void addPiece(Rectangle rec, bool black)
+        private void addPiece(string name)
         {
+            Rectangle rec = (Rectangle)grid.FindName("r" + name.Substring(1));
+
             Ellipse circle = new Ellipse
             {
-                Name = "c" + rec.Name.Substring(1),
+                Name = name,
                 HorizontalAlignment = HorizontalAlignment.Left,
                 VerticalAlignment = VerticalAlignment.Top,
                 Width = SIZE_PIECE,
                 Height = SIZE_PIECE,
-                Fill = (black) ? Brushes.Black : Brushes.White,
-                Margin = new Thickness(rec.Margin.Left + 5, rec.Margin.Top + 5, 0, 0)
+                Margin = new Thickness(rec.Margin.Left + 5, rec.Margin.Top + 5, 0, 0),
+                Fill = (currentPlayer == PLAYER_ONE) ? Brushes.Black : Brushes.White
             };
 
-            if (black)
-            {
-                circle.Fill = Brushes.Black;
-                placeOnBoard(1, rec.Name);
-            }
-            else
-            {
-                circle.Fill = Brushes.White;
-                placeOnBoard(2, rec.Name);
-            }
-
             grid.Children.Add(circle);
+            lstPiece.Add(circle);
         }
 
-        private void pickPiece(string name)
+        private void setPiece(string name)
         {
-            Ellipse circle = (Ellipse)grid.FindName(name);
+            int x = int.Parse(name[1].ToString());
+            int y = int.Parse(name[2].ToString());
 
-            if (circle.Fill == Brushes.Black)
+            setPiece(x, y);
+        }
+
+        private void setPiece(int x, int y)
+        {
+            board[x, y] = currentPlayer;
+
+            string name = "c" + x.ToString() + y.ToString();
+            Ellipse circle = lstPiece.Find(c => c.Name == name);
+            if (circle == null)
             {
-                circle.Fill = Brushes.Black;
-                placeOnBoard(1, circle.Name);
+                addPiece(name);
             }
             else
             {
-                circle.Fill = Brushes.White;
-                placeOnBoard(2, circle.Name);
+                circle.Fill = (currentPlayer == PLAYER_ONE) ? Brushes.Black : Brushes.White;
             }
         }
 
-        private void placeOnBoard(int value, string position)
+        private void getCasePlayable()
         {
-            board[int.Parse(position[1].ToString()), int.Parse(position[2].ToString())] = value;
+            for (int x = 0; x < ROW; ++x)
+            {
+                for (int y = 0; y < COLUMN; ++y)
+                {
+                    if (board[x, y] == currentPlayer)
+                    {
+                        checkMove(-currentPlayer, x, y);
+                    }
+                }
+            }
+        }
+
+        private void checkMove(int opponent, int row, int column)
+        {
+            int i = 1;
+            bool left = true;
+            bool top = true;
+            bool right = true;
+            bool bottom = true;
+            bool leftTop = true;
+            bool rightTop = true;
+            bool leftBottom = true;
+            bool rightBottom = true;
+
+            HashSet<int[]> listLeft = new HashSet<int[]>();
+            HashSet<int[]> listTop = new HashSet<int[]>();
+            HashSet<int[]> listRight = new HashSet<int[]>();
+            HashSet<int[]> listBottom = new HashSet<int[]>();
+            HashSet<int[]> listLeftTop = new HashSet<int[]>();
+            HashSet<int[]> listRightTop = new HashSet<int[]>();
+            HashSet<int[]> listLeftBottom = new HashSet<int[]>();
+            HashSet<int[]> listRightBottom = new HashSet<int[]>();
+
+            do
+            {
+                if (left)
+                {
+                    int x = row - i;
+                    int y = column;
+
+                    listLeft.Add(new int[] { x, y });
+
+                    if (x < 0)
+                    {
+                        left = false;
+                    }
+                    else if (board[x, y] != opponent)
+                    {
+                        if (board[x, y] == 0 && i > 1)
+                        {
+                            addMove(listLeft, x, y);
+                        }
+                        left = false;
+                    }
+                }
+
+                if (right)
+                {
+                    int x = row + i;
+                    int y = column;
+
+                    listRight.Add(new int[] { x, y });
+
+                    if (x >= ROW)
+                    {
+                        right = false;
+                    }
+                    else if (board[x, y] != opponent)
+                    {
+                        if (board[x, y] == 0 && i > 1)
+                        {
+                            addMove(listRight, x, y);
+                        }
+                        right = false;
+                    }
+                }
+
+                if (top)
+                {
+                    int x = row;
+                    int y = column - i;
+
+                    listTop.Add(new int[] { x, y });
+
+                    if (y < 0)
+                    {
+                        top = false;
+                    }
+                    else if (board[x, y] != opponent)
+                    {
+                        if (board[x, y] == 0 && i > 1)
+                        {
+                            addMove(listTop, x, y);
+                        }
+                        top = false;
+                    }
+                }
+
+                if (bottom)
+                {
+                    int x = row;
+                    int y = column + i;
+
+                    listBottom.Add(new int[] { x, y });
+
+                    if (y >= COLUMN)
+                    {
+                        bottom = false;
+                    }
+                    else if (board[x, y] != opponent)
+                    {
+                        if (board[x, y] == 0 && i > 1)
+                        {
+                            addMove(listBottom, x, y);
+                        }
+                        bottom = false;
+                    }
+                }
+
+                if (leftTop)
+                {
+                    int x = row - i;
+                    int y = column - i;
+
+                    listLeftTop.Add(new int[] { x, y });
+
+                    if (x < 0 || y < 0)
+                    {
+                        leftTop = false;
+                    }
+                    else if (board[x, y] != opponent)
+                    {
+                        if (board[x, y] == 0 && i > 1)
+                        {
+                            addMove(listLeftTop, x, y);
+                        }
+                        leftTop = false;
+                    }
+                }
+
+                if (rightTop)
+                {
+                    int x = row + i;
+                    int y = column - i;
+
+                    listRightTop.Add(new int[] { x, y });
+
+                    if (x >= ROW || y < 0)
+                    {
+                        rightTop = false;
+                    }
+                    else if (board[x, y] != opponent)
+                    {
+                        if (board[x, y] == 0 && i > 1)
+                        {
+                            addMove(listRightTop, x, y);
+                        }
+                        rightTop = false;
+                    }
+                }
+
+                if (leftBottom)
+                {
+                    int x = row - i;
+                    int y = column + i;
+
+                    listLeftBottom.Add(new int[] { x, y });
+
+                    if (x < 0 || y >= COLUMN)
+                    {
+                        leftBottom = false;
+                    }
+                    else if (board[x, y] != opponent)
+                    {
+                        if (board[x, y] == 0 && i > 1)
+                        {
+                            addMove(listLeftBottom, x, y);
+                        }
+                        leftBottom = false;
+                    }
+                }
+
+                if (rightBottom)
+                {
+                    int x = row + i;
+                    int y = column + i;
+
+                    listRightBottom.Add(new int[] { x, y });
+
+                    if (x >= ROW || y >= COLUMN)
+                    {
+                        rightBottom = false;
+                    }
+                    else if (board[x, y] != opponent)
+                    {
+                        if (board[x, y] == 0 && i > 1)
+                        {
+                            addMove(listRightBottom, x, y);
+                        }
+                        rightBottom = false;
+                    }
+                }
+
+                ++i;
+            } while (left || top || right || bottom || leftTop || rightTop || leftBottom || rightBottom);
+
+        }
+
+
+        private void addMove(HashSet<int[]> move, int row, int column)
+        {
+            string fName = "f" + row.ToString() + column.ToString();
+
+            Ellipse circle = (Ellipse)grid.FindName(fName);
+            if (circle == null)
+            {
+                Rectangle rec = (Rectangle)grid.FindName("r" + fName.Substring(1));
+                circle = new Ellipse
+                {
+                    Name = fName,
+                    HorizontalAlignment = HorizontalAlignment.Left,
+                    VerticalAlignment = VerticalAlignment.Top,
+                    Width = rec.Width - 20,
+                    Height = rec.Height - 20,
+                    Fill = Brushes.Black,
+                    Margin = new Thickness(rec.Margin.Left + 10, rec.Margin.Top + 10, 0, 0),
+                    Opacity = 0.2
+                };
+
+                grid.Children.Add(circle);
+                cirPlayable.Add(circle);
+                recPlayable.Add(rec);
+
+                rec.MouseDown += Rec_MouseDown;
+                circle.MouseDown += Cir_MouseDown;
+            }
+
+            if (lstMove.ContainsKey(circle.Name))
+            {
+                foreach (int[] location in move)
+                {
+                    lstMove[circle.Name].Add(location);
+                }
+            }
+            else
+            {
+                lstMove.Add(circle.Name, move);
+            }
+        }
+
+        private void Rec_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            Rectangle rec = (Rectangle)sender;
+            Ellipse circle = cirPlayable.Find(f => f.Name == "f" + rec.Name.Substring(1));
+            play(rec, circle);
+        }
+
+        private void Cir_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            Ellipse circle = (Ellipse)sender;
+            Rectangle rec = (Rectangle)grid.FindName("r" + circle.Name.Substring(1));
+            play(rec, circle);
+        }
+
+        private void play(Rectangle rec, Ellipse circle)
+        {
+            foreach (Rectangle playable in recPlayable)
+            {
+                playable.MouseDown -= Rec_MouseDown;
+            }
+            recPlayable.Clear();
+
+            HashSet<int[]> move = lstMove[circle.Name];
+            foreach (int[] location in move)
+            {
+                setPiece(location[0], location[1]);
+            }
+            lstMove.Clear();
+
+            foreach (Ellipse playable in cirPlayable)
+            {
+                grid.Children.Remove(playable);
+            }
+            cirPlayable.Clear();
+
+            currentPlayer = -currentPlayer;
+            getCasePlayable();
+
+            if (lstMove == null)
+            {
+                currentPlayer = -currentPlayer;
+                getCasePlayable();
+            }
         }
     }
 }
