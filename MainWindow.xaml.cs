@@ -37,6 +37,10 @@ namespace ArcOthelloMM
             initGame();
         }
 
+        /// <summary>
+        /// Init the first pieces
+        /// Set the first player
+        /// </summary>
         private void initGame()
         {
             currentPlayer = PLAYER_ONE;
@@ -124,18 +128,33 @@ namespace ArcOthelloMM
             }
         }
 
+        /// <summary>
+        /// Check if the move is possible
+        /// and save the pieces affected
+        /// </summary>
+        /// <param name="opponent"></param>
+        /// <param name="row"></param>
+        /// <param name="column"></param>
         private void checkMove(int opponent, int row, int column)
         {
+            // Loop and check in every direction
+            // if the case is ennemy continue to check in the direction
+            // if the case is empty and the increment is greater than 1 => move possible and save the pieces
+            // else move impossible
+
             int i = 1;
             bool left = true;
             bool top = true;
             bool right = true;
             bool bottom = true;
+
+            // Diagonal
             bool leftTop = true;
             bool rightTop = true;
             bool leftBottom = true;
             bool rightBottom = true;
 
+            // pieces affected by possible move in every direction
             HashSet<int[]> listLeft = new HashSet<int[]>();
             HashSet<int[]> listTop = new HashSet<int[]>();
             HashSet<int[]> listRight = new HashSet<int[]>();
@@ -162,7 +181,7 @@ namespace ArcOthelloMM
                     {
                         if (board[x, y] == 0 && i > 1)
                         {
-                            addMove(listLeft, x, y);
+                            addMove(listLeft, x, y); // save move
                         }
                         left = false;
                     }
@@ -183,7 +202,7 @@ namespace ArcOthelloMM
                     {
                         if (board[x, y] == 0 && i > 1)
                         {
-                            addMove(listRight, x, y);
+                            addMove(listRight, x, y); // save move
                         }
                         right = false;
                     }
@@ -204,7 +223,7 @@ namespace ArcOthelloMM
                     {
                         if (board[x, y] == 0 && i > 1)
                         {
-                            addMove(listTop, x, y);
+                            addMove(listTop, x, y); // save move
                         }
                         top = false;
                     }
@@ -225,7 +244,7 @@ namespace ArcOthelloMM
                     {
                         if (board[x, y] == 0 && i > 1)
                         {
-                            addMove(listBottom, x, y);
+                            addMove(listBottom, x, y); // save move
                         }
                         bottom = false;
                     }
@@ -246,7 +265,7 @@ namespace ArcOthelloMM
                     {
                         if (board[x, y] == 0 && i > 1)
                         {
-                            addMove(listLeftTop, x, y);
+                            addMove(listLeftTop, x, y); // save move
                         }
                         leftTop = false;
                     }
@@ -267,7 +286,7 @@ namespace ArcOthelloMM
                     {
                         if (board[x, y] == 0 && i > 1)
                         {
-                            addMove(listRightTop, x, y);
+                            addMove(listRightTop, x, y); // save move
                         }
                         rightTop = false;
                     }
@@ -288,7 +307,7 @@ namespace ArcOthelloMM
                     {
                         if (board[x, y] == 0 && i > 1)
                         {
-                            addMove(listLeftBottom, x, y);
+                            addMove(listLeftBottom, x, y); // save move
                         }
                         leftBottom = false;
                     }
@@ -309,22 +328,29 @@ namespace ArcOthelloMM
                     {
                         if (board[x, y] == 0 && i > 1)
                         {
-                            addMove(listRightBottom, x, y);
+                            addMove(listRightBottom, x, y); // save move
                         }
                         rightBottom = false;
                     }
                 }
 
                 ++i;
-            } while (left || top || right || bottom || leftTop || rightTop || leftBottom || rightBottom);
+            } while (left || top || right || bottom || leftTop || rightTop || leftBottom || rightBottom); // check if a direction need to continue
 
         }
 
-
+        /// <summary>
+        /// Save move
+        /// and show the possibility on the board
+        /// </summary>
+        /// <param name="move"></param>
+        /// <param name="row"></param>
+        /// <param name="column"></param>
         private void addMove(HashSet<int[]> move, int row, int column)
         {
             string fName = "f" + row.ToString() + column.ToString();
 
+            // create little token to show the possible move
             Ellipse circle = (Ellipse)grid.FindName(fName);
             if (circle == null)
             {
@@ -345,10 +371,12 @@ namespace ArcOthelloMM
                 cirPlayable.Add(circle);
                 recPlayable.Add(rec);
 
+                // and event to play here
                 rec.MouseDown += Rec_MouseDown;
                 circle.MouseDown += Cir_MouseDown;
             }
 
+            // add pieces affected for the case played
             if (lstMove.ContainsKey(circle.Name))
             {
                 foreach (int[] location in move)
@@ -362,6 +390,12 @@ namespace ArcOthelloMM
             }
         }
 
+        /// <summary>
+        /// Event to click on a case
+        /// where we can play
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Rec_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             Rectangle rec = (Rectangle)sender;
@@ -369,6 +403,12 @@ namespace ArcOthelloMM
             play(rec, circle);
         }
 
+        /// <summary>
+        /// Event to click on token
+        /// where we can play
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Cir_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             Ellipse circle = (Ellipse)sender;
@@ -376,14 +416,28 @@ namespace ArcOthelloMM
             play(rec, circle);
         }
 
+        /// <summary>
+        /// Play a move
+        /// </summary>
+        /// <param name="rec"></param>
+        /// <param name="circle"></param>
         private void play(Rectangle rec, Ellipse circle)
         {
+            // Remove events from each cases
             foreach (Rectangle playable in recPlayable)
             {
                 playable.MouseDown -= Rec_MouseDown;
             }
             recPlayable.Clear();
 
+            // Remove token
+            foreach (Ellipse playable in cirPlayable)
+            {
+                grid.Children.Remove(playable);
+            }
+            cirPlayable.Clear();
+
+            // Set piece for each case affected by the move
             HashSet<int[]> move = lstMove[circle.Name];
             foreach (int[] location in move)
             {
@@ -391,20 +445,22 @@ namespace ArcOthelloMM
             }
             lstMove.Clear();
 
-            foreach (Ellipse playable in cirPlayable)
-            {
-                grid.Children.Remove(playable);
-            }
-            cirPlayable.Clear();
-
+            // change player
             currentPlayer = -currentPlayer;
             getCasePlayable();
 
-            if (lstMove == null)
+            // if the player can't play change player
+            if (lstMove.Count == 0)
             {
                 currentPlayer = -currentPlayer;
                 getCasePlayable();
+
+                if (lstMove.Count == 0)
+                {
+                    // no player can play => and game
+                }
             }
+
         }
     }
 }
