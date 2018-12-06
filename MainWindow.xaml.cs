@@ -51,8 +51,10 @@ namespace ArcOthelloMM
 
         private void addPiece(string name)
         {
+            // get case to add piece
             Rectangle rec = (Rectangle)grid.FindName("r" + name.Substring(1));
 
+            // create piece
             Ellipse circle = new Ellipse
             {
                 Name = name,
@@ -64,10 +66,15 @@ namespace ArcOthelloMM
                 Fill = (currentPlayer == PLAYER_ONE) ? Brushes.Black : Brushes.White
             };
 
+            // add piece
             grid.Children.Add(circle);
             lstPiece.Add(circle);
         }
 
+        /// <summary>
+        /// set a piece of current user in the case
+        /// </summary>
+        /// <param name="name"></param>
         private void setPiece(string name)
         {
             int x = int.Parse(name[1].ToString());
@@ -76,12 +83,20 @@ namespace ArcOthelloMM
             setPiece(x, y);
         }
 
+        /// <summary>
+        /// set a piece of current user in the case
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
         private void setPiece(int x, int y)
         {
+            // set new owner of the case
             board[x, y] = currentPlayer;
 
+            // check if a piece exist already in the case
             string name = "c" + x.ToString() + y.ToString();
             Ellipse circle = lstPiece.Find(c => c.Name == name);
+
             if (circle == null)
             {
                 addPiece(name);
@@ -92,6 +107,9 @@ namespace ArcOthelloMM
             }
         }
 
+        /// <summary>
+        /// Check move from all cases who belongs to currentplayer
+        /// </summary>
         private void getCasePlayable()
         {
             for (int x = 0; x < ROW; ++x)
