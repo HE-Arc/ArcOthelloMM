@@ -5,11 +5,22 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ArcOthelloMM"
         mc:Ignorable="d"
-        Title="OthelloBoard" d:DesignWidth="800" d:DesignHeight="600" MinWidth="200" MinHeight="200">
-    <DockPanel Name="asdf" LastChildFill="False" Margin="0">
-        <Button Width="148" DockPanel.Dock="Right" HorizontalAlignment="Right"/>
-        <DockPanel Height="569" LastChildFill="False" VerticalAlignment="Center" Width="630" HorizontalAlignment="Center">
-            <Grid x:Name="board" ShowGridLines="True" Margin="0" RenderTransformOrigin="1.101,-0.004"/>
-        </DockPanel>
-    </DockPanel>
+        Title="OthelloBoard" d:DesignWidth="800" d:DesignHeight="600" MinWidth="400" MinHeight="400" SizeChanged="board_SizeChanged">
+    <Grid Margin="50px">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="100" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Column="0" Margin="10">
+            <Button>Left</Button>
+        </StackPanel>
+        <Grid Grid.Column="1" x:Name="board" />
+        <StackPanel Grid.Column="2" Margin="10">
+            <Button>Right</Button>
+        </StackPanel>
+    </Grid>
 </Window>
