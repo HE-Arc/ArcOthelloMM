@@ -47,7 +47,7 @@ namespace ArcOthelloMM
                 for (int y = 0; y < NB_ROW; y++)
                 {
                     Button txt1 = new Button();
-                    txt1.Content = "x: " + x + "y: " + y;
+                    txt1.Content = "x";
                     txt1.FontSize = 20;
                     txt1.HorizontalAlignment = HorizontalAlignment.Stretch;
                     txt1.VerticalAlignment = VerticalAlignment.Stretch;
@@ -61,25 +61,18 @@ namespace ArcOthelloMM
 
         private void board_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            board.Margin = new Thickness(0);
-            double width;
-            double height;
-            double ratio = NB_ROW / NB_COL;
-            if (board.ActualWidth * NB_ROW > board.ActualHeight * NB_COL)
-            {
-                width = 0;
-                double newH = board.ActualHeight * ratio;
-                height = (board.ActualHeight - newH) / 2;
-            }
-            else
-            {
-                double newW = board.ActualWidth / ratio;
-                height = (board.ActualWidth - newW) / 2;
-                width = 0;
-                height = 0;
-            }
-            board.Margin = new Thickness(width, height, width, height);
-            Console.WriteLine("" + width + ", " + "" + height);
+            double min = Math.Min(border.ActualHeight / NB_ROW, border.ActualWidth / NB_COL);
+
+            for (int i = 0; i < NB_COL; i++)
+                board.ColumnDefinitions[i].Width = new GridLength(min, GridUnitType.Pixel);
+
+            for (int i = 0; i < NB_ROW; i++)
+                board.RowDefinitions[i].Height = new GridLength(min, GridUnitType.Pixel);
+
+            double w = (border.ActualWidth - min * NB_COL) / 2;
+            double h = (border.ActualHeight - min * NB_ROW) / 2;
+            
+            board.Margin = new Thickness(w, h, w, h);
         }
     }
 }
