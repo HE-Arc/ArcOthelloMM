@@ -8,7 +8,7 @@
              d:DesignHeight="100" d:DesignWidth="100" HorizontalAlignment="Center" VerticalAlignment="Center">
     <Button x:Name="button" BorderThickness="1">
         <Viewbox StretchDirection="Both" Stretch="Uniform">
-            <Grid x:Name="token" Height="100" Width="100" Margin="10">
+            <Grid x:Name="token" Height="100" Width="100" Margin="10" Background="Transparent">
                 <Ellipse x:Name="tokenContent" Fill="Fuchsia"/>
             </Grid>
         </Viewbox>

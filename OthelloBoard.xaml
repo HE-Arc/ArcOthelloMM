@@ -5,24 +5,22 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ArcOthelloMM"
         mc:Ignorable="d"
-        Title="OthelloBoard" d:DesignWidth="800" d:DesignHeight="600" MinWidth="400" MinHeight="400" SizeChanged="board_SizeChanged">
-    <Grid Margin="50px">
+        Title="OthelloBoard" d:DesignWidth="680" d:DesignHeight="400" MinWidth="680" MinHeight="400" SizeChanged="Board_SizeChanged">
+    <Grid Margin="10px">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="100" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="100" />
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <StackPanel Grid.Column="0" Margin="10">
-            <Button>Left</Button>
-        </StackPanel>
-        <Border Name="border" Grid.Column="1" BorderThickness="0">
-            <Grid  x:Name="board" />
+        <Border Grid.Row="0" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,1,0" >
+            <StackPanel>
+                <Label>Temps Écoulé :</Label>
+            </StackPanel>
         </Border>
-        <StackPanel Grid.Column="2" Margin="10">
-            <Button>Right</Button>
-        </StackPanel>
+        <Border Name="border" Grid.Row="0" Grid.Column="1" BorderThickness="0">
+            <Grid x:Name="graphicalBoard" />
+        </Border>
     </Grid>
 </Window>
