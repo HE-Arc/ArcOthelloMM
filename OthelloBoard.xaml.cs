@@ -46,17 +46,40 @@ namespace ArcOthelloMM
             {
                 for (int y = 0; y < NB_ROW; y++)
                 {
-                    Button txt1 = new Button();
-                    txt1.Content = "x";
-                    txt1.FontSize = 20;
-                    txt1.HorizontalAlignment = HorizontalAlignment.Stretch;
-                    txt1.VerticalAlignment = VerticalAlignment.Stretch;
+                    OthelloGridCell cell = new OthelloGridCell(x, y);
+                    cell.Click += Cell_Click;
+                    cell.MouseEnter += Cell_MouseEnter;
+                    cell.MouseLeave += Cell_MouseLeave;
 
-                    Grid.SetRow(txt1, y);
-                    Grid.SetColumn(txt1, x);
-                    board.Children.Add(txt1);
+                    Grid.SetRow(cell, y);
+                    Grid.SetColumn(cell, x);
+                    board.Children.Add(cell);
                 }
             }
+        }
+
+        private void Cell_MouseLeave(object sender, MouseEventArgs e)
+        {
+            OthelloGridCell s = (OthelloGridCell)sender;
+            if (s.State == OthelloGridCell.States.PreviewPlayer1)
+                s.State = OthelloGridCell.States.Player1;
+            if (s.State == OthelloGridCell.States.PreviewPlayer2)
+                s.State = OthelloGridCell.States.Player2;
+        }
+
+        private void Cell_MouseEnter(object sender, MouseEventArgs e)
+        {
+            OthelloGridCell s = (OthelloGridCell)sender;
+            if (s.State == OthelloGridCell.States.Player1)
+                s.State = OthelloGridCell.States.PreviewPlayer1;
+            if (s.State == OthelloGridCell.States.Player2)
+                s.State = OthelloGridCell.States.PreviewPlayer2;
+        }
+
+        private void Cell_Click(object sender, EventArgs e)
+        {
+            OthelloGridCell s = (OthelloGridCell)sender;
+            s.State = s.State == OthelloGridCell.States.Player1 ? OthelloGridCell.States.Player2 : OthelloGridCell.States.Player1;
         }
 
         private void board_SizeChanged(object sender, SizeChangedEventArgs e)

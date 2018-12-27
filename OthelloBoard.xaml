@@ -18,7 +18,7 @@
         <StackPanel Grid.Column="0" Margin="10">
             <Button>Left</Button>
         </StackPanel>
-        <Border Name="border" Grid.Column="1" BorderBrush="Black" BorderThickness="2">
+        <Border Name="border" Grid.Column="1" BorderThickness="0">
             <Grid  x:Name="board" />
         </Border>
         <StackPanel Grid.Column="2" Margin="10">
