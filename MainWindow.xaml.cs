@@ -13,6 +13,7 @@ namespace ArcOthelloMM
         public MainWindow()
         {
             InitializeComponent();
+            LogicalBoard logicalBoard = new LogicalBoard();
         }
     }
 }
