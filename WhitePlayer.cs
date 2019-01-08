@@ -19,7 +19,7 @@ namespace ArcOthelloMM
         private WhitePlayer()
         {
             Tokens = new List<Tuple<int, int>>();
-            Value = 1;
+            Value = 0;
         }
 
         /// <summary>

@@ -34,12 +34,12 @@ namespace ArcOthelloMM
             BlackPlayer = BlackPlayer.GetBlackPlayer();
 
             // Init Board
-            Board = new int[ROW, COLUMN];
-            for (int x = 0; x < ROW; ++x)
+            Board = new int[COLUMN, ROW];
+            for (int y = 0; y < COLUMN; ++y)
             {
-                for (int y = 0; y < COLUMN; ++y)
+                for (int x = 0; x < ROW; ++x)
                 {
-                    Board[x, y] = 0;
+                    Board[y, x] = -1;
                 }
             }
 
@@ -163,30 +163,31 @@ namespace ArcOthelloMM
         /// <summary>
         /// Check move in one direction
         /// </summary>
-        /// <param name="tuple"></param>
-        /// <param name="tuples"></param>
+        /// <param name="token"></param>
+        /// <param name="tokens"></param>
         /// <param name="offsetX"></param>
         /// <param name="offsetY"></param>
         /// <returns></returns>
-        private bool CheckOnePossibleMove(Tuple<int, int> tuple, HashSet<Tuple<int, int>> tuples, int offsetX, int offsetY)
+        private bool CheckOnePossibleMove(Tuple<int, int> token, HashSet<Tuple<int, int>> tokens, int offsetX, int offsetY)
         {
             bool finished = false;
 
-            int x = tuple.Item1 + offsetX;
-            int y = tuple.Item2 + offsetY;
+            int x = token.Item1 + offsetX;
+            int y = token.Item2 + offsetY;
 
-            tuples.Add(tuple);
+            Tuple<int, int> newToken = new Tuple<int, int>(y, x);
+            tokens.Add(newToken);
 
             // Is on board
             if (x < 0 || x >= ROW || y < 0 || y >= COLUMN)
             {
                 finished = true;
             }
-            else if (!Opponent.Tokens.Contains(tuple))
+            else if (!Opponent.Tokens.Contains(newToken))
             {
-                if (!CurrentPlayer.Tokens.Contains(tuple) && (Math.Abs(offsetX) + Math.Abs(offsetY)) > 1)
+                if (!CurrentPlayer.Tokens.Contains(newToken) && (Math.Abs(offsetX) + Math.Abs(offsetY)) > 1)
                 {
-                    SavePossibleMove(tuples, tuple); // save valid move
+                    SavePossibleMove(tokens, token); // save valid move
                 }
 
                 finished = true;
@@ -325,26 +326,26 @@ namespace ArcOthelloMM
         /// Check move for empty case
         /// in one direction
         /// </summary>
-        /// <param name="tuple"></param>
+        /// <param name="token"></param>
         /// <param name="offsetX"></param>
         /// <param name="offsetY"></param>
         /// <returns></returns>
-        private int CheckOneCurrentMove(Tuple<int, int> tuple, int offsetX, int offsetY)
+        private int CheckOneCurrentMove(Tuple<int, int> token, int offsetX, int offsetY)
         {
             int state = 0;
 
-            int x = tuple.Item1 + offsetX;
-            int y = tuple.Item2 + offsetY;
-
+            int y = token.Item1 + offsetY;
+            int x = token.Item2 + offsetX;
+            Tuple<int, int> newToken = new Tuple<int, int>(y, x);
 
             // Is on board
             if (x < 0 || x >= ROW || y < 0 || y >= COLUMN)
             {
                 state = -1;
             }
-            else if (!Opponent.Tokens.Contains(tuple))
+            else if (!Opponent.Tokens.Contains(newToken))
             {
-                if (CurrentPlayer.Tokens.Contains(tuple) && (Math.Abs(offsetX) + Math.Abs(offsetY)) > 1)
+                if (CurrentPlayer.Tokens.Contains(newToken) && (Math.Abs(offsetX) + Math.Abs(offsetY)) > 1)
                 {
                     state = 1;
                 }

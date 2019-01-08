@@ -19,7 +19,7 @@ namespace ArcOthelloMM
         private BlackPlayer()
         {
             Tokens = new List<Tuple<int, int>>();
-            Value = -1;
+            Value = 1;
         }
 
         /// <summary>
