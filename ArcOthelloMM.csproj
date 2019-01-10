@@ -35,6 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="IPlayable">
+      <HintPath>.\IPlayable.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -55,6 +58,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="BlackPlayer.cs" />
     <Compile Include="LogicalBoard.cs" />
     <Compile Include="OthelloBoard.xaml.cs">
       <DependentUpon>OthelloBoard.xaml</DependentUpon>
@@ -62,11 +66,11 @@
     <Compile Include="OthelloGridCell.xaml.cs">
       <DependentUpon>OthelloGridCell.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Token.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="WhitePlayer.cs" />
     <Page Include="OthelloBoard.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

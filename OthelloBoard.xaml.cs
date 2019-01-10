@@ -26,12 +26,15 @@ namespace ArcOthelloMM
 
         OthelloGridCell[,] othelloGridCells;
 
+        bool turn;
+
         public OthelloBoard()
         {
             InitializeComponent();
             logicalBoard = new LogicalBoard();
             othelloGridCells = new OthelloGridCell[NB_COL, NB_ROW];
             GenerateGrid();
+            turn = false;
         }
 
         public void GenerateGrid()
