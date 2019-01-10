@@ -31,7 +31,6 @@ namespace ArcOthelloMM
         {
             InitializeComponent();
             turn = false;
-            LogicalBoard.GetInstance().StartGame(turn);
             othelloGridCells = new OthelloGridCell[NB_COL, NB_ROW];
             GenerateGrid();
             UpdateBoard();
@@ -73,7 +72,7 @@ namespace ArcOthelloMM
 
         private void UpdateBoard()
         {
-            currentPossibleMoves = LogicalBoard.GetInstance().listMove;
+            currentPossibleMoves = LogicalBoard.GetInstance().GetListPossibleMove(turn);
             for (int x = 0; x < othelloGridCells.GetLength(0); x++)
             {
                 for (int y = 0; y < othelloGridCells.GetLength(1); y++)
