@@ -51,7 +51,7 @@ namespace ArcOthelloMM
             LogicalBoard.GetInstance().StartGame(turn);
 
             GenerateGrid();
-            ChangeTurn();
+            ChangeTurn(true);
             UpdateBoard();
         }
 
@@ -147,9 +147,11 @@ namespace ArcOthelloMM
             UpdateBoard();
         }
 
-        private void ChangeTurn()
+        private void ChangeTurn(bool firstTurn = false)
         {
-            turn = !turn;
+            if(!firstTurn)
+                turn = !turn;
+
             if (turn)
             {
                 swPlayer2.Start();
