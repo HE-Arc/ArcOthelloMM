@@ -36,7 +36,7 @@ namespace ArcOthelloMM
 
         Stopwatch swPlayer1;
         Stopwatch swPlayer2;
-        const long totalTime = 10000; 
+        const long totalTimeMililseconds = 5 * 60 * 1000; //5min
 
         public OthelloBoard()
         {
@@ -44,15 +44,26 @@ namespace ArcOthelloMM
 
             swPlayer1 = new Stopwatch();
             swPlayer2 = new Stopwatch();
+            timerUpdateGui = new Timer();
+            timerUpdateGui.Interval = 0.1;
+            timerUpdateGui.Elapsed += TimerUpdateGui_Elapsed;
+            timerUpdateGui.Start();
             othelloGridCells = new OthelloGridCell[NB_COL, NB_ROW];
 
             turn = false;
-
-            LogicalBoard.GetInstance().StartGame(turn);
+            currentPossibleMoves = LogicalBoard.GetInstance().GetListPossibleMove(turn);
+            LogicalBoard.GetInstance();
 
             GenerateGrid();
-            ChangeTurn(true);
-            UpdateBoard();
+            UpdateGui();
+        }
+
+        private void TimerUpdateGui_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            this.Dispatcher.Invoke(() =>
+            {
+                UpdateTimers();
+            });
         }
 
         private void GenerateGrid()
@@ -111,9 +122,7 @@ namespace ArcOthelloMM
                             gcell.State = OthelloGridCell.States.PreviewPlayer2;
                     }
                     else
-                    {
                         gcell.State = OthelloGridCell.States.Empty;
-                    }
                 }
             }
         }
@@ -145,28 +154,61 @@ namespace ArcOthelloMM
         private void UpdateGui()
         {
             UpdateBoard();
+            UpdateGameData();
         }
 
-        private void ChangeTurn(bool firstTurn = false)
+        private void UpdateGameData()
         {
-            if(!firstTurn)
-                turn = !turn;
+            UpdateTimers();
+            lblTurn.Content = turn ? "White" : "Black";
+        }
 
-            if (turn)
+        private void UpdateTimers()
+        {
+            UpdateTimer(swPlayer1, lblTimeBlack);
+            UpdateTimer(swPlayer2, lblTimeWhite);
+        }
+
+        private void UpdateTimer(Stopwatch sw, Label lbl)
+        {
+            TimeSpan remainingTime = TimeSpan.FromMilliseconds(totalTimeMililseconds - sw.ElapsedMilliseconds);
+            lbl.Content = remainingTime.Hours + ":" + remainingTime.Minutes + ":" + remainingTime.Seconds + "." + remainingTime.Milliseconds;
+        }
+
+        private void ChangeTurn()
+        {
+
+            turn = !turn;
+            currentPossibleMoves = LogicalBoard.GetInstance().GetListPossibleMove(turn);
+
+            if (currentPossibleMoves.Count == 0)
             {
-                swPlayer2.Start();
-                swPlayer1.Stop();
+                turn = !turn;
+                currentPossibleMoves = LogicalBoard.GetInstance().GetListPossibleMove(turn);
+                if (currentPossibleMoves.Count == 0)
+                {
+                    Console.WriteLine("Game End");
+                }
+                else
+                {
+                    Console.WriteLine("Turn skiped");
+                }
             }
             else
+            {
+                Console.WriteLine("Next turn", currentPossibleMoves);
+            }
+
+            if (turn)
             {
                 swPlayer1.Start();
                 swPlayer2.Stop();
             }
-            do
+            else
             {
-                currentPossibleMoves = LogicalBoard.GetInstance().listMove;
+                swPlayer1.Stop();
+                swPlayer2.Start();
             }
-            while (currentPossibleMoves.Count <= 0);
         }
 
         private void Board_SizeChanged(object sender, SizeChangedEventArgs e)

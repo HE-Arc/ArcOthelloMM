@@ -21,7 +21,8 @@ namespace ArcOthelloMM
         private BlackPlayer BlackPlayer { get; set; }
         private int[,] Board { get; set; }
 
-        public Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> listMove;
+        private Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> ListPossibleMove;
+        private bool ListPossibleMoveLoaded;
 
         private const int ROW = 7;
         private const int COLUMN = 9;
@@ -45,8 +46,20 @@ namespace ArcOthelloMM
                 }
             }
 
+            // Set start tokens
+            Board[3, 3] = WhitePlayer.Value;
+            WhitePlayer.Tokens.Add(new Tuple<int, int>(3, 3));
+            Board[4, 4] = WhitePlayer.Value;
+            WhitePlayer.Tokens.Add(new Tuple<int, int>(4, 4));
+
+            Board[3, 4] = BlackPlayer.Value;
+            BlackPlayer.Tokens.Add(new Tuple<int, int>(3, 4));
+            Board[4, 3] = BlackPlayer.Value;
+            BlackPlayer.Tokens.Add(new Tuple<int, int>(4, 3));
+
             // Init others
-            listMove = new Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>>();
+            ListPossibleMove = new Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>>();
+            ListPossibleMoveLoaded = false;
         }
 
         /// <summary>
@@ -61,28 +74,6 @@ namespace ArcOthelloMM
             }
 
             return Instance;
-        }
-
-        /// <summary>
-        /// Prepare the board for the party
-        /// </summary>
-        /// <param name="whiteFirstPlayer"></param>
-        public void StartGame(bool whiteFirstPlayer)
-        {
-            // Set start tokens
-            Board[3, 3] = WhitePlayer.Value;
-            WhitePlayer.Tokens.Add(new Tuple<int, int>(3, 3));
-            Board[4, 4] = WhitePlayer.Value;
-            WhitePlayer.Tokens.Add(new Tuple<int, int>(4, 4));
-
-            Board[3, 4] = BlackPlayer.Value;
-            BlackPlayer.Tokens.Add(new Tuple<int, int>(3, 4));
-            Board[4, 3] = BlackPlayer.Value;
-            BlackPlayer.Tokens.Add(new Tuple<int, int>(4, 3));
-
-            // Move for the first player
-            SetPlayer(whiteFirstPlayer);
-            GetPlayableMove();
         }
 
         /// <summary>
@@ -117,14 +108,20 @@ namespace ArcOthelloMM
         }
 
         /// <summary>
-        /// Get the move for the current player
+        /// Get the possible moves for a player
         /// </summary>
-        public void GetPlayableMove()
+        /// <param name="isWhite"></param>
+        /// <returns></returns>
+        public Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> GetListPossibleMove(bool isWhite)
         {
+            SetPlayer(isWhite);
             foreach (Tuple<int, int> token in CurrentPlayer.Tokens)
             {
                 CheckAllPossibleMove(token);
             }
+
+            ListPossibleMoveLoaded = true;
+            return ListPossibleMove;
         }
 
         /// <summary>
@@ -239,16 +236,16 @@ namespace ArcOthelloMM
         private void SavePossibleMove(HashSet<Tuple<int, int>> move, Tuple<int, int> key)
         {
             // add pieces affected for the case played
-            if (listMove.ContainsKey(key))
+            if (ListPossibleMove.ContainsKey(key))
             {
                 foreach (Tuple<int, int> tuple in move)
                 {
-                    listMove[key].Add(tuple);
+                    ListPossibleMove[key].Add(tuple);
                 }
             }
             else
             {
-                listMove.Add(key, move);
+                ListPossibleMove.Add(key, move);
             }
         }
 
@@ -424,19 +421,24 @@ namespace ArcOthelloMM
         /// <returns></returns>
         public bool PlayMove(int column, int line, bool isWhite)
         {
+            if (ListPossibleMoveLoaded)
+                GetListPossibleMove(isWhite);
+
+            if (ListPossibleMove.Count == 0)
+                return false;
+          
             SetPlayer(isWhite);
 
-            foreach (Tuple<int, int> tuple in listMove[new Tuple<int, int>(column, line)])
+            foreach (Tuple<int, int> tuple in ListPossibleMove[new Tuple<int, int>(column, line)])
             {
                 AddToken(tuple);
             }
 
             // Reset possible move
-            listMove.Clear();
-            SetPlayer(!isWhite);
-            GetPlayableMove();
+            ListPossibleMove.Clear();
+            ListPossibleMoveLoaded = false;
 
-            return (listMove.Count > 0);
+            return (ListPossibleMove.Count > 0);
         }
 
         public Tuple<int, int> GetNextMove(int[,] game, int level, bool whiteTurn)
