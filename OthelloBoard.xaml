@@ -17,8 +17,12 @@
         <Border Grid.Row="0" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,1,0" >
             <StackPanel Orientation="Vertical">
                 <StackPanel Orientation="Horizontal">
-                    <Label>Temps Écoulé :</Label>
-                    <Label Name="lblTime">0:00:00</Label>
+                    <Label>Temps restant joueur noir :</Label>
+                    <Label Name="lblTimeBlack">0:00:00</Label>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label>Temps restant joueur blanc:</Label>
+                    <Label Name="lblTimeWhite">0:00:00</Label>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <Label>Tour :</Label>

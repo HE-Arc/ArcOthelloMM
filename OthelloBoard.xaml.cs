@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -27,6 +29,13 @@ namespace ArcOthelloMM
         bool turn;
         Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> currentPossibleMoves;
 
+
+        Timer timerUpdateGui;
+
+        Stopwatch swPlayer1;
+        Stopwatch swPlayer2;
+        const long totalTime = 10000; 
+
         public OthelloBoard()
         {
             InitializeComponent();
@@ -35,6 +44,8 @@ namespace ArcOthelloMM
             othelloGridCells = new OthelloGridCell[NB_COL, NB_ROW];
             GenerateGrid();
             UpdateBoard();
+            swPlayer1 = new Stopwatch();
+            swPlayer2 = new Stopwatch();
         }
 
         public void GenerateGrid()
@@ -133,6 +144,16 @@ namespace ArcOthelloMM
         private void ChangeTurn()
         {
             turn = !turn;
+            if (turn)
+            {
+                swPlayer2.Start();
+                swPlayer1.Stop();
+            }
+            else
+            {
+                swPlayer1.Start();
+                swPlayer2.Stop();
+            }
         }
 
         private void Board_SizeChanged(object sender, SizeChangedEventArgs e)
