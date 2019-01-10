@@ -174,13 +174,13 @@ namespace ArcOthelloMM
                 if (!topFinished)
                     topFinished = CheckOnePossibleMove(token, listTop, 0, -i);
                 if (!bottomFinished)
-                    bottomFinished = CheckOnePossibleMove(token, listBottom, 0, -i);
+                    bottomFinished = CheckOnePossibleMove(token, listBottom, 0, i);
                 if (!leftTopFinished)
                     leftTopFinished = CheckOnePossibleMove(token, listLeftTop, -i, -i);
                 if (!rightTopFinished)
                     rightTopFinished = CheckOnePossibleMove(token, listRightTop, i, -i);
                 if (!leftBottomFinished)
-                    leftBottomFinished = CheckOnePossibleMove(token, listBottom, -i, i);
+                    leftBottomFinished = CheckOnePossibleMove(token, listLeftBottom, -i, i);
                 if (!rightBottomFinished)
                     rightBottomFinished = CheckOnePossibleMove(token, listRightBottom, i, i);
 
@@ -220,7 +220,7 @@ namespace ArcOthelloMM
             }
             else if (!OpponentPlayer.Tokens.Contains(newToken))
             {
-                if (!CurrentPlayer.Tokens.Contains(newToken) && (Math.Abs(offsetX) + Math.Abs(offsetY)) > 1)
+                if (!CurrentPlayer.Tokens.Contains(newToken) && Math.Abs(offsetX) > 1 || Math.Abs(offsetY) > 1)
                 {
                     SavePossibleMove(tokens, newToken); // save valid move
                 }
@@ -309,7 +309,7 @@ namespace ArcOthelloMM
                     break;
                 }
 
-                bottomState = CheckOnePlayableCase(token, 0, -i);
+                bottomState = CheckOnePlayableCase(token, 0, i);
                 if (bottomState == 1)
                 {
                     valid = true;
@@ -380,7 +380,7 @@ namespace ArcOthelloMM
             }
             else if (!OpponentPlayer.Tokens.Contains(newToken))
             {
-                if (CurrentPlayer.Tokens.Contains(newToken) && (Math.Abs(offsetX) + Math.Abs(offsetY)) > 1)
+                if (CurrentPlayer.Tokens.Contains(newToken) && Math.Abs(offsetX) > 1 || Math.Abs(offsetY) > 1)
                 {
                     state = 1;
                 }
@@ -433,7 +433,7 @@ namespace ArcOthelloMM
 
             // Reset possible move
             listMove.Clear();
-
+            SetPlayer(!isWhite);
             GetPlayableMove();
 
             return (listMove.Count > 0);
