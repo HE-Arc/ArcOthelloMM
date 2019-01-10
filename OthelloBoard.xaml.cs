@@ -72,13 +72,9 @@ namespace ArcOthelloMM
             }
         }
 
-        private void NextTurn()
-        {
-            turn = !turn;
-        }
-
         private void UpdateBoard()
         {
+            currentPossibleMoves = logicalBoard.listMove;
             for (int x = 0; x < othelloGridCells.GetLength(0); x++)
             {
                 for (int y = 0; y < othelloGridCells.GetLength(1); y++)
@@ -107,15 +103,12 @@ namespace ArcOthelloMM
 
         private void Cell_MouseLeave(object sender, MouseEventArgs e)
         {
-            OthelloGridCell s = (OthelloGridCell)sender;
-            ClearPreview();
+
         }
 
         private void Cell_MouseEnter(object sender, MouseEventArgs e)
         {
-            OthelloGridCell s = (OthelloGridCell)sender;
-            if(s.State != OthelloGridCell.States.Player1 && s.State != OthelloGridCell.States.Player2)
-                s.State = OthelloGridCell.States.PreviewPlayer1; //replace by player1 or 2 depending of the turn
+            
         }
 
         private void Cell_Click(object sender, EventArgs e)
@@ -127,22 +120,19 @@ namespace ArcOthelloMM
             if (currentPossibleMoves.ContainsKey(pos))
             {
                 logicalBoard.PlayMove(x, y, turn);
+                ChangeTurn();
+                UpdateGui();
             }
-            currentPossibleMoves = logicalBoard.listMove;
+        }
+
+        private void UpdateGui()
+        {
             UpdateBoard();
         }
 
-        private void ClearPreview()
+        private void ChangeTurn()
         {
-            for (int x = 0; x < othelloGridCells.GetLength(0); x++)
-            {
-                for (int y = 0; y < othelloGridCells.GetLength(1); y++)
-                {
-                    OthelloGridCell cell = othelloGridCells[x, y];
-                    if (cell.State == OthelloGridCell.States.PreviewPlayer1 || cell.State == OthelloGridCell.States.PreviewPlayer2)
-                        cell.State = OthelloGridCell.States.Empty; // to replace with the actual value of the cell
-                }
-            }
+            turn = !turn;
         }
 
         private void Board_SizeChanged(object sender, SizeChangedEventArgs e)

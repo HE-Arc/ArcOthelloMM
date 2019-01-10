@@ -15,8 +15,15 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Border Grid.Row="0" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,1,0" >
-            <StackPanel>
-                <Label>Temps Écoulé :</Label>
+            <StackPanel Orientation="Vertical">
+                <StackPanel Orientation="Horizontal">
+                    <Label>Temps Écoulé :</Label>
+                    <Label Name="lblTime">0:00:00</Label>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label>Tour :</Label>
+                    <Label Name="lblTurn">Couleur</Label>
+                </StackPanel>
             </StackPanel>
         </Border>
         <Border Name="border" Grid.Row="0" Grid.Column="1" BorderThickness="0">
