@@ -62,7 +62,7 @@ namespace ArcOthelloMM
         {
             this.Dispatcher.Invoke(() =>
             {
-                UpdateTimers();
+                UpdateTimers(); // je sais que ça crash là à la fermeture j'investigue
             });
         }
 
