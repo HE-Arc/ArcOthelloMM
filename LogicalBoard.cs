@@ -433,7 +433,7 @@ namespace ArcOthelloMM
 
             // Reset possible move
             listMove.Clear();
-
+            SetPlayer(!isWhite);
             GetPlayableMove();
 
             return (listMove.Count > 0);
