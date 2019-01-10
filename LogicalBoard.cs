@@ -143,16 +143,16 @@ namespace ArcOthelloMM
             //      else move impossible
 
             int i = 1;
-            bool leftFinished = true;
-            bool topFinished = true;
-            bool rightFinished = true;
-            bool bottomFinished = true;
+            bool leftFinished = false;
+            bool topFinished = false;
+            bool rightFinished = false;
+            bool bottomFinished = false;
 
             // Diagonal
-            bool leftTopFinished = true;
-            bool rightTopFinished = true;
-            bool leftBottomFinished = true;
-            bool rightBottomFinished = true;
+            bool leftTopFinished = false;
+            bool rightTopFinished = false;
+            bool leftBottomFinished = false;
+            bool rightBottomFinished = false;
 
             // pieces affected by possible move in every direction
             HashSet<Tuple<int, int>> listLeft = new HashSet<Tuple<int, int>>();
@@ -167,24 +167,32 @@ namespace ArcOthelloMM
             // continue until all direction was checked
             do
             {
-                leftFinished = CheckOnePossibleMove(token, listLeft, -i, 0);
-                rightFinished = CheckOnePossibleMove(token, listRight, i, 0);
-                topFinished = CheckOnePossibleMove(token, listTop, 0, -i);
-                bottomFinished = CheckOnePossibleMove(token, listBottom, 0, -i);
-                leftTopFinished = CheckOnePossibleMove(token, listLeftTop, -i, -i);
-                rightTopFinished = CheckOnePossibleMove(token, listRightTop, i, -i);
-                leftBottomFinished = CheckOnePossibleMove(token, listBottom, -i, i);
-                rightBottomFinished = CheckOnePossibleMove(token, listRightBottom, i, i);
+                if (!leftFinished)
+                    leftFinished = CheckOnePossibleMove(token, listLeft, -i, 0);
+                if (!rightFinished)
+                    rightFinished = CheckOnePossibleMove(token, listRight, i, 0);
+                if (!topFinished)
+                    topFinished = CheckOnePossibleMove(token, listTop, 0, -i);
+                if (!bottomFinished)
+                    bottomFinished = CheckOnePossibleMove(token, listBottom, 0, -i);
+                if (!leftTopFinished)
+                    leftTopFinished = CheckOnePossibleMove(token, listLeftTop, -i, -i);
+                if (!rightTopFinished)
+                    rightTopFinished = CheckOnePossibleMove(token, listRightTop, i, -i);
+                if (!leftBottomFinished)
+                    leftBottomFinished = CheckOnePossibleMove(token, listBottom, -i, i);
+                if (!rightBottomFinished)
+                    rightBottomFinished = CheckOnePossibleMove(token, listRightBottom, i, i);
 
                 ++i;
             } while (!leftFinished
-                && !topFinished
-                && !rightFinished
-                && !bottomFinished
-                && !leftTopFinished
-                && !rightTopFinished
-                && !leftBottomFinished
-                && !rightBottomFinished); // check if all direction is finished
+                || !topFinished
+                || !rightFinished
+                || !bottomFinished
+                || !leftTopFinished
+                || !rightTopFinished
+                || !leftBottomFinished
+                || !rightBottomFinished); // check if all direction is finished
         }
 
         /// <summary>
@@ -214,7 +222,7 @@ namespace ArcOthelloMM
             {
                 if (!CurrentPlayer.Tokens.Contains(newToken) && (Math.Abs(offsetX) + Math.Abs(offsetY)) > 1)
                 {
-                    SavePossibleMove(tokens, token); // save valid move
+                    SavePossibleMove(tokens, newToken); // save valid move
                 }
 
                 finished = true;
@@ -338,13 +346,13 @@ namespace ArcOthelloMM
 
                 ++i;
             } while (leftState == 0
-                && topState == 0
-                && rightState == 0
-                && bottomState == 0
-                && leftTopState == 0
-                && rightTopState == 0
-                && leftBottomState == 0
-                && rightBottomState == 0); // check if all direction is finished
+                || topState == 0
+                || rightState == 0
+                || bottomState == 0
+                || leftTopState == 0
+                || rightTopState == 0
+                || leftBottomState == 0
+                || rightBottomState == 0); // check if all direction is finished
 
             return valid;
         }
