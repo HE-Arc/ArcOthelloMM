@@ -11,7 +11,7 @@ namespace ArcOthelloMM
     /// </summary>
     class WhitePlayer : Player
     {
-        private static WhitePlayer instance;
+        private static WhitePlayer Instance;
 
         /// <summary>
         /// Instanciate the white player
@@ -26,14 +26,23 @@ namespace ArcOthelloMM
         /// Assure there is one white player
         /// </summary>
         /// <returns></returns>
-        public static WhitePlayer GetWhitePlayer()
+        public static WhitePlayer GetInstance()
         {
-            if (instance == null)
+            if (Instance == null)
             {
-                instance = new WhitePlayer();
+                Instance = new WhitePlayer();
             }
 
-            return instance;
+            return Instance;
+        }
+
+        /// <summary>
+        /// Return the value of white player
+        /// </summary>
+        /// <returns></returns>
+        public int GetValue()
+        {
+            return Value;
         }
     }
 }
