@@ -21,13 +21,15 @@ namespace ArcOthelloMM
     /// </summary>
     public partial class OthelloBoard : Window
     {
-        const int NB_COL = 9;
-        const int NB_ROW = 7;
-        
-        OthelloGridCell[,] othelloGridCells;
+        private const int NB_COL = 9;
+        private const int NB_ROW = 7;
+        private const string LABEL_COL = "ABCDEFGHI";
+        private const string LABEL_ROW = "1234567";
 
-        bool turn;
-        Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> currentPossibleMoves;
+        private OthelloGridCell[,] othelloGridCells;
+
+        private bool turn;
+        private Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> currentPossibleMoves;
 
 
         Timer timerUpdateGui;
@@ -39,16 +41,21 @@ namespace ArcOthelloMM
         public OthelloBoard()
         {
             InitializeComponent();
-            turn = false;
-            LogicalBoard.GetInstance().StartGame(turn);
-            othelloGridCells = new OthelloGridCell[NB_COL, NB_ROW];
-            GenerateGrid();
-            UpdateBoard();
+
             swPlayer1 = new Stopwatch();
             swPlayer2 = new Stopwatch();
+            othelloGridCells = new OthelloGridCell[NB_COL, NB_ROW];
+
+            turn = false;
+
+            LogicalBoard.GetInstance().StartGame(turn);
+
+            GenerateGrid();
+            ChangeTurn();
+            UpdateBoard();
         }
 
-        public void GenerateGrid()
+        private void GenerateGrid()
         {
             //add row col labels
             for (int i = 0; i < NB_COL; i++)
@@ -84,7 +91,6 @@ namespace ArcOthelloMM
 
         private void UpdateBoard()
         {
-            currentPossibleMoves = LogicalBoard.GetInstance().listMove;
             for (int x = 0; x < othelloGridCells.GetLength(0); x++)
             {
                 for (int y = 0; y < othelloGridCells.GetLength(1); y++)
@@ -154,6 +160,11 @@ namespace ArcOthelloMM
                 swPlayer1.Start();
                 swPlayer2.Stop();
             }
+            do
+            {
+                currentPossibleMoves = LogicalBoard.GetInstance().listMove;
+            }
+            while (currentPossibleMoves.Count <= 0);
         }
 
         private void Board_SizeChanged(object sender, SizeChangedEventArgs e)
