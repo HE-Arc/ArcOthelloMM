@@ -202,11 +202,11 @@ namespace ArcOthelloMM
             int x = token.Item1 + offsetX;
             int y = token.Item2 + offsetY;
 
-            Tuple<int, int> newToken = new Tuple<int, int>(y, x);
+            Tuple<int, int> newToken = new Tuple<int, int>(x, y);
             tokens.Add(newToken);
 
             // Is on board
-            if (x < 0 || x >= ROW || y < 0 || y >= COLUMN)
+            if (x < 0 || x >= COLUMN || y < 0 || y >= ROW)
             {
                 finished = true;
             }
@@ -250,7 +250,7 @@ namespace ArcOthelloMM
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        private bool CheckAllCurrentMove(Tuple<int, int> token)
+        private bool CheckAllPlayableCase(Tuple<int, int> token)
         {
             // Algo :
             //      Loop and check in every direction
@@ -280,56 +280,56 @@ namespace ArcOthelloMM
             // continue until all direction was checked
             do
             {
-                leftState = CheckOneCurrentMove(token, -i, 0);
+                leftState = CheckOnePlayableCase(token, -i, 0);
                 if (leftState == 1)
                 {
                     valid = true;
                     break;
                 }
 
-                rightState = CheckOneCurrentMove(token, i, 0);
+                rightState = CheckOnePlayableCase(token, i, 0);
                 if (rightState == 1)
                 {
                     valid = true;
                     break;
                 }
 
-                topState = CheckOneCurrentMove(token, 0, -i);
+                topState = CheckOnePlayableCase(token, 0, -i);
                 if (topState == 1)
                 {
                     valid = true;
                     break;
                 }
 
-                bottomState = CheckOneCurrentMove(token, 0, -i);
+                bottomState = CheckOnePlayableCase(token, 0, -i);
                 if (bottomState == 1)
                 {
                     valid = true;
                     break;
                 }
 
-                leftTopState = CheckOneCurrentMove(token, -i, -i);
+                leftTopState = CheckOnePlayableCase(token, -i, -i);
                 if (leftTopState == 1)
                 {
                     valid = true;
                     break;
                 }
 
-                rightTopState = CheckOneCurrentMove(token, i, -i);
+                rightTopState = CheckOnePlayableCase(token, i, -i);
                 if (rightTopState == 1)
                 {
                     valid = true;
                     break;
                 }
 
-                leftBottomState = CheckOneCurrentMove(token, -i, i);
+                leftBottomState = CheckOnePlayableCase(token, -i, i);
                 if (leftBottomState == 1)
                 {
                     valid = true;
                     break;
                 }
 
-                rightBottomState = CheckOneCurrentMove(token, i, i);
+                rightBottomState = CheckOnePlayableCase(token, i, i);
                 if (rightBottomState == 1)
                 {
                     valid = true;
@@ -357,16 +357,16 @@ namespace ArcOthelloMM
         /// <param name="offsetX"></param>
         /// <param name="offsetY"></param>
         /// <returns></returns>
-        private int CheckOneCurrentMove(Tuple<int, int> token, int offsetX, int offsetY)
+        private int CheckOnePlayableCase(Tuple<int, int> token, int offsetX, int offsetY)
         {
             int state = 0;
 
             int y = token.Item1 + offsetY;
             int x = token.Item2 + offsetX;
-            Tuple<int, int> newToken = new Tuple<int, int>(y, x);
+            Tuple<int, int> newToken = new Tuple<int, int>(x, y);
 
             // Is on board
-            if (x < 0 || x >= ROW || y < 0 || y >= COLUMN)
+            if (x < 0 || x >= COLUMN || y < 0 || y >= ROW)
             {
                 state = -1;
             }
@@ -404,7 +404,7 @@ namespace ArcOthelloMM
         public bool IsPlayable(int column, int line, bool isWhite)
         {
             SetPlayer(isWhite);
-            return Board[line, column] == 0 && CheckAllCurrentMove(new Tuple<int, int>(column, line));
+            return Board[line, column] == 0 && CheckAllPlayableCase(new Tuple<int, int>(column, line));
         }
 
         /// <summary>
@@ -433,6 +433,7 @@ namespace ArcOthelloMM
 
         public Tuple<int, int> GetNextMove(int[,] game, int level, bool whiteTurn)
         {
+            // logic ia
             throw new NotImplementedException();
         }
 
