@@ -21,9 +21,7 @@ namespace ArcOthelloMM
     {
         const int NB_COL = 9;
         const int NB_ROW = 7;
-
-        LogicalBoard logicalBoard;
-
+        
         OthelloGridCell[,] othelloGridCells;
 
         bool turn;
@@ -32,15 +30,16 @@ namespace ArcOthelloMM
         public OthelloBoard()
         {
             InitializeComponent();
-            logicalBoard = new LogicalBoard();
+            turn = false;
+            LogicalBoard.GetInstance().StartGame(turn);
             othelloGridCells = new OthelloGridCell[NB_COL, NB_ROW];
             GenerateGrid();
-            turn = false;
             UpdateBoard();
         }
 
         public void GenerateGrid()
         {
+            //add row col labels
             for (int i = 0; i < NB_COL; i++)
             {
                 ColumnDefinition col = new ColumnDefinition();
@@ -74,28 +73,29 @@ namespace ArcOthelloMM
 
         private void UpdateBoard()
         {
-            currentPossibleMoves = logicalBoard.listMove;
+            currentPossibleMoves = LogicalBoard.GetInstance().listMove;
             for (int x = 0; x < othelloGridCells.GetLength(0); x++)
             {
                 for (int y = 0; y < othelloGridCells.GetLength(1); y++)
                 {
                     Tuple<int, int> pos = new Tuple<int, int>(x, y);
                     OthelloGridCell gcell = othelloGridCells[x, y];
-                    int[,] lboard = logicalBoard.GetBoard();
+                    int[,] lboard = LogicalBoard.GetInstance().GetBoard();
                     int lcell = lboard[x,y];
-                    if (lcell == -1)
-                        gcell.State = OthelloGridCell.States.Empty;
-                    else if (lcell == 0)
+                    if (lcell == 0)
                         gcell.State = OthelloGridCell.States.Player1;
                     else if (lcell == 1)
                         gcell.State = OthelloGridCell.States.Player2;
-
-                    if(currentPossibleMoves.ContainsKey(pos))
+                    else if(lcell == -1 && currentPossibleMoves.ContainsKey(pos))
                     {
                         if (turn)
                             gcell.State = OthelloGridCell.States.PreviewPlayer1;
                         else
                             gcell.State = OthelloGridCell.States.PreviewPlayer2;
+                    }
+                    else
+                    {
+                        gcell.State = OthelloGridCell.States.Empty;
                     }
                 }
             }
@@ -119,7 +119,7 @@ namespace ArcOthelloMM
             Tuple<int, int> pos = new Tuple<int, int>(x, y);
             if (currentPossibleMoves.ContainsKey(pos))
             {
-                logicalBoard.PlayMove(x, y, turn);
+                LogicalBoard.GetInstance().PlayMove(x, y, turn);
                 ChangeTurn();
                 UpdateGui();
             }
