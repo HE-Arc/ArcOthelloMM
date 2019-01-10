@@ -11,7 +11,7 @@ namespace ArcOthelloMM
     /// </summary>
     class BlackPlayer : Player
     {
-        private static BlackPlayer instance;
+        private static BlackPlayer Instance;
 
         /// <summary>
         /// Instanciate the black player
@@ -26,14 +26,23 @@ namespace ArcOthelloMM
         /// Assure there is one black player
         /// </summary>
         /// <returns></returns>
-        public static BlackPlayer GetBlackPlayer()
+        public static BlackPlayer GetInstance()
         {
-            if (instance == null)
+            if (Instance == null)
             {
-                instance = new BlackPlayer();
+                Instance = new BlackPlayer();
             }
 
-            return instance;
+            return Instance;
+        }
+
+        /// <summary>
+        /// Return the value of black player
+        /// </summary>
+        /// <returns></returns>
+        public int GetValue()
+        {
+            return Value;
         }
     }
 }

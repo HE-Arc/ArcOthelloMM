@@ -13,8 +13,10 @@ namespace ArcOthelloMM
     /// </summary>
     class LogicalBoard : IPlayable.IPlayable
     {
+        private static LogicalBoard Instance;
+
         private Player CurrentPlayer { get; set; }
-        private Player Opponent { get; set; }
+        private Player OpponentPlayer { get; set; }
         private WhitePlayer WhitePlayer { get; set; }
         private BlackPlayer BlackPlayer { get; set; }
         private int[,] Board { get; set; }
@@ -27,22 +29,46 @@ namespace ArcOthelloMM
         /// <summary>
         /// Class to manage logical game
         /// </summary>
-        public LogicalBoard()
+        private LogicalBoard()
         {
             // Create players
-            WhitePlayer = WhitePlayer.GetWhitePlayer();
-            BlackPlayer = BlackPlayer.GetBlackPlayer();
+            WhitePlayer = WhitePlayer.GetInstance();
+            BlackPlayer = BlackPlayer.GetInstance();
 
             // Init Board
             Board = new int[COLUMN, ROW];
-            for (int y = 0; y < COLUMN; ++y)
+            for (int x = 0; x < COLUMN; ++x)
             {
-                for (int x = 0; x < ROW; ++x)
+                for (int y = 0; y < ROW; ++y)
                 {
-                    Board[y, x] = -1;
+                    Board[x, y] = -1;
                 }
             }
 
+            // Init others
+            listMove = new Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>>();
+        }
+
+        /// <summary>
+        /// Assure there is one white player
+        /// </summary>
+        /// <returns></returns>
+        public static LogicalBoard GetInstance()
+        {
+            if (Instance == null)
+            {
+                Instance = new LogicalBoard();
+            }
+
+            return Instance;
+        }
+
+        /// <summary>
+        /// Prepare the board for the party
+        /// </summary>
+        /// <param name="whiteFirstPlayer"></param>
+        public void StartGame(bool whiteFirstPlayer)
+        {
             // Set start tokens
             Board[3, 3] = WhitePlayer.Value;
             WhitePlayer.Tokens.Add(new Tuple<int, int>(3, 3));
@@ -54,8 +80,9 @@ namespace ArcOthelloMM
             Board[4, 3] = BlackPlayer.Value;
             BlackPlayer.Tokens.Add(new Tuple<int, int>(4, 3));
 
-            // Init others
-            listMove = new Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>>();
+            // Move for the first player
+            SetPlayer(whiteFirstPlayer);
+            GetPlayableMove();
         }
 
         /// <summary>
@@ -66,12 +93,12 @@ namespace ArcOthelloMM
             if (isWhite)
             {
                 CurrentPlayer = WhitePlayer;
-                Opponent = BlackPlayer;
+                OpponentPlayer = BlackPlayer;
             }
             else
             {
                 CurrentPlayer = BlackPlayer;
-                Opponent = WhitePlayer;
+                OpponentPlayer = WhitePlayer;
             }
         }
 
@@ -85,8 +112,8 @@ namespace ArcOthelloMM
             Board[token.Item1, token.Item2] = CurrentPlayer.Value;
 
             // Steal token
-            if (Opponent.Tokens.Contains(token))
-                Opponent.Tokens.Remove(token);
+            if (OpponentPlayer.Tokens.Contains(token))
+                OpponentPlayer.Tokens.Remove(token);
         }
 
         /// <summary>
@@ -183,7 +210,7 @@ namespace ArcOthelloMM
             {
                 finished = true;
             }
-            else if (!Opponent.Tokens.Contains(newToken))
+            else if (!OpponentPlayer.Tokens.Contains(newToken))
             {
                 if (!CurrentPlayer.Tokens.Contains(newToken) && (Math.Abs(offsetX) + Math.Abs(offsetY)) > 1)
                 {
@@ -253,7 +280,7 @@ namespace ArcOthelloMM
             // continue until all direction was checked
             do
             {
-                leftState = CheckOneCurrentMove(token, - i, 0);
+                leftState = CheckOneCurrentMove(token, -i, 0);
                 if (leftState == 1)
                 {
                     valid = true;
@@ -343,7 +370,7 @@ namespace ArcOthelloMM
             {
                 state = -1;
             }
-            else if (!Opponent.Tokens.Contains(newToken))
+            else if (!OpponentPlayer.Tokens.Contains(newToken))
             {
                 if (CurrentPlayer.Tokens.Contains(newToken) && (Math.Abs(offsetX) + Math.Abs(offsetY)) > 1)
                 {
@@ -400,7 +427,8 @@ namespace ArcOthelloMM
             listMove.Clear();
 
             GetPlayableMove();
-            throw new NotImplementedException();
+
+            return (listMove.Count > 0);
         }
 
         public Tuple<int, int> GetNextMove(int[,] game, int level, bool whiteTurn)
@@ -433,6 +461,24 @@ namespace ArcOthelloMM
         public int GetBlackScore()
         {
             return BlackPlayer.Tokens.Count;
+        }
+
+        /// <summary>
+        /// Get the tokens of the white player
+        /// </summary>
+        /// <returns></returns>
+        public List<Tuple<int, int>> GetWhiteTokens()
+        {
+            return WhitePlayer.Tokens;
+        }
+
+        /// <summary>
+        /// Get the tokens of the black player
+        /// </summary>
+        /// <returns></returns>
+        public List<Tuple<int, int>> GetBlackTokens()
+        {
+            return BlackPlayer.Tokens;
         }
     }
 }
