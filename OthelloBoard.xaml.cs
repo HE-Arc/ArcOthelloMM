@@ -73,13 +73,14 @@ namespace ArcOthelloMM
         private void UpdateBoard()
         {
             currentPossibleMoves = LogicalBoard.GetInstance().GetListPossibleMove(turn);
+            int[,] lboard = LogicalBoard.GetInstance().GetBoard();
             for (int x = 0; x < othelloGridCells.GetLength(0); x++)
             {
                 for (int y = 0; y < othelloGridCells.GetLength(1); y++)
                 {
                     Tuple<int, int> pos = new Tuple<int, int>(x, y);
                     OthelloGridCell gcell = othelloGridCells[x, y];
-                    int[,] lboard = LogicalBoard.GetInstance().GetBoard();
+                    
                     int lcell = lboard[x,y];
                     if (lcell == 0)
                         gcell.State = OthelloGridCell.States.Player1;
