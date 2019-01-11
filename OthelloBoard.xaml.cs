@@ -146,7 +146,7 @@ namespace ArcOthelloMM
             if (currentPossibleMoves.ContainsKey(pos))
             {
                 LogicalBoard.GetInstance().PlayMove(x, y, turn);
-                ChangeTurn();
+                NextTurn();
                 UpdateGui();
             }
         }
@@ -175,28 +175,38 @@ namespace ArcOthelloMM
             lbl.Content = remainingTime.Hours + ":" + remainingTime.Minutes + ":" + remainingTime.Seconds + "." + remainingTime.Milliseconds;
         }
 
-        private void ChangeTurn()
+        private void NextTurn()
         {
+            Console.WriteLine("------");
+            foreach (Tuple<int, int> b in currentPossibleMoves.Keys)
+            {
+                Console.WriteLine(b);
+            }
 
             turn = !turn;
             currentPossibleMoves = LogicalBoard.GetInstance().GetListPossibleMove(turn);
 
-            if (currentPossibleMoves.Count == 0)
+            if (currentPossibleMoves.Count <= 0)
             {
                 turn = !turn;
                 currentPossibleMoves = LogicalBoard.GetInstance().GetListPossibleMove(turn);
-                if (currentPossibleMoves.Count == 0)
+                if (currentPossibleMoves.Count <= 0)
                 {
-                    Console.WriteLine("Game End");
+                    Console.WriteLine("Game End :" + currentPossibleMoves.Count);
                 }
                 else
                 {
-                    Console.WriteLine("Turn skiped");
+                    Console.WriteLine("Turn skiped :" + currentPossibleMoves.Count);
                 }
             }
             else
             {
-                Console.WriteLine("Next turn", currentPossibleMoves);
+                Console.WriteLine("Next turn :" + currentPossibleMoves.Count);
+            }
+
+            foreach(Tuple<int, int>  b in currentPossibleMoves.Keys)
+            {
+                Console.WriteLine(b);
             }
 
             if (turn)
