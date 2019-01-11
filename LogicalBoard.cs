@@ -250,147 +250,6 @@ namespace ArcOthelloMM
         }
 
         /// <summary>
-        /// Check if an empty case is playable
-        /// for the current player
-        /// </summary>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        private bool CheckAllPlayableCase(Tuple<int, int> token)
-        {
-            // Algo :
-            //      Loop and check in every direction
-            //      if the case is ennemy continue to check in the direction
-            //      if the case belong to the current player and the increment is greater than 1
-            //      => it means there is possible move
-
-            int i = 1;
-            bool valid = false;
-
-            // Values of states:
-            //      -1  impossible move
-            //      0   need to continue
-            //      1   possible move
-
-            int leftState = 0;
-            int topState = 0;
-            int rightState = 0;
-            int bottomState = 0;
-
-            // Diagonal
-            int leftTopState = 0;
-            int rightTopState = 0;
-            int leftBottomState = 0;
-            int rightBottomState = 0;
-
-            // continue until all direction was checked
-            do
-            {
-                leftState = CheckOnePlayableCase(token, -i, 0);
-                if (leftState == 1)
-                {
-                    valid = true;
-                    break;
-                }
-
-                rightState = CheckOnePlayableCase(token, i, 0);
-                if (rightState == 1)
-                {
-                    valid = true;
-                    break;
-                }
-
-                topState = CheckOnePlayableCase(token, 0, -i);
-                if (topState == 1)
-                {
-                    valid = true;
-                    break;
-                }
-
-                bottomState = CheckOnePlayableCase(token, 0, i);
-                if (bottomState == 1)
-                {
-                    valid = true;
-                    break;
-                }
-
-                leftTopState = CheckOnePlayableCase(token, -i, -i);
-                if (leftTopState == 1)
-                {
-                    valid = true;
-                    break;
-                }
-
-                rightTopState = CheckOnePlayableCase(token, i, -i);
-                if (rightTopState == 1)
-                {
-                    valid = true;
-                    break;
-                }
-
-                leftBottomState = CheckOnePlayableCase(token, -i, i);
-                if (leftBottomState == 1)
-                {
-                    valid = true;
-                    break;
-                }
-
-                rightBottomState = CheckOnePlayableCase(token, i, i);
-                if (rightBottomState == 1)
-                {
-                    valid = true;
-                    break;
-                }
-
-                ++i;
-            } while (leftState == 0
-                || topState == 0
-                || rightState == 0
-                || bottomState == 0
-                || leftTopState == 0
-                || rightTopState == 0
-                || leftBottomState == 0
-                || rightBottomState == 0); // check if all direction is finished
-
-            return valid;
-        }
-
-        /// <summary>
-        /// Check move for empty case
-        /// in one direction
-        /// </summary>
-        /// <param name="token"></param>
-        /// <param name="offsetX"></param>
-        /// <param name="offsetY"></param>
-        /// <returns></returns>
-        private int CheckOnePlayableCase(Tuple<int, int> token, int offsetX, int offsetY)
-        {
-            int state = 0;
-
-            int y = token.Item1 + offsetY;
-            int x = token.Item2 + offsetX;
-            Tuple<int, int> newToken = new Tuple<int, int>(x, y);
-
-            // Is on board
-            if (x < 0 || x >= COLUMN || y < 0 || y >= ROW)
-            {
-                state = -1;
-            }
-            else if (!OpponentPlayer.Tokens.Contains(newToken))
-            {
-                if (CurrentPlayer.Tokens.Contains(newToken) && Math.Abs(offsetX) > 1 || Math.Abs(offsetY) > 1)
-                {
-                    state = 1;
-                }
-                else
-                {
-                    state = -1;
-                }
-            }
-
-            return state;
-        }
-
-        /// <summary>
         /// Return the name of the IA
         /// </summary>
         /// <returns></returns>
@@ -409,7 +268,20 @@ namespace ArcOthelloMM
         public bool IsPlayable(int column, int line, bool isWhite)
         {
             SetPlayer(isWhite);
-            return Board[line, column] == 0 && CheckAllPlayableCase(new Tuple<int, int>(column, line));
+            GetListPossibleMove(isWhite);
+
+            if (Board[line, column] != 0)
+            {
+                foreach (KeyValuePair<Tuple<int, int>, HashSet<Tuple<int, int>>> possibleMove in ListPossibleMove)
+                {
+                    if (possibleMove.Value.Contains(new Tuple<int, int>(column, line)))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
