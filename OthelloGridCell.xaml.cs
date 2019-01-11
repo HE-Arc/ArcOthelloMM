@@ -49,7 +49,7 @@ namespace ArcOthelloMM
         static Dictionary<States, Tuple<Brush, Brush>> colors;
         static Color colorPlayer1 = Color.FromRgb(255, 255, 255);
         static Color colorPlayer2 = Color.FromRgb(0, 0, 0);
-        static byte opacityPreview = 127;
+        static byte opacityPreview = 63;
         static byte opacityNormal = 255;
 
         static OthelloGridCell()

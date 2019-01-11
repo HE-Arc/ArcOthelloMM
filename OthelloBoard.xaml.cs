@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -19,24 +21,52 @@ namespace ArcOthelloMM
     /// </summary>
     public partial class OthelloBoard : Window
     {
-        const int NB_COL = 9;
-        const int NB_ROW = 7;
-        
-        OthelloGridCell[,] othelloGridCells;
+        private const int NB_COL = 9;
+        private const int NB_ROW = 7;
+        private const string LABEL_COL = "ABCDEFGHI";
+        private const string LABEL_ROW = "1234567";
 
-        bool turn;
-        Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> currentPossibleMoves;
+        private OthelloGridCell[,] othelloGridCells;
+
+        private bool turn;
+        private Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> currentPossibleMoves;
+
+
+        Timer timerUpdateGui;
+
+        Stopwatch swPlayer1;
+        Stopwatch swPlayer2;
+        const long totalTimeMililseconds = 5 * 60 * 1000; //5min
 
         public OthelloBoard()
         {
             InitializeComponent();
-            turn = false;
+
+            swPlayer1 = new Stopwatch();
+            swPlayer2 = new Stopwatch();
+            timerUpdateGui = new Timer();
+            timerUpdateGui.Interval = 0.1;
+            timerUpdateGui.Elapsed += TimerUpdateGui_Elapsed;
+            timerUpdateGui.Start();
             othelloGridCells = new OthelloGridCell[NB_COL, NB_ROW];
+
+            turn = false;
+            currentPossibleMoves = LogicalBoard.GetInstance().GetListPossibleMove(turn);
+            LogicalBoard.GetInstance();
+
             GenerateGrid();
-            UpdateBoard();
+            UpdateGui();
         }
 
-        public void GenerateGrid()
+        private void TimerUpdateGui_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            this.Dispatcher.Invoke(() =>
+            {
+                UpdateTimers(); // je sais que ça crash là à la fermeture j'investigue
+            });
+        }
+
+        private void GenerateGrid()
         {
             //add row col labels
             for (int i = 0; i < NB_COL; i++)
@@ -94,9 +124,7 @@ namespace ArcOthelloMM
                             gcell.State = OthelloGridCell.States.PreviewPlayer2;
                     }
                     else
-                    {
                         gcell.State = OthelloGridCell.States.Empty;
-                    }
                 }
             }
         }
@@ -120,7 +148,7 @@ namespace ArcOthelloMM
             if (currentPossibleMoves.ContainsKey(pos))
             {
                 LogicalBoard.GetInstance().PlayMove(x, y, turn);
-                ChangeTurn();
+                NextTurn();
                 UpdateGui();
             }
         }
@@ -128,11 +156,71 @@ namespace ArcOthelloMM
         private void UpdateGui()
         {
             UpdateBoard();
+            UpdateGameData();
         }
 
-        private void ChangeTurn()
+        private void UpdateGameData()
         {
+            UpdateTimers();
+            lblTurn.Content = turn ? "White" : "Black";
+        }
+
+        private void UpdateTimers()
+        {
+            UpdateTimer(swPlayer1, lblTimeBlack);
+            UpdateTimer(swPlayer2, lblTimeWhite);
+        }
+
+        private void UpdateTimer(Stopwatch sw, Label lbl)
+        {
+            TimeSpan remainingTime = TimeSpan.FromMilliseconds(totalTimeMililseconds - sw.ElapsedMilliseconds);
+            lbl.Content = remainingTime.Hours + ":" + remainingTime.Minutes + ":" + remainingTime.Seconds + "." + remainingTime.Milliseconds;
+        }
+
+        private void NextTurn()
+        {
+            Console.WriteLine("------");
+            foreach (Tuple<int, int> b in currentPossibleMoves.Keys)
+            {
+                Console.WriteLine(b);
+            }
+
             turn = !turn;
+            currentPossibleMoves = LogicalBoard.GetInstance().GetListPossibleMove(turn);
+
+            if (currentPossibleMoves.Count <= 0)
+            {
+                turn = !turn;
+                currentPossibleMoves = LogicalBoard.GetInstance().GetListPossibleMove(turn);
+                if (currentPossibleMoves.Count <= 0)
+                {
+                    Console.WriteLine("Game End :" + currentPossibleMoves.Count);
+                }
+                else
+                {
+                    Console.WriteLine("Turn skiped :" + currentPossibleMoves.Count);
+                }
+            }
+            else
+            {
+                Console.WriteLine("Next turn :" + currentPossibleMoves.Count);
+            }
+
+            foreach(Tuple<int, int>  b in currentPossibleMoves.Keys)
+            {
+                Console.WriteLine(b);
+            }
+
+            if (turn)
+            {
+                swPlayer1.Start();
+                swPlayer2.Stop();
+            }
+            else
+            {
+                swPlayer1.Stop();
+                swPlayer2.Start();
+            }
         }
 
         private void Board_SizeChanged(object sender, SizeChangedEventArgs e)
