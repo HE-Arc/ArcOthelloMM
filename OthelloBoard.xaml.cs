@@ -89,30 +89,53 @@ namespace ArcOthelloMM
         private void GenerateGrid()
         {
             //add row col labels
-            for (int i = 0; i < LogicalBoard.GetInstance().GetCol(); i++)
+            graphicalBoard.ColumnDefinitions.Clear();
+            for (int i = 0; i < LogicalBoard.GetInstance().GetCol() + 1; i++)
             {
                 ColumnDefinition col = new ColumnDefinition();
                 graphicalBoard.ColumnDefinitions.Add(col);
             }
 
-            for (int i = 0; i < LogicalBoard.GetInstance().GetRow(); i++)
+            graphicalBoard.RowDefinitions.Clear();
+            for (int i = 0; i < LogicalBoard.GetInstance().GetRow() + 1; i++)
             {
                 RowDefinition row = new RowDefinition();
                 graphicalBoard.RowDefinitions.Add(row);
             }
+
+            for (int i = 0; i < LogicalBoard.GetInstance().GetCol(); i++)
+            {
+                OthelloGridLabel label = new OthelloGridLabel("" + LABEL_COL[i]);
+
+                Grid.SetColumn(label, i + 1);
+                Grid.SetRow(label, 0);
+
+                graphicalBoard.Children.Add(label);
+            }
+
+            for (int i = 0; i < LogicalBoard.GetInstance().GetRow(); i++)
+            {
+                OthelloGridLabel label = new OthelloGridLabel("" + LABEL_ROW[i]);
+
+                Grid.SetColumn(label, 0);
+                Grid.SetRow(label, i + 1);
+
+                graphicalBoard.Children.Add(label);
+            }
+
 
             for (int x = 0; x < othelloGridCells.GetLength(0); x++)
             {
                 for (int y = 0; y < othelloGridCells.GetLength(1); y++)
                 {
                     OthelloGridCell cell = new OthelloGridCell(x, y);
+                    othelloGridCells[x, y] = cell;
 
                     cell.Click += Cell_Click;
 
-                    Grid.SetRow(cell, y);
-                    Grid.SetColumn(cell, x);
+                    Grid.SetColumn(cell, x + 1);
+                    Grid.SetRow(cell, y+1);
 
-                    othelloGridCells[x, y] = cell;
                     graphicalBoard.Children.Add(cell);
                 }
             }
@@ -242,8 +265,8 @@ namespace ArcOthelloMM
 
         private void Board_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            int row = LogicalBoard.GetInstance().GetRow();
-            int col = LogicalBoard.GetInstance().GetCol();
+            int row = graphicalBoard.RowDefinitions.Count;
+            int col = graphicalBoard.ColumnDefinitions.Count;
 
             double min = Math.Min(border.ActualHeight / row, border.ActualWidth / col);
 
