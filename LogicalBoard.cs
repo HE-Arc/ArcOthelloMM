@@ -352,6 +352,21 @@ namespace ArcOthelloMM
             return WhitePlayer.Tokens.Count;
         }
 
+        public int BlackScore {
+            get
+            {
+                return GetBlackScore();
+            }
+        }
+
+        public int WhiteScore
+        {
+            get
+            {
+                return GetWhiteScore();
+            }
+        }
+
         /// <summary>
         /// Get the score of the black player
         /// </summary>

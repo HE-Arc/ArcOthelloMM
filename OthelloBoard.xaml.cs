@@ -40,6 +40,14 @@ namespace ArcOthelloMM
         public OthelloBoard()
         {
             InitializeComponent();
+
+            timerUpdateGui = new Timer();
+            timerUpdateGui.Interval = 0.1;
+            timerUpdateGui.Elapsed += TimerUpdateGui_Elapsed;
+            timerUpdateGui.Start();
+
+            DataContext = LogicalBoard.GetInstance();
+
             NewGame();
         }
 
@@ -47,10 +55,6 @@ namespace ArcOthelloMM
         {
             swPlayerWhite = new Stopwatch();
             swPlayerBlack = new Stopwatch();
-            timerUpdateGui = new Timer();
-            timerUpdateGui.Interval = 0.1;
-            timerUpdateGui.Elapsed += TimerUpdateGui_Elapsed;
-            timerUpdateGui.Start();
             othelloGridCells = new OthelloGridCell[LogicalBoard.GetInstance().GetCol(), LogicalBoard.GetInstance().GetRow()];
 
             turnWhite = false; //black start
@@ -167,12 +171,15 @@ namespace ArcOthelloMM
             UpdateGameData();
         }
 
+        public int ScoreBlack { get; set; }
+        public int ScoreWhite { get; set; }
+
         private void UpdateGameData()
         {
             UpdateTimers();
             lblTurn.Content = turnWhite ? "blanc" : "noir";
-            lblNbTokenBlack.Content = LogicalBoard.GetInstance().GetBlackScore();
-            lblNbTokenWhite.Content = LogicalBoard.GetInstance().GetWhiteScore();
+            lblNbTokenBlack.GetBindingExpression(Label.ContentProperty).UpdateTarget();
+            lblNbTokenWhite.GetBindingExpression(Label.ContentProperty).UpdateTarget();
         }
 
         private void UpdateTimers()
