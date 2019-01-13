@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -21,8 +22,6 @@ namespace ArcOthelloMM
     /// </summary>
     public partial class OthelloBoard : Window
     {
-        private const int NB_COL = 9;
-        private const int NB_ROW = 7;
         private const string LABEL_COL = "ABCDEFGHI";
         private const string LABEL_ROW = "1234567";
 
@@ -35,9 +34,8 @@ namespace ArcOthelloMM
 
         Timer timerUpdateGui;
 
-        Stopwatch swPlayer1;
-        Stopwatch swPlayer2;
-        const long totalTimeMililseconds = 5 * 60 * 1000; //5min
+        Stopwatch swPlayerWhite;
+        Stopwatch swPlayerBlack;
 
         public OthelloBoard()
         {
@@ -47,13 +45,13 @@ namespace ArcOthelloMM
 
         private void NewGame()
         {
-            swPlayer1 = new Stopwatch();
-            swPlayer2 = new Stopwatch();
+            swPlayerWhite = new Stopwatch();
+            swPlayerBlack = new Stopwatch();
             timerUpdateGui = new Timer();
             timerUpdateGui.Interval = 0.1;
             timerUpdateGui.Elapsed += TimerUpdateGui_Elapsed;
             timerUpdateGui.Start();
-            othelloGridCells = new OthelloGridCell[NB_COL, NB_ROW];
+            othelloGridCells = new OthelloGridCell[LogicalBoard.GetInstance().GetCol(), LogicalBoard.GetInstance().GetRow()];
 
             turnWhite = false; //black start
             lastPlay = null;
@@ -71,22 +69,29 @@ namespace ArcOthelloMM
 
         private void TimerUpdateGui_Elapsed(object sender, ElapsedEventArgs e)
         {
-            //this.Dispatcher.Invoke(() =>
-            //{
-                //UpdateTimers(); // je sais que ça crash là à la fermeture j'investigue
-            //});
+            try
+            {
+                Dispatcher.Invoke((Action)delegate ()
+                {
+                    UpdateTimers();
+                });
+            }
+            catch
+            {
+                // try catch to avoid crash on windows close
+            }
         }
 
         private void GenerateGrid()
         {
             //add row col labels
-            for (int i = 0; i < NB_COL; i++)
+            for (int i = 0; i < LogicalBoard.GetInstance().GetCol(); i++)
             {
                 ColumnDefinition col = new ColumnDefinition();
                 graphicalBoard.ColumnDefinitions.Add(col);
             }
 
-            for (int i = 0; i < NB_ROW; i++)
+            for (int i = 0; i < LogicalBoard.GetInstance().GetRow(); i++)
             {
                 RowDefinition row = new RowDefinition();
                 graphicalBoard.RowDefinitions.Add(row);
@@ -121,9 +126,9 @@ namespace ArcOthelloMM
                     OthelloGridCell gcell = othelloGridCells[x, y];
                     
                     int lcell = lboard[x,y];
-                    if (lcell == 0)
+                    if (lcell == 1)
                         gcell.State = OthelloGridCell.States.Player1;
-                    else if (lcell == 1)
+                    else if (lcell == 0)
                         gcell.State = OthelloGridCell.States.Player2;
                     else if(lcell == -1 && currentPossibleMoves.ContainsKey(pos))
                     {
@@ -166,18 +171,20 @@ namespace ArcOthelloMM
         {
             UpdateTimers();
             lblTurn.Content = turnWhite ? "blanc" : "noir";
+            lblNbTokenBlack.Content = LogicalBoard.GetInstance().GetBlackScore();
+            lblNbTokenWhite.Content = LogicalBoard.GetInstance().GetWhiteScore();
         }
 
         private void UpdateTimers()
         {
-            UpdateTimer(swPlayer1, lblTimeBlack);
-            UpdateTimer(swPlayer2, lblTimeWhite);
+            UpdateTimer(swPlayerBlack, lblTimeBlack);
+            UpdateTimer(swPlayerWhite, lblTimeWhite);
         }
 
         private void UpdateTimer(Stopwatch sw, Label lbl)
         {
-            TimeSpan remainingTime = TimeSpan.FromMilliseconds(totalTimeMililseconds - sw.ElapsedMilliseconds);
-            lbl.Content = remainingTime.Hours + ":" + remainingTime.Minutes + ":" + remainingTime.Seconds + "." + remainingTime.Milliseconds;
+            TimeSpan remainingTime = TimeSpan.FromMilliseconds(sw.ElapsedMilliseconds);
+            lbl.Content = remainingTime.ToString(@"mm\:ss\.fff");
         }
 
         private void NextTurn()
@@ -216,30 +223,63 @@ namespace ArcOthelloMM
 
             if (turnWhite)
             {
-                swPlayer1.Start();
-                swPlayer2.Stop();
+                swPlayerWhite.Start();
+                swPlayerBlack.Stop();
             }
             else
             {
-                swPlayer1.Stop();
-                swPlayer2.Start();
+                swPlayerWhite.Stop();
+                swPlayerBlack.Start();
             }
         }
 
         private void Board_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            double min = Math.Min(border.ActualHeight / NB_ROW, border.ActualWidth / NB_COL);
+            int row = LogicalBoard.GetInstance().GetRow();
+            int col = LogicalBoard.GetInstance().GetCol();
 
-            for (int i = 0; i < NB_COL; i++)
+            double min = Math.Min(border.ActualHeight / row, border.ActualWidth / col);
+
+            for (int i = 0; i < col; i++)
                 graphicalBoard.ColumnDefinitions[i].Width = new GridLength(min, GridUnitType.Pixel);
 
-            for (int i = 0; i < NB_ROW; i++)
+            for (int i = 0; i < row; i++)
                 graphicalBoard.RowDefinitions[i].Height = new GridLength(min, GridUnitType.Pixel);
 
-            double w = (border.ActualWidth - min * NB_COL) / 2;
-            double h = (border.ActualHeight - min * NB_ROW) / 2;
+            double w = (border.ActualWidth - min * col) / 2;
+            double h = (border.ActualHeight - min * row) / 2;
             
             graphicalBoard.Margin = new Thickness(w, h, w, h);
+        }
+
+        private void btnSave_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Othello Game Status|*.csv";
+            saveFileDialog.Title = "Sauvegarder la partie d'Othello";
+            saveFileDialog.ShowDialog();
+            
+            if (saveFileDialog.FileName != "")
+            {
+                System.IO.FileStream fs = (System.IO.FileStream)saveFileDialog.OpenFile();
+                //todo
+                fs.Close();
+            }
+        }
+
+        private void btnLoad_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Othello Game Status|*.csv";
+            openFileDialog.Title = "Charger la partie d'Othello";
+            openFileDialog.ShowDialog();
+
+            if (openFileDialog.FileName != "")
+            {
+                System.IO.FileStream fs = (System.IO.FileStream)openFileDialog.OpenFile();
+                //todo
+                fs.Close();
+            }
         }
     }
 }

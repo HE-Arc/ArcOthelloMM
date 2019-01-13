@@ -37,6 +37,16 @@ namespace ArcOthelloMM
             ResetGame();
         }
 
+        public int GetRow()
+        {
+            return ROW;
+        }
+
+        public int GetCol()
+        {
+            return COLUMN;
+        }
+
         public void ResetGame()
         {
             // Create players
