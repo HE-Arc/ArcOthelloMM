@@ -65,15 +65,18 @@ namespace ArcOthelloMM
             }
 
             // Set start tokens
-            Board[3, 3] = WhitePlayer.Value;
-            WhitePlayer.Tokens.Add(new Tuple<int, int>(3, 3));
-            Board[4, 4] = WhitePlayer.Value;
-            WhitePlayer.Tokens.Add(new Tuple<int, int>(4, 4));
+            int px = COLUMN / 2 - 1;
+            int py = ROW / 2;
 
-            Board[3, 4] = BlackPlayer.Value;
-            BlackPlayer.Tokens.Add(new Tuple<int, int>(3, 4));
-            Board[4, 3] = BlackPlayer.Value;
-            BlackPlayer.Tokens.Add(new Tuple<int, int>(4, 3));
+            Board[px, py] = WhitePlayer.Value;
+            WhitePlayer.Tokens.Add(new Tuple<int, int>(px, py));
+            Board[px + 1, py + 1] = WhitePlayer.Value;
+            WhitePlayer.Tokens.Add(new Tuple<int, int>(px + 1, py + 1));
+
+            Board[px, py + 1] = BlackPlayer.Value;
+            BlackPlayer.Tokens.Add(new Tuple<int, int>(px, py + 1));
+            Board[px + 1, py] = BlackPlayer.Value;
+            BlackPlayer.Tokens.Add(new Tuple<int, int>(px + 1, py));
 
             // Init others
             ListPossibleMove = new Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>>();

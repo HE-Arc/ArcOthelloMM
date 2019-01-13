@@ -22,9 +22,6 @@ namespace ArcOthelloMM
     /// </summary>
     public partial class OthelloBoard : Window
     {
-        private const string LABEL_COL = "ABCDEFGHI";
-        private const string LABEL_ROW = "1234567";
-
         private OthelloGridCell[,] othelloGridCells;
 
         private bool turnWhite;
@@ -88,42 +85,48 @@ namespace ArcOthelloMM
 
         private void GenerateGrid()
         {
-            //add row col labels
             graphicalBoard.ColumnDefinitions.Clear();
-            for (int i = 0; i < LogicalBoard.GetInstance().GetCol() + 1; i++)
+            graphicalBoard.RowDefinitions.Clear();
+            graphicalBoard.Children.Clear();
+
+
+            //define columns
+            for (int i = 0; i <= LogicalBoard.GetInstance().GetCol(); i++)
             {
                 ColumnDefinition col = new ColumnDefinition();
                 graphicalBoard.ColumnDefinitions.Add(col);
             }
 
-            graphicalBoard.RowDefinitions.Clear();
-            for (int i = 0; i < LogicalBoard.GetInstance().GetRow() + 1; i++)
+            //define rows
+            for (int i = 0; i <= LogicalBoard.GetInstance().GetRow(); i++)
             {
                 RowDefinition row = new RowDefinition();
                 graphicalBoard.RowDefinitions.Add(row);
             }
 
-            for (int i = 0; i < LogicalBoard.GetInstance().GetCol(); i++)
+            //add columns labels
+            for (int i = 1; i <= othelloGridCells.GetLength(0); i++)
             {
-                OthelloGridLabel label = new OthelloGridLabel("" + LABEL_COL[i]);
+                OthelloGridLabel label = new OthelloGridLabel("" + i);
 
-                Grid.SetColumn(label, i + 1);
+                Grid.SetColumn(label, i);
                 Grid.SetRow(label, 0);
 
                 graphicalBoard.Children.Add(label);
             }
 
-            for (int i = 0; i < LogicalBoard.GetInstance().GetRow(); i++)
+            //add rows labels
+            for (int i = 1; i <= othelloGridCells.GetLength(1); i++)
             {
-                OthelloGridLabel label = new OthelloGridLabel("" + LABEL_ROW[i]);
+                OthelloGridLabel label = new OthelloGridLabel("" + Convert.ToChar(i + 64));
 
                 Grid.SetColumn(label, 0);
-                Grid.SetRow(label, i + 1);
+                Grid.SetRow(label, i);
 
                 graphicalBoard.Children.Add(label);
             }
 
-
+            //add game cells
             for (int x = 0; x < othelloGridCells.GetLength(0); x++)
             {
                 for (int y = 0; y < othelloGridCells.GetLength(1); y++)
