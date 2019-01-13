@@ -58,7 +58,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="BlackPlayer.cs" />
     <Compile Include="LogicalBoard.cs" />
     <Compile Include="OthelloBoard.xaml.cs">
       <DependentUpon>OthelloBoard.xaml</DependentUpon>
@@ -70,7 +69,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="WhitePlayer.cs" />
     <Page Include="OthelloBoard.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

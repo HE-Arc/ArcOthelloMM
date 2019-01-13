@@ -5,10 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ArcOthelloMM"
         mc:Ignorable="d"
-        Title="OthelloBoard" d:DesignWidth="680" d:DesignHeight="400" MinWidth="680" MinHeight="400" SizeChanged="Board_SizeChanged">
+        Title="OthelloBoard" d:DesignWidth="800" d:DesignHeight="450" MinWidth="800" MinHeight="450" SizeChanged="Board_SizeChanged">
     <Grid Margin="10px">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="250"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -16,6 +16,9 @@
         </Grid.RowDefinitions>
         <Border Grid.Row="0" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,1,0" >
             <StackPanel Orientation="Vertical">
+                <Button Name="btnNewGame" Content="Nouvelle partie" Click="btnNewGame_Click"/>
+                <Button Name="btnSave" Content="Sauvegarder"/>
+                <Button Name="btnLoad" Content="Charger une partie"/>
                 <StackPanel Orientation="Horizontal">
                     <Label>Temps restant joueur noir :</Label>
                     <Label Name="lblTimeBlack">0:00:00</Label>

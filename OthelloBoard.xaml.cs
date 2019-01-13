@@ -28,7 +28,8 @@ namespace ArcOthelloMM
 
         private OthelloGridCell[,] othelloGridCells;
 
-        private bool turn;
+        private bool turnWhite;
+        private Tuple<int, int> lastPlay;
         private Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> currentPossibleMoves;
 
 
@@ -41,7 +42,11 @@ namespace ArcOthelloMM
         public OthelloBoard()
         {
             InitializeComponent();
+            NewGame();
+        }
 
+        private void NewGame()
+        {
             swPlayer1 = new Stopwatch();
             swPlayer2 = new Stopwatch();
             timerUpdateGui = new Timer();
@@ -50,20 +55,26 @@ namespace ArcOthelloMM
             timerUpdateGui.Start();
             othelloGridCells = new OthelloGridCell[NB_COL, NB_ROW];
 
-            turn = false;
-            currentPossibleMoves = LogicalBoard.GetInstance().GetListPossibleMove(turn);
-            LogicalBoard.GetInstance();
+            turnWhite = false; //black start
+            lastPlay = null;
+            LogicalBoard.GetInstance().ResetGame();
+            currentPossibleMoves = LogicalBoard.GetInstance().GetListPossibleMove(turnWhite);
 
             GenerateGrid();
             UpdateGui();
         }
 
+        private void btnNewGame_Click(object sender, RoutedEventArgs e)
+        {
+            NewGame();
+        }
+
         private void TimerUpdateGui_Elapsed(object sender, ElapsedEventArgs e)
         {
-            this.Dispatcher.Invoke(() =>
-            {
-                UpdateTimers(); // je sais que ça crash là à la fermeture j'investigue
-            });
+            //this.Dispatcher.Invoke(() =>
+            //{
+                //UpdateTimers(); // je sais que ça crash là à la fermeture j'investigue
+            //});
         }
 
         private void GenerateGrid()
@@ -88,8 +99,6 @@ namespace ArcOthelloMM
                     OthelloGridCell cell = new OthelloGridCell(x, y);
 
                     cell.Click += Cell_Click;
-                    //cell.MouseEnter += Cell_MouseEnter;
-                    //cell.MouseLeave += Cell_MouseLeave;
 
                     Grid.SetRow(cell, y);
                     Grid.SetColumn(cell, x);
@@ -102,7 +111,7 @@ namespace ArcOthelloMM
 
         private void UpdateBoard()
         {
-            currentPossibleMoves = LogicalBoard.GetInstance().GetListPossibleMove(turn);
+            currentPossibleMoves = LogicalBoard.GetInstance().GetListPossibleMove(turnWhite);
             int[,] lboard = LogicalBoard.GetInstance().GetBoard();
             for (int x = 0; x < othelloGridCells.GetLength(0); x++)
             {
@@ -118,25 +127,18 @@ namespace ArcOthelloMM
                         gcell.State = OthelloGridCell.States.Player2;
                     else if(lcell == -1 && currentPossibleMoves.ContainsKey(pos))
                     {
-                        if (turn)
+                        if (turnWhite)
                             gcell.State = OthelloGridCell.States.PreviewPlayer1;
                         else
                             gcell.State = OthelloGridCell.States.PreviewPlayer2;
                     }
                     else
                         gcell.State = OthelloGridCell.States.Empty;
+
+                    if (lastPlay != null)
+                        gcell.LastPlay = pos.Item1 == lastPlay.Item1 && pos.Item2 == lastPlay.Item2;
                 }
             }
-        }
-
-        private void Cell_MouseLeave(object sender, MouseEventArgs e)
-        {
-
-        }
-
-        private void Cell_MouseEnter(object sender, MouseEventArgs e)
-        {
-            
         }
 
         private void Cell_Click(object sender, EventArgs e)
@@ -147,7 +149,8 @@ namespace ArcOthelloMM
             Tuple<int, int> pos = new Tuple<int, int>(x, y);
             if (currentPossibleMoves.ContainsKey(pos))
             {
-                LogicalBoard.GetInstance().PlayMove(x, y, turn);
+                LogicalBoard.GetInstance().PlayMove(x, y, turnWhite);
+                lastPlay = pos;
                 NextTurn();
                 UpdateGui();
             }
@@ -162,7 +165,7 @@ namespace ArcOthelloMM
         private void UpdateGameData()
         {
             UpdateTimers();
-            lblTurn.Content = turn ? "White" : "Black";
+            lblTurn.Content = turnWhite ? "blanc" : "noir";
         }
 
         private void UpdateTimers()
@@ -185,13 +188,13 @@ namespace ArcOthelloMM
                 Console.WriteLine(b);
             }
 
-            turn = !turn;
-            currentPossibleMoves = LogicalBoard.GetInstance().GetListPossibleMove(turn);
+            turnWhite = !turnWhite;
+            currentPossibleMoves = LogicalBoard.GetInstance().GetListPossibleMove(turnWhite);
 
             if (currentPossibleMoves.Count <= 0)
             {
-                turn = !turn;
-                currentPossibleMoves = LogicalBoard.GetInstance().GetListPossibleMove(turn);
+                turnWhite = !turnWhite;
+                currentPossibleMoves = LogicalBoard.GetInstance().GetListPossibleMove(turnWhite);
                 if (currentPossibleMoves.Count <= 0)
                 {
                     Console.WriteLine("Game End :" + currentPossibleMoves.Count);
@@ -211,7 +214,7 @@ namespace ArcOthelloMM
                 Console.WriteLine(b);
             }
 
-            if (turn)
+            if (turnWhite)
             {
                 swPlayer1.Start();
                 swPlayer2.Stop();

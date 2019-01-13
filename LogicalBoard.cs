@@ -17,8 +17,8 @@ namespace ArcOthelloMM
 
         private Player CurrentPlayer { get; set; }
         private Player OpponentPlayer { get; set; }
-        private WhitePlayer WhitePlayer { get; set; }
-        private BlackPlayer BlackPlayer { get; set; }
+        private Player WhitePlayer { get; set; }
+        private Player BlackPlayer { get; set; }
         private int[,] Board { get; set; }
 
         private Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> ListPossibleMove;
@@ -32,9 +32,17 @@ namespace ArcOthelloMM
         /// </summary>
         private LogicalBoard()
         {
+            WhitePlayer = Player.GetWhite();
+            BlackPlayer = Player.GetBlack();
+            ResetGame();
+        }
+
+        public void ResetGame()
+        {
             // Create players
-            WhitePlayer = WhitePlayer.GetInstance();
-            BlackPlayer = BlackPlayer.GetInstance();
+            Player.GetWhite().Reset();
+            Player.GetBlack().Reset();
+
 
             // Init Board
             Board = new int[COLUMN, ROW];
@@ -69,10 +77,7 @@ namespace ArcOthelloMM
         public static LogicalBoard GetInstance()
         {
             if (Instance == null)
-            {
                 Instance = new LogicalBoard();
-            }
-
             return Instance;
         }
 
