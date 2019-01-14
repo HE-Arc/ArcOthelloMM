@@ -9,7 +9,7 @@ namespace ArcOthelloMM
 {
     public class Player
     {
-        public List<Tuple<int, int>> Tokens { get; set; }
+        private List<Token> Tokens;
         public int Value { get; set; }
         public string Name { get; set; }
         
@@ -55,7 +55,60 @@ namespace ArcOthelloMM
 
         public void Reset()
         {
-            Tokens = new List<Tuple<int, int>>();
+            Tokens = new List<Token>();
+        }
+
+        public List<Tuple<int, int>> GetTuples()
+        {
+            List<Tuple<int, int>> tuples = new List<Tuple<int, int>>();
+            foreach (Token token in Tokens)
+            {
+                tuples.Add(token.Tuple);
+            }
+            return tuples;
+        }
+
+        public List<Token> GetTokens()
+        {
+            return Tokens;
+        }
+
+        public void AddToken(Tuple<int, int> tuple)
+        {
+            Tokens.Add(new Token(tuple));
+        }
+
+        public void RemoveToken(Tuple<int, int> tuple)
+        {
+            foreach (Token token in Tokens)
+            {
+                if (token.Tuple.Item1 == tuple.Item1 && token.Tuple.Item2 == tuple.Item2)
+                {
+                    Tokens.Remove(token);
+                    break;
+                }
+            }
+        }
+
+        public bool ContainsToken(Tuple<int, int> tuple)
+        {
+            foreach (Token token in Tokens)
+            {
+                if (token.Tuple.Item1 == tuple.Item1 && token.Tuple.Item2 == tuple.Item2)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public void ResetTokens()
+        {
+            foreach (Token token in Tokens)
+            {
+                token.ResetDirections();
+            }
         }
     }
 }
