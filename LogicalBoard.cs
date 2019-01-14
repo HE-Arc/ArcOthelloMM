@@ -69,14 +69,14 @@ namespace ArcOthelloMM
             int py = ROW / 2;
 
             Board[px, py] = WhitePlayer.Value;
-            WhitePlayer.AddToken(new Tuple<int, int>(px, py));
+            WhitePlayer.Tokens.Add(new Tuple<int, int>(px, py));
             Board[px + 1, py + 1] = WhitePlayer.Value;
-            WhitePlayer.AddToken(new Tuple<int, int>(px + 1, py + 1));
+            WhitePlayer.Tokens.Add(new Tuple<int, int>(px + 1, py + 1));
 
             Board[px, py + 1] = BlackPlayer.Value;
-            BlackPlayer.AddToken(new Tuple<int, int>(px, py + 1));
+            BlackPlayer.Tokens.Add(new Tuple<int, int>(px, py + 1));
             Board[px + 1, py] = BlackPlayer.Value;
-            BlackPlayer.AddToken(new Tuple<int, int>(px + 1, py));
+            BlackPlayer.Tokens.Add(new Tuple<int, int>(px + 1, py));
 
             // Init others
             ListPossibleMove = new Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>>();
@@ -117,12 +117,12 @@ namespace ArcOthelloMM
         /// <param name="token"></param>
         private void AddToken(Tuple<int, int> token)
         {
-            CurrentPlayer.AddToken(token);
+            CurrentPlayer.Tokens.Add(token);
             Board[token.Item1, token.Item2] = CurrentPlayer.Value;
 
             // Steal token
-            if (OpponentPlayer.ContainsToken(token))
-                OpponentPlayer.RemoveToken(token);
+            if (OpponentPlayer.Tokens.Contains(token))
+                OpponentPlayer.Tokens.Remove(token);
         }
 
         /// <summary>
@@ -133,12 +133,11 @@ namespace ArcOthelloMM
         public Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> GetListPossibleMove(bool isWhite)
         {
             SetPlayer(isWhite);
-
-            foreach (Token token in CurrentPlayer.GetTokens())
+            foreach (Tuple<int, int> token in CurrentPlayer.Tokens)
             {
                 CheckAllPossibleMove(token);
             }
-            CurrentPlayer.ResetTokens();
+
             ListPossibleMoveLoaded = true;
             return ListPossibleMove;
         }
@@ -148,7 +147,7 @@ namespace ArcOthelloMM
         /// from a token for the current player
         /// </summary>
         /// <param name="token"></param>
-        private void CheckAllPossibleMove(Token token)
+        private void CheckAllPossibleMove(Tuple<int, int> token)
         {
             // Algo :
             //      Loop and check in every direction
@@ -211,67 +210,75 @@ namespace ArcOthelloMM
                 || !rightBottomFinished); // check if all direction is finished
             */
 
+            bool finish = false;
             HashSet<Tuple<int, int>> takedTokens = new HashSet<Tuple<int, int>>();
             int i = 1;
-            while (!token.Left)
+            while (!finish)
             {
-                token.Left = CheckOnePossibleMove(token.Tuple, takedTokens, -i, 0);
+                finish = CheckOnePossibleMove(token, takedTokens, -i, 0);
                 ++i;
             }
 
+            finish = false;
             takedTokens.Clear();
             i = 1;
-            while (!token.LeftTop)
+            while (!finish)
             {
-                token.LeftTop = CheckOnePossibleMove(token.Tuple, takedTokens, -i, -i);
+                finish = CheckOnePossibleMove(token, takedTokens, i, 0);
                 ++i;
             }
 
+            finish = false;
             takedTokens.Clear();
             i = 1;
-            while (!token.Top)
+            while (!finish)
             {
-                token.Top = CheckOnePossibleMove(token.Tuple, takedTokens, i, 0);
+                finish = CheckOnePossibleMove(token, takedTokens, 0, -i);
                 ++i;
             }
 
+            finish = false;
             takedTokens.Clear();
             i = 1;
-            while (!token.RightTop)
+            while (!finish)
             {
-                token.RightTop = CheckOnePossibleMove(token.Tuple, takedTokens, -i, i);
+                finish = CheckOnePossibleMove(token, takedTokens, 0, i);
                 ++i;
             }
 
+            finish = false;
             takedTokens.Clear();
             i = 1;
-            while (!token.Right)
+            while (!finish)
             {
-                token.Right = CheckOnePossibleMove(token.Tuple, takedTokens, 0, -i);
+                finish = CheckOnePossibleMove(token, takedTokens, -i, -i);
                 ++i;
             }
 
+            finish = false;
             takedTokens.Clear();
             i = 1;
-            while (!token.RightBottom)
+            while (!finish)
             {
-                token.RightBottom = CheckOnePossibleMove(token.Tuple, takedTokens, i, -i);
+                finish = CheckOnePossibleMove(token, takedTokens, -i, i);
                 ++i;
             }
 
+            finish = false;
             takedTokens.Clear();
             i = 1;
-            while (!token.Bottom)
+            while (!finish)
             {
-                token.Bottom = CheckOnePossibleMove(token.Tuple, takedTokens, 0, i);
+                finish = CheckOnePossibleMove(token, takedTokens, i, -i);
                 ++i;
             }
 
+            finish = false;
             takedTokens.Clear();
             i = 1;
-            while (!token.LeftBottom)
+            while (!finish)
             {
-                token.LeftBottom = CheckOnePossibleMove(token.Tuple, takedTokens, -i, i);
+                finish = CheckOnePossibleMove(token, takedTokens, -i, i);
                 ++i;
             }
         }
@@ -299,9 +306,9 @@ namespace ArcOthelloMM
             {
                 finished = true;
             }
-            else if (!OpponentPlayer.ContainsToken(newToken))
+            else if (!OpponentPlayer.Tokens.Contains(newToken))
             {
-                if (!CurrentPlayer.ContainsToken(newToken) && (Math.Abs(offsetX) > 1 || Math.Abs(offsetY) > 1))
+                if (!CurrentPlayer.Tokens.Contains(newToken) && Math.Abs(offsetX) > 1 || Math.Abs(offsetY) > 1)
                 {
                     SavePossibleMove(tokens, newToken); // save valid move
                 }
@@ -325,9 +332,9 @@ namespace ArcOthelloMM
             if (!ListPossibleMove.ContainsKey(key))
                 ListPossibleMove.Add(key, new HashSet<Tuple<int, int>>());
 
-            foreach (Tuple<int, int> tuple in move)
+            foreach (Tuple<int, int> token in move)
             {
-                ListPossibleMove[key].Add(new Tuple<int, int>(tuple.Item1, tuple.Item2));
+                ListPossibleMove[key].Add(new Tuple<int, int>(token.Item1, token.Item2));
             }
         }
 
@@ -349,6 +356,7 @@ namespace ArcOthelloMM
         /// <returns></returns>
         public bool IsPlayable(int column, int line, bool isWhite)
         {
+            SetPlayer(isWhite);
             GetListPossibleMove(isWhite);
 
             if (Board[line, column] != 0)
@@ -379,7 +387,9 @@ namespace ArcOthelloMM
 
             if (ListPossibleMove.Count == 0)
                 return false;
-  
+          
+            SetPlayer(isWhite);
+
             foreach (Tuple<int, int> tuple in ListPossibleMove[new Tuple<int, int>(column, line)])
             {
                 AddToken(tuple);
@@ -413,7 +423,7 @@ namespace ArcOthelloMM
         /// <returns></returns>
         public int GetWhiteScore()
         {
-            return WhitePlayer.GetTokens().Count;
+            return WhitePlayer.Tokens.Count;
         }
 
         public int BlackScore {
@@ -437,7 +447,7 @@ namespace ArcOthelloMM
         /// <returns></returns>
         public int GetBlackScore()
         {
-            return BlackPlayer.GetTokens().Count;
+            return BlackPlayer.Tokens.Count;
         }
 
         /// <summary>
@@ -446,7 +456,7 @@ namespace ArcOthelloMM
         /// <returns></returns>
         public List<Tuple<int, int>> GetWhiteTokens()
         {
-            return WhitePlayer.GetTuples();
+            return WhitePlayer.Tokens;
         }
 
         /// <summary>
@@ -455,7 +465,7 @@ namespace ArcOthelloMM
         /// <returns></returns>
         public List<Tuple<int, int>> GetBlackTokens()
         {
-            return BlackPlayer.GetTuples();
+            return BlackPlayer.Tokens;
         }
     }
 }
