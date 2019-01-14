@@ -26,6 +26,7 @@ namespace ArcOthelloMM
 
         private bool turnWhite;
         private Tuple<int, int> lastPlay;
+        private bool playerVsPlayer;
         private Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> currentPossibleMoves;
 
 
@@ -56,6 +57,7 @@ namespace ArcOthelloMM
 
             turnWhite = false; //black start
             lastPlay = null;
+            this.playerVsPlayer = playerVsPlayer;
             LogicalBoard.GetInstance().ResetGame();
             currentPossibleMoves = LogicalBoard.GetInstance().GetListPossibleMove(turnWhite);
 
