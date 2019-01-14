@@ -157,7 +157,7 @@ namespace ArcOthelloMM
             //         and a possible token to play
             //      else move impossible
 
-            int i = 1;
+            /*int i = 1;
             bool leftFinished = false;
             bool topFinished = false;
             bool rightFinished = false;
@@ -208,6 +208,79 @@ namespace ArcOthelloMM
                 || !rightTopFinished
                 || !leftBottomFinished
                 || !rightBottomFinished); // check if all direction is finished
+            */
+
+            bool finish = false;
+            HashSet<Tuple<int, int>> takedTokens = new HashSet<Tuple<int, int>>();
+            int i = 1;
+            while (!finish)
+            {
+                finish = CheckOnePossibleMove(token, takedTokens, -i, 0);
+                ++i;
+            }
+
+            finish = false;
+            takedTokens.Clear();
+            i = 1;
+            while (!finish)
+            {
+                finish = CheckOnePossibleMove(token, takedTokens, i, 0);
+                ++i;
+            }
+
+            finish = false;
+            takedTokens.Clear();
+            i = 1;
+            while (!finish)
+            {
+                finish = CheckOnePossibleMove(token, takedTokens, 0, -i);
+                ++i;
+            }
+
+            finish = false;
+            takedTokens.Clear();
+            i = 1;
+            while (!finish)
+            {
+                finish = CheckOnePossibleMove(token, takedTokens, 0, i);
+                ++i;
+            }
+
+            finish = false;
+            takedTokens.Clear();
+            i = 1;
+            while (!finish)
+            {
+                finish = CheckOnePossibleMove(token, takedTokens, -i, -i);
+                ++i;
+            }
+
+            finish = false;
+            takedTokens.Clear();
+            i = 1;
+            while (!finish)
+            {
+                finish = CheckOnePossibleMove(token, takedTokens, -i, i);
+                ++i;
+            }
+
+            finish = false;
+            takedTokens.Clear();
+            i = 1;
+            while (!finish)
+            {
+                finish = CheckOnePossibleMove(token, takedTokens, i, -i);
+                ++i;
+            }
+
+            finish = false;
+            takedTokens.Clear();
+            i = 1;
+            while (!finish)
+            {
+                finish = CheckOnePossibleMove(token, takedTokens, -i, i);
+                ++i;
+            }
         }
 
         /// <summary>
@@ -254,16 +327,14 @@ namespace ArcOthelloMM
         private void SavePossibleMove(HashSet<Tuple<int, int>> move, Tuple<int, int> key)
         {
             // add pieces affected for the case played
-            if (ListPossibleMove.ContainsKey(key))
+            // with a depth copy
+
+            if (!ListPossibleMove.ContainsKey(key))
+                ListPossibleMove.Add(key, new HashSet<Tuple<int, int>>());
+
+            foreach (Tuple<int, int> token in move)
             {
-                foreach (Tuple<int, int> tuple in move)
-                {
-                    ListPossibleMove[key].Add(tuple);
-                }
-            }
-            else
-            {
-                ListPossibleMove.Add(key, move);
+                ListPossibleMove[key].Add(new Tuple<int, int>(token.Item1, token.Item2));
             }
         }
 
