@@ -17,7 +17,8 @@
         <Border Grid.Row="0" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,1,0" >
             <StackPanel Orientation="Vertical">
                 <StackPanel Orientation="Vertical" Margin="5 0">
-                    <Button Name="btnNewGame" Content="Nouvelle partie" Click="btnNewGame_Click" Margin="0 0 0 2"/>
+                    <Button Name="btnNewGame" Content="Nouvelle partie joueur contre joueur" Click="btnNewGame_Click" Margin="0 0 0 2"/>
+                    <Button Name="btnNewGameAI" Content="Nouvelle partie joueur contre ordinateur" Margin="0 2"/>
                     <Button Name="btnSave" Content="Sauvegarder" Margin="0 2" Click="btnSave_Click"/>
                     <Button Name="btnLoad" Content="Charger une partie" Margin="0 2" Click="btnLoad_Click"/>
                 </StackPanel>

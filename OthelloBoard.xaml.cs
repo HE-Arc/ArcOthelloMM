@@ -45,10 +45,10 @@ namespace ArcOthelloMM
 
             DataContext = LogicalBoard.GetInstance();
 
-            NewGame();
+            BlankBoard();
         }
 
-        private void NewGame()
+        private void NewGame(bool playerVsPlayer)
         {
             swPlayerWhite = new Stopwatch();
             swPlayerBlack = new Stopwatch();
@@ -65,7 +65,12 @@ namespace ArcOthelloMM
 
         private void btnNewGame_Click(object sender, RoutedEventArgs e)
         {
-            NewGame();
+            NewGame(true);
+        }
+
+        private void btnNewGameAI_Click(object sender, RoutedEventArgs e)
+        {
+            NewGame(false);
         }
 
         private void TimerUpdateGui_Elapsed(object sender, ElapsedEventArgs e)
@@ -154,7 +159,7 @@ namespace ArcOthelloMM
                 {
                     Tuple<int, int> pos = new Tuple<int, int>(x, y);
                     OthelloGridCell gcell = othelloGridCells[x, y];
-                    
+
                     int lcell = lboard[x,y];
                     if (lcell == 1)
                         gcell.State = OthelloGridCell.States.Player1;
@@ -266,6 +271,21 @@ namespace ArcOthelloMM
             }
         }
 
+        private void BlankBoard()
+        {
+            int col = LogicalBoard.GetInstance().GetCol();
+            int row = LogicalBoard.GetInstance().GetRow();
+            int[,] board = LogicalBoard.GetInstance().GetBoard();
+
+            for (int x = 0; x < col; x++)
+            {
+                for (int y = 0; y < row; y++)
+                {
+
+                }
+            }
+        }
+
         private void Board_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             int row = graphicalBoard.RowDefinitions.Count;
@@ -281,7 +301,7 @@ namespace ArcOthelloMM
 
             double w = (border.ActualWidth - min * col) / 2;
             double h = (border.ActualHeight - min * row) / 2;
-            
+
             graphicalBoard.Margin = new Thickness(w, h, w, h);
         }
 
@@ -291,7 +311,7 @@ namespace ArcOthelloMM
             saveFileDialog.Filter = "Othello Game Status|*.csv";
             saveFileDialog.Title = "Sauvegarder la partie d'Othello";
             saveFileDialog.ShowDialog();
-            
+
             if (saveFileDialog.FileName != "")
             {
                 System.IO.FileStream fs = (System.IO.FileStream)saveFileDialog.OpenFile();
