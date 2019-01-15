@@ -20,6 +20,8 @@ namespace ArcOthelloMM
         private Player WhitePlayer { get; set; }
         private Player BlackPlayer { get; set; }
         private int[,] Board { get; set; }
+        private List<Tuple<bool, int[,]>> BoardHistory { get; set; }
+        private int IndexHistory { get; set; }
 
         private Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> ListPossibleMove;
         private bool ListPossibleMoveLoaded;
@@ -81,6 +83,11 @@ namespace ArcOthelloMM
             // Init others
             ListPossibleMove = new Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>>();
             ListPossibleMoveLoaded = false;
+            BoardHistory = new List<Tuple<bool, int[,]>>
+            {
+                new Tuple<bool, int[,]>(false, Board)
+            };
+            IndexHistory = 0;
         }
 
         /// <summary>
@@ -399,6 +406,8 @@ namespace ArcOthelloMM
             ListPossibleMove.Clear();
             ListPossibleMoveLoaded = false;
 
+            BoardHistory.Add(new Tuple<bool, int[,]>(isWhite, Board));
+
             return (ListPossibleMove.Count > 0);
         }
 
@@ -466,6 +475,13 @@ namespace ArcOthelloMM
         public List<Tuple<int, int>> GetBlackTokens()
         {
             return BlackPlayer.Tokens;
+        }
+
+        public void Undo()
+        {
+            --IndexHistory;
+
+            Board = BoardHistory.ElementAt(IndexHistory).Item2;
         }
     }
 }
