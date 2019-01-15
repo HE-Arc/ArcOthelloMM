@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
@@ -28,7 +30,6 @@ namespace ArcOthelloMM
         private Tuple<int, int> lastPlay;
         private Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> currentPossibleMoves;
 
-
         Timer timerUpdateGui;
 
         Stopwatch swPlayerWhite;
@@ -43,7 +44,7 @@ namespace ArcOthelloMM
             timerUpdateGui.Elapsed += TimerUpdateGui_Elapsed;
             timerUpdateGui.Start();
 
-            DataContext = LogicalBoard.GetInstance();
+            DataContext = LogicalBoard.Instance;
 
             NewGame();
         }
@@ -52,12 +53,12 @@ namespace ArcOthelloMM
         {
             swPlayerWhite = new Stopwatch();
             swPlayerBlack = new Stopwatch();
-            othelloGridCells = new OthelloGridCell[LogicalBoard.GetInstance().GetCol(), LogicalBoard.GetInstance().GetRow()];
+            othelloGridCells = new OthelloGridCell[LogicalBoard.Instance.GetCol(), LogicalBoard.Instance.GetRow()];
 
             turnWhite = false; //black start
             lastPlay = null;
-            LogicalBoard.GetInstance().ResetGame();
-            currentPossibleMoves = LogicalBoard.GetInstance().GetListPossibleMove(turnWhite);
+            LogicalBoard.Instance.ResetGame();
+            currentPossibleMoves = LogicalBoard.Instance.GetListPossibleMove(turnWhite);
 
             GenerateGrid();
             UpdateGui();
@@ -91,14 +92,14 @@ namespace ArcOthelloMM
 
 
             //define columns
-            for (int i = 0; i <= LogicalBoard.GetInstance().GetCol(); i++)
+            for (int i = 0; i <= LogicalBoard.Instance.GetCol(); i++)
             {
                 ColumnDefinition col = new ColumnDefinition();
                 graphicalBoard.ColumnDefinitions.Add(col);
             }
 
             //define rows
-            for (int i = 0; i <= LogicalBoard.GetInstance().GetRow(); i++)
+            for (int i = 0; i <= LogicalBoard.Instance.GetRow(); i++)
             {
                 RowDefinition row = new RowDefinition();
                 graphicalBoard.RowDefinitions.Add(row);
@@ -146,8 +147,8 @@ namespace ArcOthelloMM
 
         private void UpdateBoard()
         {
-            currentPossibleMoves = LogicalBoard.GetInstance().GetListPossibleMove(turnWhite);
-            int[,] lboard = LogicalBoard.GetInstance().GetBoard();
+            currentPossibleMoves = LogicalBoard.Instance.GetListPossibleMove(turnWhite);
+            int[,] lboard = LogicalBoard.Instance.GetBoard();
             for (int x = 0; x < othelloGridCells.GetLength(0); x++)
             {
                 for (int y = 0; y < othelloGridCells.GetLength(1); y++)
@@ -184,7 +185,7 @@ namespace ArcOthelloMM
             Tuple<int, int> pos = new Tuple<int, int>(x, y);
             if (currentPossibleMoves.ContainsKey(pos))
             {
-                LogicalBoard.GetInstance().PlayMove(x, y, turnWhite);
+                LogicalBoard.Instance.PlayMove(x, y, turnWhite);
                 lastPlay = pos;
                 NextTurn();
                 UpdateGui();
@@ -229,12 +230,12 @@ namespace ArcOthelloMM
             }
 
             turnWhite = !turnWhite;
-            currentPossibleMoves = LogicalBoard.GetInstance().GetListPossibleMove(turnWhite);
+            currentPossibleMoves = LogicalBoard.Instance.GetListPossibleMove(turnWhite);
 
             if (currentPossibleMoves.Count <= 0)
             {
                 turnWhite = !turnWhite;
-                currentPossibleMoves = LogicalBoard.GetInstance().GetListPossibleMove(turnWhite);
+                currentPossibleMoves = LogicalBoard.Instance.GetListPossibleMove(turnWhite);
                 if (currentPossibleMoves.Count <= 0)
                 {
                     Console.WriteLine("Game End :" + currentPossibleMoves.Count);
@@ -288,14 +289,15 @@ namespace ArcOthelloMM
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = "Othello Game Status|*.csv";
+            saveFileDialog.Filter = "Othello Game Status|*.txt";
             saveFileDialog.Title = "Sauvegarder la partie d'Othello";
             saveFileDialog.ShowDialog();
             
             if (saveFileDialog.FileName != "")
             {
+                IFormatter formatter = new BinaryFormatter();
                 System.IO.FileStream fs = (System.IO.FileStream)saveFileDialog.OpenFile();
-                //todo
+                formatter.Serialize(fs, LogicalBoard.Instance);
                 fs.Close();
             }
         }
@@ -303,15 +305,18 @@ namespace ArcOthelloMM
         private void btnLoad_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Othello Game Status|*.csv";
+            openFileDialog.Filter = "Othello Game Status|*.txt";
             openFileDialog.Title = "Charger la partie d'Othello";
             openFileDialog.ShowDialog();
 
             if (openFileDialog.FileName != "")
             {
+                IFormatter formatter = new BinaryFormatter();
                 System.IO.FileStream fs = (System.IO.FileStream)openFileDialog.OpenFile();
-                //todo
+                LogicalBoard.Instance = (LogicalBoard)formatter.Deserialize(fs);
                 fs.Close();
+                turnWhite = !LogicalBoard.Instance.GetLastPlayer();
+                UpdateGui();
             }
         }
     }

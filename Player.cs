@@ -7,6 +7,7 @@ using System.Windows.Media;
 
 namespace ArcOthelloMM
 {
+    [Serializable]
     public class Player
     {
         public List<Tuple<int, int>> Tokens { get; set; }
