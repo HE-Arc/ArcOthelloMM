@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
-using IPlayable;
+using System.Runtime.Serialization;
 
 namespace ArcOthelloMM
 {
     /// <summary>
     /// Class to manage the game
     /// </summary>
-    class LogicalBoard : IPlayable.IPlayable
+    [Serializable]
+    class LogicalBoard : IPlayable.IPlayable, ISerializable
     {
-        private static LogicalBoard Instance;
+        private static LogicalBoard instance = null;
 
         private Player CurrentPlayer { get; set; }
         private Player OpponentPlayer { get; set; }
@@ -23,6 +20,8 @@ namespace ArcOthelloMM
 
         private Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> ListPossibleMove;
         private bool ListPossibleMoveLoaded;
+
+        private bool LastPlayer;
 
         private const int ROW = 7;
         private const int COLUMN = 9;
@@ -35,6 +34,39 @@ namespace ArcOthelloMM
             WhitePlayer = Player.GetWhite();
             BlackPlayer = Player.GetBlack();
             ResetGame();
+        }
+
+        /// <summary>
+        /// Constructor for serialization
+        /// </summary>
+        /// <param name="info"></param>
+        /// <param name="context"></param>
+        protected LogicalBoard(SerializationInfo info, StreamingContext context)
+        {
+            WhitePlayer = (Player)info.GetValue("WhitePlayer", typeof(Player));
+            BlackPlayer = (Player)info.GetValue("BlackPlayer", typeof(Player));
+            Board = (int[,])info.GetValue("Board", typeof(int[,]));
+            ListPossibleMove = (Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>>)info.GetValue("ListPossibleMove", typeof(Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>>));
+            ListPossibleMoveLoaded = (bool)info.GetValue("ListPossibleMoveLoaded", typeof(bool));
+        }
+
+        /// <summary>
+        /// Assure there is one white player
+        /// </summary>
+        /// <returns></returns>
+        public static LogicalBoard Instance
+        {
+            get
+            {
+                if (instance == null)
+                    instance = new LogicalBoard();
+                return instance;
+            }
+
+            set
+            {
+                instance = value;
+            }
         }
 
         public int GetRow()
@@ -81,17 +113,7 @@ namespace ArcOthelloMM
             // Init others
             ListPossibleMove = new Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>>();
             ListPossibleMoveLoaded = false;
-        }
-
-        /// <summary>
-        /// Assure there is one white player
-        /// </summary>
-        /// <returns></returns>
-        public static LogicalBoard GetInstance()
-        {
-            if (Instance == null)
-                Instance = new LogicalBoard();
-            return Instance;
+            LastPlayer = false;
         }
 
         /// <summary>
@@ -398,6 +420,7 @@ namespace ArcOthelloMM
             // Reset possible move
             ListPossibleMove.Clear();
             ListPossibleMoveLoaded = false;
+            LastPlayer = isWhite;
 
             return (ListPossibleMove.Count > 0);
         }
@@ -466,6 +489,21 @@ namespace ArcOthelloMM
         public List<Tuple<int, int>> GetBlackTokens()
         {
             return BlackPlayer.Tokens;
+        }
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("WhitePlayer", WhitePlayer);
+            info.AddValue("BlackPlayer", BlackPlayer); 
+            info.AddValue("Board", Board);
+            info.AddValue("ListPossibleMove", ListPossibleMove);
+            info.AddValue("ListPossibleMoveLoaded", ListPossibleMoveLoaded);
+            info.AddValue("LastPlayer", LastPlayer);
+        }
+
+        public bool GetLastPlayer()
+        {
+            return LastPlayer;
         }
     }
 }
