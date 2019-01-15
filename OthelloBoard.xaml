@@ -40,9 +40,9 @@
                     <Label Grid.Column="1" Grid.Row="1" Name="lblTimeBlack">0:00:00</Label>
                     <Label Grid.Column="0" Grid.Row="2">Temps écoulé joueur blanc</Label>
                     <Label Grid.Column="1" Grid.Row="2" Name="lblTimeWhite">0:00:00</Label>
-                    <Label Grid.Column="0" Grid.Row="3">Nombre de pièce noirs</Label>
+                    <Label Grid.Column="0" Grid.Row="3">Nombre de pièces noires</Label>
                     <Label Grid.Column="1" Grid.Row="3" Name="lblNbTokenBlack" Content="{Binding BlackScore}"></Label>
-                    <Label Grid.Column="0" Grid.Row="4">Nombre de pièce blanches</Label>
+                    <Label Grid.Column="0" Grid.Row="4">Nombre de pièces blanches</Label>
                     <Label Grid.Column="1" Grid.Row="4" Name="lblNbTokenWhite" Content="{Binding WhiteScore}"></Label>
                 </Grid>
             </StackPanel>

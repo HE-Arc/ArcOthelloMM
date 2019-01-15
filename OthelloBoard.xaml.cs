@@ -46,6 +46,8 @@ namespace ArcOthelloMM
 
             DataContext = LogicalBoard.GetInstance();
 
+            GenerateGrid();
+
             BlankBoard();
         }
 
@@ -53,7 +55,6 @@ namespace ArcOthelloMM
         {
             swPlayerWhite = new Stopwatch();
             swPlayerBlack = new Stopwatch();
-            othelloGridCells = new OthelloGridCell[LogicalBoard.GetInstance().GetCol(), LogicalBoard.GetInstance().GetRow()];
 
             turnWhite = false; //black start
             lastPlay = null;
@@ -92,6 +93,8 @@ namespace ArcOthelloMM
 
         private void GenerateGrid()
         {
+            othelloGridCells = new OthelloGridCell[LogicalBoard.GetInstance().GetCol(), LogicalBoard.GetInstance().GetRow()];
+
             graphicalBoard.ColumnDefinitions.Clear();
             graphicalBoard.RowDefinitions.Clear();
             graphicalBoard.Children.Clear();
@@ -189,7 +192,7 @@ namespace ArcOthelloMM
             int x = s.X;
             int y = s.Y;
             Tuple<int, int> pos = new Tuple<int, int>(x, y);
-            if (currentPossibleMoves.ContainsKey(pos))
+            if (currentPossibleMoves != null && currentPossibleMoves.ContainsKey(pos))
             {
                 LogicalBoard.GetInstance().PlayMove(x, y, turnWhite);
                 lastPlay = pos;
@@ -223,8 +226,11 @@ namespace ArcOthelloMM
 
         private void UpdateTimer(Stopwatch sw, Label lbl)
         {
-            TimeSpan remainingTime = TimeSpan.FromMilliseconds(sw.ElapsedMilliseconds);
-            lbl.Content = remainingTime.ToString(@"mm\:ss\.fff");
+            if (sw != null)
+            {
+                TimeSpan remainingTime = TimeSpan.FromMilliseconds(sw.ElapsedMilliseconds);
+                lbl.Content = remainingTime.ToString(@"mm\:ss\.fff");
+            }
         }
 
         private void NextTurn()
