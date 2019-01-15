@@ -51,6 +51,8 @@ namespace ArcOthelloMM
             Board = (int[,])info.GetValue("Board", typeof(int[,]));
             ListPossibleMove = (Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>>)info.GetValue("ListPossibleMove", typeof(Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>>));
             ListPossibleMoveLoaded = (bool)info.GetValue("ListPossibleMoveLoaded", typeof(bool));
+            BoardHistory = (List<Tuple<bool, int[,]>>)info.GetValue("BoardHistory", typeof(List<Tuple<bool, int[,]>>));
+            IndexHistory = (int)info.GetValue("IndexHistory", typeof(int));
         }
 
         /// <summary>
@@ -513,7 +515,7 @@ namespace ArcOthelloMM
             
         }
 
-        public void Recto()
+        public void Redo()
         {
             if (IndexHistory < BoardHistory.Count - 1)
             {
@@ -531,6 +533,8 @@ namespace ArcOthelloMM
             info.AddValue("ListPossibleMove", ListPossibleMove);
             info.AddValue("ListPossibleMoveLoaded", ListPossibleMoveLoaded);
             info.AddValue("LastPlayer", LastPlayer);
+            info.AddValue("BoardHistory", BoardHistory);
+            info.AddValue("IndexHistory", IndexHistory);
         }
 
         public bool GetLastPlayer()
