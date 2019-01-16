@@ -26,7 +26,6 @@ namespace ArcOthelloMM
     {
         private OthelloGridCell[,] othelloGridCells;
 
-        private bool turnWhite;
         private bool playerVsPlayer;
         private Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> currentPossibleMoves;
 
@@ -44,41 +43,6 @@ namespace ArcOthelloMM
             DataContext = LogicalBoard.Instance;
 
             GenerateGrid();
-        }
-
-        private void NewGame(bool playerVsPlayer)
-        {
-            turnWhite = false; //black start
-            this.playerVsPlayer = playerVsPlayer;
-            LogicalBoard.Instance.ResetGame();
-            currentPossibleMoves = LogicalBoard.Instance.GetListPossibleMove(turnWhite);
-
-            UpdateGui();
-        }
-
-        private void btnNewGame_Click(object sender, RoutedEventArgs e)
-        {
-            NewGame(true);
-        }
-
-        private void btnNewGameAI_Click(object sender, RoutedEventArgs e)
-        {
-            NewGame(false);
-        }
-
-        private void TimerUpdateGui_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            try
-            {
-                Dispatcher.Invoke((Action)delegate ()
-                {
-                    UpdateTimers();
-                });
-            }
-            catch
-            {
-                // try catch to avoid crash on windows close
-            }
         }
 
         private void GenerateGrid()
@@ -137,16 +101,50 @@ namespace ArcOthelloMM
                     cell.Click += Cell_Click;
 
                     Grid.SetColumn(cell, x + 1);
-                    Grid.SetRow(cell, y+1);
+                    Grid.SetRow(cell, y + 1);
 
                     graphicalBoard.Children.Add(cell);
                 }
             }
         }
 
+        private void NewGame(bool playerVsPlayer)
+        {
+            this.playerVsPlayer = playerVsPlayer;
+            LogicalBoard.Instance.ResetGame();
+            currentPossibleMoves = LogicalBoard.Instance.CurrentPossibleMoves;
+
+            UpdateGui();
+        }
+
+        private void btnNewGame_Click(object sender, RoutedEventArgs e)
+        {
+            NewGame(true);
+        }
+
+        private void btnNewGameAI_Click(object sender, RoutedEventArgs e)
+        {
+            NewGame(false);
+        }
+
+        private void TimerUpdateGui_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            try
+            {
+                Dispatcher.Invoke((Action)delegate ()
+                {
+                    UpdateTimers();
+                });
+            }
+            catch
+            {
+                // try catch to avoid crash on windows close
+            }
+        }
+
         private void UpdateBoard()
         {
-            currentPossibleMoves = LogicalBoard.Instance.GetListPossibleMove(turnWhite);
+            currentPossibleMoves = LogicalBoard.Instance.CurrentPossibleMoves;
             int[,] lboard = LogicalBoard.Instance.GetBoard();
 
             for (int x = 0; x < othelloGridCells.GetLength(0); x++)
@@ -163,7 +161,7 @@ namespace ArcOthelloMM
                         gcell.State = OthelloGridCell.States.Player2;
                     else if(lcell == -1 && currentPossibleMoves.ContainsKey(pos))
                     {
-                        if (turnWhite)
+                        if (LogicalBoard.Instance.CurrentPlayerTurn)
                             gcell.State = OthelloGridCell.States.PreviewPlayer1;
                         else
                             gcell.State = OthelloGridCell.States.PreviewPlayer2;
@@ -184,7 +182,7 @@ namespace ArcOthelloMM
             Tuple<int, int> pos = new Tuple<int, int>(x, y);
             if (currentPossibleMoves != null && currentPossibleMoves.ContainsKey(pos))
             {
-                LogicalBoard.Instance.PlayMove(x, y, turnWhite);
+                LogicalBoard.Instance.PlayMove(x, y, LogicalBoard.Instance.CurrentPlayerTurn);
                 NextTurn();
                 UpdateGui();
             }
@@ -200,7 +198,7 @@ namespace ArcOthelloMM
         private void UpdateGameData()
         {
             UpdateTimers();
-            lblTurn.Content = turnWhite ? Player.WhitePlayer.Name : Player.BlackPlayer.Name;
+            lblTurn.Content = LogicalBoard.Instance.CurrentPlayerTurn ? Player.WhitePlayer.Name : Player.BlackPlayer.Name;
             lblNbTokenBlack.GetBindingExpression(Label.ContentProperty).UpdateTarget();
             lblNbTokenWhite.GetBindingExpression(Label.ContentProperty).UpdateTarget();
         }
@@ -228,13 +226,13 @@ namespace ArcOthelloMM
 
         private void NextTurn()
         {
-            turnWhite = !turnWhite;
-            currentPossibleMoves = LogicalBoard.Instance.GetListPossibleMove(turnWhite);
+            currentPossibleMoves = LogicalBoard.Instance.CurrentPossibleMoves;
 
             if (currentPossibleMoves.Count <= 0)
             {
-                turnWhite = !turnWhite;
-                currentPossibleMoves = LogicalBoard.Instance.GetListPossibleMove(turnWhite);
+                LogicalBoard.Instance.CurrentPlayerTurn ^= true; // change turn
+                currentPossibleMoves = LogicalBoard.Instance.CurrentPossibleMoves;
+
                 if (currentPossibleMoves.Count <= 0)
                 {
                     Console.WriteLine("Game End :" + currentPossibleMoves.Count);
@@ -245,7 +243,7 @@ namespace ArcOthelloMM
                 }
             }
 
-            if (turnWhite)
+            if (LogicalBoard.Instance.CurrentPlayerTurn)
             {
                 Player.WhitePlayer.Start();
                 Player.BlackPlayer.Stop();
@@ -305,7 +303,6 @@ namespace ArcOthelloMM
                 System.IO.FileStream fs = (System.IO.FileStream)openFileDialog.OpenFile();
                 LogicalBoard.Instance = (LogicalBoard)formatter.Deserialize(fs);
                 fs.Close();
-                turnWhite = LogicalBoard.Instance.CurrentPlayerTurn;
                 UpdateGui();
             }
         }
@@ -313,14 +310,12 @@ namespace ArcOthelloMM
         private void btnRedo_Click(object sender, RoutedEventArgs e)
         {
             LogicalBoard.Instance.Redo();
-            turnWhite = LogicalBoard.Instance.CurrentPlayerTurn;
             UpdateGui();
         }
 
         private void btnUndo_Click(object sender, RoutedEventArgs e)
         {
             LogicalBoard.Instance.Undo();
-            turnWhite = LogicalBoard.Instance.CurrentPlayerTurn;
             UpdateGui();
         }
     }

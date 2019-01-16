@@ -27,7 +27,7 @@ namespace ArcOthelloMM
         
         private bool currentPlayerTurn; // true == white / false == black
 
-        public bool CurrentPlayerTurn { get { return currentPlayerTurn; } }
+        public bool CurrentPlayerTurn { get { return currentPlayerTurn; } set { currentPlayerTurn = value; } }
 
         private const int ROW = 7;
         private const int COLUMN = 9;
@@ -442,6 +442,14 @@ namespace ArcOthelloMM
             get
             {
                 return Player.WhitePlayer.Score;
+            }
+        }
+
+        public Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> CurrentPossibleMoves
+        {
+            get
+            {
+                return GetListPossibleMove(CurrentPlayerTurn);
             }
         }
 
