@@ -24,10 +24,10 @@ namespace ArcOthelloMM
     /// </summary>
     public partial class OthelloBoard : Window
     {
-        private OthelloGridCell[,] othelloGridCells;
+        private OthelloGridCell[,] othelloGridCells; // to change their states
 
         private bool playerVsPlayer;
-        private Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> currentPossibleMoves;
+        private Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> currentPossibleMoves; // to optimize calls
 
         Timer timerUpdateGui;
 
