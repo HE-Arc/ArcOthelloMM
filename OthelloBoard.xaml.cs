@@ -319,5 +319,15 @@ namespace ArcOthelloMM
                 UpdateGui();
             }
         }
+
+        private void btnRedo_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btnUndo_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
