@@ -322,12 +322,16 @@ namespace ArcOthelloMM
 
         private void btnRedo_Click(object sender, RoutedEventArgs e)
         {
-
+            LogicalBoard.Instance.Redo();
+            turnWhite = !LogicalBoard.Instance.GetLastPlayer();
+            UpdateGui();
         }
 
         private void btnUndo_Click(object sender, RoutedEventArgs e)
         {
-
+            LogicalBoard.Instance.Undo();
+            turnWhite = !LogicalBoard.Instance.GetLastPlayer();
+            UpdateGui();
         }
     }
 }

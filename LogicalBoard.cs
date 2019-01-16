@@ -18,7 +18,7 @@ namespace ArcOthelloMM
         private Player WhitePlayer { get; set; }
         private Player BlackPlayer { get; set; }
         private int[,] Board { get; set; }
-        private List<Tuple<bool, int[,]>> BoardHistory { get; set; }
+        private List<Tuple<bool, int[,]>> Archive { get; set; }
         private int IndexHistory { get; set; }
 
         private Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> ListPossibleMove;
@@ -51,7 +51,7 @@ namespace ArcOthelloMM
             Board = (int[,])info.GetValue("Board", typeof(int[,]));
             ListPossibleMove = (Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>>)info.GetValue("ListPossibleMove", typeof(Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>>));
             ListPossibleMoveLoaded = (bool)info.GetValue("ListPossibleMoveLoaded", typeof(bool));
-            BoardHistory = (List<Tuple<bool, int[,]>>)info.GetValue("BoardHistory", typeof(List<Tuple<bool, int[,]>>));
+            Archive = (List<Tuple<bool, int[,]>>)info.GetValue("BoardHistory", typeof(List<Tuple<bool, int[,]>>));
             IndexHistory = (int)info.GetValue("IndexHistory", typeof(int));
         }
 
@@ -119,11 +119,9 @@ namespace ArcOthelloMM
             ListPossibleMove = new Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>>();
             ListPossibleMoveLoaded = false;
             LastPlayer = false;
-            BoardHistory = new List<Tuple<bool, int[,]>>
-            {
-                new Tuple<bool, int[,]>(false, Board)
-            };
+            Archive = new List<Tuple<bool, int[,]>>();
             IndexHistory = 0;
+            AddArchive(LastPlayer, Board);
         }
 
         /// <summary>
@@ -433,11 +431,10 @@ namespace ArcOthelloMM
             LastPlayer = isWhite;
 
             ++IndexHistory;
-            if (IndexHistory < BoardHistory.Count)
-                BoardHistory.RemoveRange(IndexHistory, BoardHistory.Count - IndexHistory);
+            if (IndexHistory < Archive.Count)
+                Archive.RemoveRange(IndexHistory, Archive.Count - IndexHistory);
 
-            BoardHistory.Add(new Tuple<bool, int[,]>(isWhite, Board));
-            
+            AddArchive(isWhite, Board);
             return (ListPossibleMove.Count > 0);
         }
 
@@ -509,19 +506,19 @@ namespace ArcOthelloMM
 
         public void Undo()
         {
-            --IndexHistory;
-            LastPlayer = BoardHistory[IndexHistory].Item1;
-            Board = BoardHistory[IndexHistory].Item2;
-            
+            if (IndexHistory > 0)
+            {
+                --IndexHistory;
+                LoadArchive();
+            }
         }
 
         public void Redo()
         {
-            if (IndexHistory < BoardHistory.Count - 1)
+            if (IndexHistory < Archive.Count - 1)
             {
                 ++IndexHistory;
-                LastPlayer = BoardHistory[IndexHistory].Item1;
-                Board = BoardHistory[IndexHistory].Item2;
+                LoadArchive();
             }
         }
 
@@ -533,13 +530,55 @@ namespace ArcOthelloMM
             info.AddValue("ListPossibleMove", ListPossibleMove);
             info.AddValue("ListPossibleMoveLoaded", ListPossibleMoveLoaded);
             info.AddValue("LastPlayer", LastPlayer);
-            info.AddValue("BoardHistory", BoardHistory);
+            info.AddValue("BoardHistory", Archive);
             info.AddValue("IndexHistory", IndexHistory);
         }
 
         public bool GetLastPlayer()
         {
             return LastPlayer;
+        }
+
+        public void AddArchive(bool isWhite, int[,]  Board)
+        {
+            int[,] BoardCopy = new int[COLUMN, ROW];
+
+            for (int x = 0; x < COLUMN; ++x)
+            {
+                for (int y = 0; y < ROW; ++y)
+                {
+                    BoardCopy[x, y] = Board[x, y];
+                }
+            }
+
+            Archive.Add(new Tuple<bool, int[,]>(isWhite, BoardCopy));
+        }
+
+        public void LoadArchive()
+        {
+            WhitePlayer.Tokens.Clear();
+            BlackPlayer.Tokens.Clear();
+
+            if (IndexHistory < Archive.Count - 1)
+                LastPlayer = !Archive[IndexHistory + 1].Item1;
+            else
+                LastPlayer = Archive[IndexHistory].Item1; // Last Redo
+
+            for (int x = 0; x < COLUMN; ++x)
+            {
+                for (int y = 0; y < ROW; ++y)
+                {
+                    Board[x, y] = Archive[IndexHistory].Item2[x, y];
+
+                    if (Archive[IndexHistory].Item2[x, y] == WhitePlayer.Value)
+                        WhitePlayer.Tokens.Add(new Tuple<int, int>(x, y));
+                    else if (Archive[IndexHistory].Item2[x, y] == BlackPlayer.Value)
+                        BlackPlayer.Tokens.Add(new Tuple<int, int>(x, y));
+                }
+            }
+
+            ListPossibleMove.Clear();
+            GetListPossibleMove(!LastPlayer);
         }
     }
 }
