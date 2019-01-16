@@ -360,10 +360,7 @@ namespace ArcOthelloMM
             // with a depth copy
 
             if (!ListPossibleMove.ContainsKey(key))
-            {
                 ListPossibleMove.Add(key, new HashSet<Tuple<int, int>>());
-                ListPossibleMove[key].Add(new Tuple<int, int>(key.Item1, key.Item2));
-            }
 
 
             foreach (Tuple<int, int> tokenToAdd in move)
@@ -375,9 +372,7 @@ namespace ArcOthelloMM
                     {
                         alreadyAdded = true;
                         break;
-                    }
-
-                    
+                    }    
                 }
                 if (!alreadyAdded)
                     ListPossibleMove[key].Add(new Tuple<int, int>(tokenToAdd.Item1, tokenToAdd.Item2));
