@@ -32,7 +32,7 @@ namespace ArcOthelloMM
         /// <summary>
         /// Class to manage logical game
         /// </summary>
-        private LogicalBoard()
+        public LogicalBoard()
         {
             WhitePlayer = Player.GetWhite();
             BlackPlayer = Player.GetBlack();
@@ -451,8 +451,7 @@ namespace ArcOthelloMM
 
         public Tuple<int, int> GetNextMove(int[,] game, int level, bool whiteTurn)
         {
-            // logic ia
-            throw new NotImplementedException();
+            return IA.GetInstance().GetNextMove(game, level, whiteTurn);
         }
 
         /// <summary>

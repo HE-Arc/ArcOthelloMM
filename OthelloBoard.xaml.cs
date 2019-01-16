@@ -28,6 +28,7 @@ namespace ArcOthelloMM
 
         private bool turnWhite;
         private Tuple<int, int> lastPlay;
+        private bool playerVsPlayer;
         private Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> currentPossibleMoves;
 
         Timer timerUpdateGui;
@@ -46,10 +47,12 @@ namespace ArcOthelloMM
 
             DataContext = LogicalBoard.Instance;
 
-            NewGame();
+            GenerateGrid();
+
+            BlankBoard();
         }
 
-        private void NewGame()
+        private void NewGame(bool playerVsPlayer)
         {
             swPlayerWhite = new Stopwatch();
             swPlayerBlack = new Stopwatch();
@@ -57,6 +60,7 @@ namespace ArcOthelloMM
 
             turnWhite = false; //black start
             lastPlay = null;
+            this.playerVsPlayer = playerVsPlayer;
             LogicalBoard.Instance.ResetGame();
             currentPossibleMoves = LogicalBoard.Instance.GetListPossibleMove(turnWhite);
 
@@ -66,7 +70,12 @@ namespace ArcOthelloMM
 
         private void btnNewGame_Click(object sender, RoutedEventArgs e)
         {
-            NewGame();
+            NewGame(true);
+        }
+
+        private void btnNewGameAI_Click(object sender, RoutedEventArgs e)
+        {
+            NewGame(false);
         }
 
         private void TimerUpdateGui_Elapsed(object sender, ElapsedEventArgs e)
@@ -86,6 +95,8 @@ namespace ArcOthelloMM
 
         private void GenerateGrid()
         {
+            othelloGridCells = new OthelloGridCell[LogicalBoard.GetInstance().GetCol(), LogicalBoard.GetInstance().GetRow()];
+
             graphicalBoard.ColumnDefinitions.Clear();
             graphicalBoard.RowDefinitions.Clear();
             graphicalBoard.Children.Clear();
@@ -155,7 +166,7 @@ namespace ArcOthelloMM
                 {
                     Tuple<int, int> pos = new Tuple<int, int>(x, y);
                     OthelloGridCell gcell = othelloGridCells[x, y];
-                    
+
                     int lcell = lboard[x,y];
                     if (lcell == 1)
                         gcell.State = OthelloGridCell.States.Player1;
@@ -183,7 +194,7 @@ namespace ArcOthelloMM
             int x = s.X;
             int y = s.Y;
             Tuple<int, int> pos = new Tuple<int, int>(x, y);
-            if (currentPossibleMoves.ContainsKey(pos))
+            if (currentPossibleMoves != null && currentPossibleMoves.ContainsKey(pos))
             {
                 LogicalBoard.Instance.PlayMove(x, y, turnWhite);
                 lastPlay = pos;
@@ -217,8 +228,11 @@ namespace ArcOthelloMM
 
         private void UpdateTimer(Stopwatch sw, Label lbl)
         {
-            TimeSpan remainingTime = TimeSpan.FromMilliseconds(sw.ElapsedMilliseconds);
-            lbl.Content = remainingTime.ToString(@"mm\:ss\.fff");
+            if (sw != null)
+            {
+                TimeSpan remainingTime = TimeSpan.FromMilliseconds(sw.ElapsedMilliseconds);
+                lbl.Content = remainingTime.ToString(@"mm\:ss\.fff");
+            }
         }
 
         private void NextTurn()
@@ -267,6 +281,21 @@ namespace ArcOthelloMM
             }
         }
 
+        private void BlankBoard()
+        {
+            int col = LogicalBoard.GetInstance().GetCol();
+            int row = LogicalBoard.GetInstance().GetRow();
+            int[,] board = LogicalBoard.GetInstance().GetBoard();
+
+            for (int x = 0; x < col; x++)
+            {
+                for (int y = 0; y < row; y++)
+                {
+
+                }
+            }
+        }
+
         private void Board_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             int row = graphicalBoard.RowDefinitions.Count;
@@ -282,7 +311,7 @@ namespace ArcOthelloMM
 
             double w = (border.ActualWidth - min * col) / 2;
             double h = (border.ActualHeight - min * row) / 2;
-            
+
             graphicalBoard.Margin = new Thickness(w, h, w, h);
         }
 
@@ -292,7 +321,7 @@ namespace ArcOthelloMM
             saveFileDialog.Filter = "Othello Game Status|*.txt";
             saveFileDialog.Title = "Sauvegarder la partie d'Othello";
             saveFileDialog.ShowDialog();
-            
+
             if (saveFileDialog.FileName != "")
             {
                 IFormatter formatter = new BinaryFormatter();

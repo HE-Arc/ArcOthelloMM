@@ -17,7 +17,8 @@
         <Border Grid.Row="0" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,1,0" >
             <StackPanel Orientation="Vertical">
                 <StackPanel Orientation="Vertical" Margin="5 0">
-                    <Button Name="btnNewGame" Content="Nouvelle partie" Click="btnNewGame_Click" Margin="0 0 0 2"/>
+                    <Button Name="btnNewGame" Content="Nouvelle partie joueur contre joueur" Click="btnNewGame_Click" Margin="0 0 0 2"/>
+                    <Button Name="btnNewGameAI" Content="Nouvelle partie joueur contre ordinateur" Margin="0 2"/>
                     <Button Name="btnSave" Content="Sauvegarder" Margin="0 2" Click="btnSave_Click"/>
                     <Button Name="btnLoad" Content="Charger une partie" Margin="0 2" Click="btnLoad_Click"/>
                     <Grid HorizontalAlignment="Stretch" Margin="0 2">
@@ -48,9 +49,9 @@
                     <Label Grid.Column="1" Grid.Row="1" Name="lblTimeBlack">0:00:00</Label>
                     <Label Grid.Column="0" Grid.Row="2">Temps écoulé joueur blanc</Label>
                     <Label Grid.Column="1" Grid.Row="2" Name="lblTimeWhite">0:00:00</Label>
-                    <Label Grid.Column="0" Grid.Row="3">Nombre de pièce noirs</Label>
+                    <Label Grid.Column="0" Grid.Row="3">Nombre de pièces noires</Label>
                     <Label Grid.Column="1" Grid.Row="3" Name="lblNbTokenBlack" Content="{Binding BlackScore}"></Label>
-                    <Label Grid.Column="0" Grid.Row="4">Nombre de pièce blanches</Label>
+                    <Label Grid.Column="0" Grid.Row="4">Nombre de pièces blanches</Label>
                     <Label Grid.Column="1" Grid.Row="4" Name="lblNbTokenWhite" Content="{Binding WhiteScore}"></Label>
                 </Grid>
             </StackPanel>
