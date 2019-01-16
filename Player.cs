@@ -18,6 +18,8 @@ namespace ArcOthelloMM
 
         public Stopwatch Stopwatch { get; set; }
 
+        public long PreviousTime { get; set; }
+
         private static Player whitePlayer;
         private static Player blackPlayer;
 
@@ -29,24 +31,37 @@ namespace ArcOthelloMM
             Reset();
             Value = value;
             Name = name;
+            PreviousTime = 0;
         }
 
-        /// <summary>
-        /// Assure there is one white player
-        /// </summary>
-        /// <returns></returns>
-        public static Player GetWhite()
+        public static Player WhitePlayer
         {
-            if (whitePlayer == null)
-                whitePlayer = new Player(1, "Blanc");
-            return whitePlayer;
+            get
+            {
+                if (whitePlayer == null)
+                    whitePlayer = new Player(1, "Blanc");
+                return whitePlayer;
+            }
+
+            set
+            {
+                whitePlayer = value;
+            }
         }
 
-        public static Player GetBlack()
+        public static Player BlackPlayer
         {
-            if (blackPlayer == null)
-                blackPlayer = new Player(0, "Noir");
-            return blackPlayer;
+            get
+            {
+                if (blackPlayer == null)
+                    blackPlayer = new Player(0, "Noir");
+                return blackPlayer;
+            }
+
+            set
+            {
+                blackPlayer = value;
+            }
         }
 
         /// <summary>
@@ -62,10 +77,24 @@ namespace ArcOthelloMM
         {
             Tokens = new List<Tuple<int, int>>();
             Stopwatch = new Stopwatch();
+            PreviousTime = 0;
+        }
+
+        protected Player(SerializationInfo info, StreamingContext context)
+        {
+            Tokens = (List<Tuple<int, int>>)info.GetValue("Tokens", typeof(List<Tuple<int, int>>));
+            Value = (int)info.GetValue("Value", typeof(int));
+            Name = (string)info.GetValue("Name", typeof(string));
+            PreviousTime = (long)info.GetValue("PreviousTime", typeof(long));
+            Stopwatch = new Stopwatch();
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
+            info.AddValue("Tokens", Tokens);
+            info.AddValue("Value", Value);
+            info.AddValue("Name", Name);
+            info.AddValue("PreviousTime", Stopwatch.ElapsedMilliseconds + PreviousTime);
         }
     }
 }

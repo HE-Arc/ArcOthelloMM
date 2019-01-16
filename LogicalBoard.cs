@@ -15,11 +15,11 @@ namespace ArcOthelloMM
 
         private Player CurrentPlayer { get; set; }
         private Player OpponentPlayer { get; set; }
-        public Player WhitePlayer { get; set; }
-        public Player BlackPlayer { get; set; }
         private int[,] Board { get; set; }
-        private List<Tuple<bool, int[,]>> Archive { get; set; }
+        private List<Tuple<bool, int[,], Tuple<int, int>>> Archive { get; set; }
         private int IndexHistory { get; set; }
+
+        public Tuple<int, int> LastPlay { get; set; }
 
         private Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> ListPossibleMove;
         private bool ListPossibleMoveLoaded;
@@ -34,8 +34,6 @@ namespace ArcOthelloMM
         /// </summary>
         public LogicalBoard()
         {
-            WhitePlayer = Player.GetWhite();
-            BlackPlayer = Player.GetBlack();
             ResetGame();
         }
 
@@ -46,13 +44,14 @@ namespace ArcOthelloMM
         /// <param name="context"></param>
         protected LogicalBoard(SerializationInfo info, StreamingContext context)
         {
-            WhitePlayer = (Player)info.GetValue("WhitePlayer", typeof(Player));
-            BlackPlayer = (Player)info.GetValue("BlackPlayer", typeof(Player));
+            Player.WhitePlayer = (Player)info.GetValue("Player.WhitePlayer", typeof(Player));
+            Player.BlackPlayer = (Player)info.GetValue("Player.BlackPlayer", typeof(Player));
             Board = (int[,])info.GetValue("Board", typeof(int[,]));
             ListPossibleMove = (Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>>)info.GetValue("ListPossibleMove", typeof(Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>>));
             ListPossibleMoveLoaded = (bool)info.GetValue("ListPossibleMoveLoaded", typeof(bool));
-            Archive = (List<Tuple<bool, int[,]>>)info.GetValue("BoardHistory", typeof(List<Tuple<bool, int[,]>>));
+            Archive = (List<Tuple<bool, int[,], Tuple<int, int>>>)info.GetValue("BoardHistory", typeof(List<Tuple<bool, int[,], Tuple<int, int>>>));
             IndexHistory = (int)info.GetValue("IndexHistory", typeof(int));
+            LastPlay = (Tuple<int, int>)info.GetValue("LastPlay", typeof(Tuple<int, int>));
         }
 
         /// <summary>
@@ -87,9 +86,10 @@ namespace ArcOthelloMM
         public void ResetGame()
         {
             // Create players
-            Player.GetWhite().Reset();
-            Player.GetBlack().Reset();
+            Player.WhitePlayer.Reset();
+            Player.BlackPlayer.Reset();
 
+            LastPlay = null;
 
             // Init Board
             Board = new int[COLUMN, ROW];
@@ -105,23 +105,23 @@ namespace ArcOthelloMM
             int px = COLUMN / 2 - 1;
             int py = ROW / 2;
 
-            Board[px, py] = WhitePlayer.Value;
-            WhitePlayer.Tokens.Add(new Tuple<int, int>(px, py));
-            Board[px + 1, py + 1] = WhitePlayer.Value;
-            WhitePlayer.Tokens.Add(new Tuple<int, int>(px + 1, py + 1));
+            Board[px, py] = Player.WhitePlayer.Value;
+            Player.WhitePlayer.Tokens.Add(new Tuple<int, int>(px, py));
+            Board[px + 1, py + 1] = Player.WhitePlayer.Value;
+            Player.WhitePlayer.Tokens.Add(new Tuple<int, int>(px + 1, py + 1));
 
-            Board[px, py + 1] = BlackPlayer.Value;
-            BlackPlayer.Tokens.Add(new Tuple<int, int>(px, py + 1));
-            Board[px + 1, py] = BlackPlayer.Value;
-            BlackPlayer.Tokens.Add(new Tuple<int, int>(px + 1, py));
+            Board[px, py + 1] = Player.BlackPlayer.Value;
+            Player.BlackPlayer.Tokens.Add(new Tuple<int, int>(px, py + 1));
+            Board[px + 1, py] = Player.BlackPlayer.Value;
+            Player.BlackPlayer.Tokens.Add(new Tuple<int, int>(px + 1, py));
 
             // Init others
             ListPossibleMove = new Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>>();
             ListPossibleMoveLoaded = false;
             LastPlayer = false;
-            Archive = new List<Tuple<bool, int[,]>>();
+            Archive = new List<Tuple<bool, int[,], Tuple<int, int>>>();
             IndexHistory = 0;
-            AddArchive(LastPlayer, Board);
+            AddArchive(LastPlayer, Board, null);
         }
 
         /// <summary>
@@ -131,13 +131,13 @@ namespace ArcOthelloMM
         {
             if (isWhite)
             {
-                CurrentPlayer = WhitePlayer;
-                OpponentPlayer = BlackPlayer;
+                CurrentPlayer = Player.WhitePlayer;
+                OpponentPlayer = Player.BlackPlayer;
             }
             else
             {
-                CurrentPlayer = BlackPlayer;
-                OpponentPlayer = WhitePlayer;
+                CurrentPlayer = Player.BlackPlayer;
+                OpponentPlayer = Player.WhitePlayer;
             }
         }
 
@@ -445,7 +445,9 @@ namespace ArcOthelloMM
             if (IndexHistory < Archive.Count)
                 Archive.RemoveRange(IndexHistory, Archive.Count - IndexHistory);
 
-            AddArchive(isWhite, Board);
+
+            LastPlay = new Tuple<int, int>(column, line);
+            AddArchive(isWhite, Board, LastPlay);
             return true;
         }
 
@@ -469,7 +471,7 @@ namespace ArcOthelloMM
         /// <returns></returns>
         public int GetWhiteScore()
         {
-            return WhitePlayer.Tokens.Count;
+            return Player.WhitePlayer.Tokens.Count;
         }
 
         public int BlackScore {
@@ -493,7 +495,7 @@ namespace ArcOthelloMM
         /// <returns></returns>
         public int GetBlackScore()
         {
-            return BlackPlayer.Tokens.Count;
+            return Player.BlackPlayer.Tokens.Count;
         }
 
         /// <summary>
@@ -502,7 +504,7 @@ namespace ArcOthelloMM
         /// <returns></returns>
         public List<Tuple<int, int>> GetWhiteTokens()
         {
-            return WhitePlayer.Tokens;
+            return Player.WhitePlayer.Tokens;
         }
 
         /// <summary>
@@ -511,7 +513,7 @@ namespace ArcOthelloMM
         /// <returns></returns>
         public List<Tuple<int, int>> GetBlackTokens()
         {
-            return BlackPlayer.Tokens;
+            return Player.BlackPlayer.Tokens;
         }
 
         public void Undo()
@@ -544,14 +546,15 @@ namespace ArcOthelloMM
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            info.AddValue("WhitePlayer", WhitePlayer);
-            info.AddValue("BlackPlayer", BlackPlayer); 
+            info.AddValue("Player.WhitePlayer", Player.WhitePlayer);
+            info.AddValue("Player.BlackPlayer", Player.BlackPlayer); 
             info.AddValue("Board", Board);
             info.AddValue("ListPossibleMove", ListPossibleMove);
             info.AddValue("ListPossibleMoveLoaded", ListPossibleMoveLoaded);
             info.AddValue("LastPlayer", LastPlayer);
             info.AddValue("BoardHistory", Archive);
             info.AddValue("IndexHistory", IndexHistory);
+            info.AddValue("LastPlay", LastPlay);
         }
 
         public bool GetLastPlayer()
@@ -559,7 +562,7 @@ namespace ArcOthelloMM
             return LastPlayer;
         }
 
-        public void AddArchive(bool isWhite, int[,]  Board)
+        public void AddArchive(bool isWhite, int[,]  Board, Tuple<int, int> lastPlay)
         {
             int[,] BoardCopy = new int[COLUMN, ROW];
 
@@ -571,18 +574,24 @@ namespace ArcOthelloMM
                 }
             }
 
-            Archive.Add(new Tuple<bool, int[,]>(isWhite, BoardCopy));
+            Archive.Add(new Tuple<bool, int[,], Tuple<int,int>>(isWhite, BoardCopy, lastPlay));
         }
 
         public void LoadArchive()
         {
-            WhitePlayer.Tokens.Clear();
-            BlackPlayer.Tokens.Clear();
+            Player.WhitePlayer.Tokens.Clear();
+            Player.BlackPlayer.Tokens.Clear();
 
             if (IndexHistory < Archive.Count - 1)
+            {
                 LastPlayer = !Archive[IndexHistory + 1].Item1;
+            }
             else
+            {
                 LastPlayer = Archive[IndexHistory].Item1; // Last Redo
+            }
+
+            LastPlay = Archive[IndexHistory].Item3;
 
             for (int x = 0; x < COLUMN; ++x)
             {
@@ -590,10 +599,10 @@ namespace ArcOthelloMM
                 {
                     Board[x, y] = Archive[IndexHistory].Item2[x, y];
 
-                    if (Archive[IndexHistory].Item2[x, y] == WhitePlayer.Value)
-                        WhitePlayer.Tokens.Add(new Tuple<int, int>(x, y));
-                    else if (Archive[IndexHistory].Item2[x, y] == BlackPlayer.Value)
-                        BlackPlayer.Tokens.Add(new Tuple<int, int>(x, y));
+                    if (Archive[IndexHistory].Item2[x, y] == Player.WhitePlayer.Value)
+                        Player.WhitePlayer.Tokens.Add(new Tuple<int, int>(x, y));
+                    else if (Archive[IndexHistory].Item2[x, y] == Player.BlackPlayer.Value)
+                        Player.BlackPlayer.Tokens.Add(new Tuple<int, int>(x, y));
                 }
             }
 
