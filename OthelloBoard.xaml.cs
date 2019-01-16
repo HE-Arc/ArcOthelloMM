@@ -148,6 +148,7 @@ namespace ArcOthelloMM
         {
             currentPossibleMoves = LogicalBoard.Instance.GetListPossibleMove(turnWhite);
             int[,] lboard = LogicalBoard.Instance.GetBoard();
+
             for (int x = 0; x < othelloGridCells.GetLength(0); x++)
             {
                 for (int y = 0; y < othelloGridCells.GetLength(1); y++)
@@ -169,9 +170,8 @@ namespace ArcOthelloMM
                     }
                     else
                         gcell.State = OthelloGridCell.States.Empty;
-
-                    if (LogicalBoard.Instance.LastPlay != null)
-                        gcell.LastPlay = pos.Item1 == LogicalBoard.Instance.LastPlay.Item1 && pos.Item2 == LogicalBoard.Instance.LastPlay.Item2;
+                    
+                    gcell.LastPlay = LogicalBoard.Instance.LastPlay != null && pos.Item1 == LogicalBoard.Instance.LastPlay.Item1 && pos.Item2 == LogicalBoard.Instance.LastPlay.Item2;
                 }
             }
         }
@@ -221,7 +221,7 @@ namespace ArcOthelloMM
         {
             if (p != null)
             {
-                TimeSpan remainingTime = TimeSpan.FromMilliseconds(p.Stopwatch.ElapsedMilliseconds + p.PreviousTime);
+                TimeSpan remainingTime = TimeSpan.FromMilliseconds(p.GetTime());
                 lbl.Content = remainingTime.ToString(@"mm\:ss\.fff");
             }
         }
@@ -247,13 +247,13 @@ namespace ArcOthelloMM
 
             if (turnWhite)
             {
-                Player.WhitePlayer.Stopwatch.Start();
-                Player.BlackPlayer.Stopwatch.Stop();
+                Player.WhitePlayer.Start();
+                Player.BlackPlayer.Stop();
             }
             else
             {
-                Player.WhitePlayer.Stopwatch.Stop();
-                Player.BlackPlayer.Stopwatch.Start();
+                Player.WhitePlayer.Stop();
+                Player.BlackPlayer.Start();
             }
         }
 

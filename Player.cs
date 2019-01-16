@@ -16,9 +16,9 @@ namespace ArcOthelloMM
         public int Value { get; set; }
         public string Name { get; set; }
 
-        public Stopwatch Stopwatch { get; set; }
+        private Stopwatch Stopwatch { get; set; }
 
-        public long PreviousTime { get; set; }
+        private long PreviousTime { get; set; }
 
         private static Player whitePlayer;
         private static Player blackPlayer;
@@ -85,8 +85,8 @@ namespace ArcOthelloMM
             Tokens = (List<Tuple<int, int>>)info.GetValue("Tokens", typeof(List<Tuple<int, int>>));
             Value = (int)info.GetValue("Value", typeof(int));
             Name = (string)info.GetValue("Name", typeof(string));
-            PreviousTime = (long)info.GetValue("PreviousTime", typeof(long));
-            Stopwatch = new Stopwatch();
+            Stopwatch = new Stopwatch(); // not serializable
+            PreviousTime = (long)info.GetValue("PreviousTime", typeof(long)); //mini hack to avoid stopwatch not serializable
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -94,7 +94,22 @@ namespace ArcOthelloMM
             info.AddValue("Tokens", Tokens);
             info.AddValue("Value", Value);
             info.AddValue("Name", Name);
-            info.AddValue("PreviousTime", Stopwatch.ElapsedMilliseconds + PreviousTime);
+            info.AddValue("PreviousTime", GetTime());
+        }
+
+        public long GetTime()
+        {
+            return Stopwatch.ElapsedMilliseconds + PreviousTime;
+        }
+
+        public void Start()
+        {
+            Stopwatch.Start();
+        }
+
+        public void Stop()
+        {
+            Stopwatch.Stop();
         }
     }
 }
