@@ -18,7 +18,7 @@
             <StackPanel Orientation="Vertical">
                 <StackPanel Orientation="Vertical" Margin="5 0">
                     <Button Name="btnNewGame" Content="Nouvelle partie joueur contre joueur" Click="btnNewGame_Click" Margin="0 0 0 2"/>
-                    <Button Name="btnNewGameAI" Content="Nouvelle partie joueur contre ordinateur" Margin="0 2"/>
+                    <Button Name="btnNewGameAI" Content="Nouvelle partie joueur contre ordinateur" Margin="0 2" IsEnabled="False"/>
                     <Button Name="btnSave" Content="Sauvegarder" Margin="0 2" Click="btnSave_Click"/>
                     <Button Name="btnLoad" Content="Charger une partie" Margin="0 2" Click="btnLoad_Click"/>
                     <Grid HorizontalAlignment="Stretch" Margin="0 2">
@@ -27,8 +27,8 @@
                             <ColumnDefinition Width="2"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Button Name="btnUndo" Grid.Column="0" Content="Annuler" Click="btnUndo_Click"/>
-                        <Button Name="btnRedo" Grid.Column="2"  Content="Rejouer" Click="btnRedo_Click"/>
+                        <Button Name="btnUndo" IsEnabled="False" Grid.Column="0" Content="Annuler" Click="btnUndo_Click"/>
+                        <Button Name="btnRedo" IsEnabled="False" Grid.Column="2"  Content="Rejouer" Click="btnRedo_Click"/>
                     </Grid>
                 </StackPanel>
                 <Grid>

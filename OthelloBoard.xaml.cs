@@ -33,9 +33,6 @@ namespace ArcOthelloMM
 
         Timer timerUpdateGui;
 
-        Stopwatch swPlayerWhite;
-        Stopwatch swPlayerBlack;
-
         public OthelloBoard()
         {
             InitializeComponent();
@@ -48,23 +45,16 @@ namespace ArcOthelloMM
             DataContext = LogicalBoard.Instance;
 
             GenerateGrid();
-
-            BlankBoard();
         }
 
         private void NewGame(bool playerVsPlayer)
         {
-            swPlayerWhite = new Stopwatch();
-            swPlayerBlack = new Stopwatch();
-            othelloGridCells = new OthelloGridCell[LogicalBoard.Instance.GetCol(), LogicalBoard.Instance.GetRow()];
-
             turnWhite = false; //black start
             lastPlay = null;
             this.playerVsPlayer = playerVsPlayer;
             LogicalBoard.Instance.ResetGame();
             currentPossibleMoves = LogicalBoard.Instance.GetListPossibleMove(turnWhite);
 
-            GenerateGrid();
             UpdateGui();
         }
 
@@ -95,7 +85,7 @@ namespace ArcOthelloMM
 
         private void GenerateGrid()
         {
-            othelloGridCells = new OthelloGridCell[LogicalBoard.GetInstance().GetCol(), LogicalBoard.GetInstance().GetRow()];
+            othelloGridCells = new OthelloGridCell[LogicalBoard.Instance.GetCol(), LogicalBoard.Instance.GetRow()];
 
             graphicalBoard.ColumnDefinitions.Clear();
             graphicalBoard.RowDefinitions.Clear();
@@ -207,23 +197,27 @@ namespace ArcOthelloMM
         {
             UpdateBoard();
             UpdateGameData();
+            UpdateControls();
         }
-
-        public int ScoreBlack { get; set; }
-        public int ScoreWhite { get; set; }
 
         private void UpdateGameData()
         {
             UpdateTimers();
-            lblTurn.Content = turnWhite ? "blanc" : "noir";
+            lblTurn.Content = turnWhite ? LogicalBoard.Instance.WhitePlayer.Name : LogicalBoard.Instance.BlackPlayer.Name;
             lblNbTokenBlack.GetBindingExpression(Label.ContentProperty).UpdateTarget();
             lblNbTokenWhite.GetBindingExpression(Label.ContentProperty).UpdateTarget();
         }
 
         private void UpdateTimers()
         {
-            UpdateTimer(swPlayerBlack, lblTimeBlack);
-            UpdateTimer(swPlayerWhite, lblTimeWhite);
+            UpdateTimer(LogicalBoard.Instance.BlackPlayer.Stopwatch, lblTimeBlack);
+            UpdateTimer(LogicalBoard.Instance.WhitePlayer.Stopwatch, lblTimeWhite);
+        }
+
+        private void UpdateControls()
+        {
+            btnUndo.IsEnabled = LogicalBoard.Instance.CanUndo();
+            btnRedo.IsEnabled = LogicalBoard.Instance.CanRedo();
         }
 
         private void UpdateTimer(Stopwatch sw, Label lbl)
@@ -237,12 +231,6 @@ namespace ArcOthelloMM
 
         private void NextTurn()
         {
-            Console.WriteLine("------");
-            foreach (Tuple<int, int> b in currentPossibleMoves.Keys)
-            {
-                Console.WriteLine(b);
-            }
-
             turnWhite = !turnWhite;
             currentPossibleMoves = LogicalBoard.Instance.GetListPossibleMove(turnWhite);
 
@@ -259,40 +247,16 @@ namespace ArcOthelloMM
                     Console.WriteLine("Turn skiped :" + currentPossibleMoves.Count);
                 }
             }
-            else
-            {
-                Console.WriteLine("Next turn :" + currentPossibleMoves.Count);
-            }
-
-            foreach(Tuple<int, int>  b in currentPossibleMoves.Keys)
-            {
-                Console.WriteLine(b);
-            }
 
             if (turnWhite)
             {
-                swPlayerWhite.Start();
-                swPlayerBlack.Stop();
+                LogicalBoard.Instance.WhitePlayer.Stopwatch.Start();
+                LogicalBoard.Instance.BlackPlayer.Stopwatch.Stop();
             }
             else
             {
-                swPlayerWhite.Stop();
-                swPlayerBlack.Start();
-            }
-        }
-
-        private void BlankBoard()
-        {
-            int col = LogicalBoard.GetInstance().GetCol();
-            int row = LogicalBoard.GetInstance().GetRow();
-            int[,] board = LogicalBoard.GetInstance().GetBoard();
-
-            for (int x = 0; x < col; x++)
-            {
-                for (int y = 0; y < row; y++)
-                {
-
-                }
+                LogicalBoard.Instance.WhitePlayer.Stopwatch.Stop();
+                LogicalBoard.Instance.BlackPlayer.Stopwatch.Start();
             }
         }
 
@@ -318,7 +282,7 @@ namespace ArcOthelloMM
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = "Othello Game Status|*.txt";
+            saveFileDialog.Filter = "Othello Game Status|*.mm";
             saveFileDialog.Title = "Sauvegarder la partie d'Othello";
             saveFileDialog.ShowDialog();
 
@@ -334,7 +298,7 @@ namespace ArcOthelloMM
         private void btnLoad_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Othello Game Status|*.txt";
+            openFileDialog.Filter = "Othello Game Status|*.mm";
             openFileDialog.Title = "Charger la partie d'Othello";
             openFileDialog.ShowDialog();
 

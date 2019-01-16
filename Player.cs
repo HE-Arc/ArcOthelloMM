@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
@@ -8,12 +10,14 @@ using System.Windows.Media;
 namespace ArcOthelloMM
 {
     [Serializable]
-    public class Player
+    public class Player: ISerializable
     {
         public List<Tuple<int, int>> Tokens { get; set; }
         public int Value { get; set; }
         public string Name { get; set; }
-        
+
+        public Stopwatch Stopwatch { get; set; }
+
         private static Player whitePlayer;
         private static Player blackPlayer;
 
@@ -57,6 +61,11 @@ namespace ArcOthelloMM
         public void Reset()
         {
             Tokens = new List<Tuple<int, int>>();
+            Stopwatch = new Stopwatch();
+        }
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
         }
     }
 }

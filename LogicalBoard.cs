@@ -15,8 +15,8 @@ namespace ArcOthelloMM
 
         private Player CurrentPlayer { get; set; }
         private Player OpponentPlayer { get; set; }
-        private Player WhitePlayer { get; set; }
-        private Player BlackPlayer { get; set; }
+        public Player WhitePlayer { get; set; }
+        public Player BlackPlayer { get; set; }
         private int[,] Board { get; set; }
         private List<Tuple<bool, int[,]>> Archive { get; set; }
         private int IndexHistory { get; set; }
@@ -516,7 +516,7 @@ namespace ArcOthelloMM
 
         public void Undo()
         {
-            if (IndexHistory > 0)
+            if (CanUndo())
             {
                 --IndexHistory;
                 LoadArchive();
@@ -525,11 +525,21 @@ namespace ArcOthelloMM
 
         public void Redo()
         {
-            if (IndexHistory < Archive.Count - 1)
+            if (CanRedo())
             {
                 ++IndexHistory;
                 LoadArchive();
             }
+        }
+
+        public bool CanUndo()
+        {
+            return IndexHistory > 0;
+        }
+
+        public bool CanRedo()
+        {
+            return IndexHistory < Archive.Count - 1;
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
