@@ -305,7 +305,7 @@ namespace ArcOthelloMM
                 System.IO.FileStream fs = (System.IO.FileStream)openFileDialog.OpenFile();
                 LogicalBoard.Instance = (LogicalBoard)formatter.Deserialize(fs);
                 fs.Close();
-                turnWhite = !LogicalBoard.Instance.GetLastPlayer();
+                turnWhite = LogicalBoard.Instance.CurrentPlayerTurn;
                 UpdateGui();
             }
         }
@@ -313,14 +313,14 @@ namespace ArcOthelloMM
         private void btnRedo_Click(object sender, RoutedEventArgs e)
         {
             LogicalBoard.Instance.Redo();
-            turnWhite = !LogicalBoard.Instance.GetLastPlayer();
+            turnWhite = LogicalBoard.Instance.CurrentPlayerTurn;
             UpdateGui();
         }
 
         private void btnUndo_Click(object sender, RoutedEventArgs e)
         {
             LogicalBoard.Instance.Undo();
-            turnWhite = !LogicalBoard.Instance.GetLastPlayer();
+            turnWhite = LogicalBoard.Instance.CurrentPlayerTurn;
             UpdateGui();
         }
     }

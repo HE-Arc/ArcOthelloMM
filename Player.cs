@@ -10,7 +10,7 @@ using System.Windows.Media;
 namespace ArcOthelloMM
 {
     [Serializable]
-    public class Player: ISerializable
+    public class Player : ISerializable
     {
         public List<Tuple<int, int>> Tokens { get; set; }
         public int Value { get; set; }
@@ -72,6 +72,11 @@ namespace ArcOthelloMM
         {
             return Value;
         }
+
+        public int Score {
+            get {
+                return Tokens.Count;
+            } }
 
         public void Reset()
         {
