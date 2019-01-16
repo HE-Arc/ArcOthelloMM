@@ -254,7 +254,7 @@ namespace ArcOthelloMM
             i = 1;
             while (!finish)
             {
-                finish = CheckOnePossibleMove(token, takedTokens, i, 0);
+                finish = CheckOnePossibleMove(token, takedTokens, -i, -i);
                 ++i;
             }
 
@@ -272,34 +272,34 @@ namespace ArcOthelloMM
             i = 1;
             while (!finish)
             {
-                finish = CheckOnePossibleMove(token, takedTokens, 0, i);
-                ++i;
-            }
-
-            finish = false;
-            takedTokens.Clear();
-            i = 1;
-            while (!finish)
-            {
-                finish = CheckOnePossibleMove(token, takedTokens, -i, -i);
-                ++i;
-            }
-
-            finish = false;
-            takedTokens.Clear();
-            i = 1;
-            while (!finish)
-            {
-                finish = CheckOnePossibleMove(token, takedTokens, -i, i);
-                ++i;
-            }
-
-            finish = false;
-            takedTokens.Clear();
-            i = 1;
-            while (!finish)
-            {
                 finish = CheckOnePossibleMove(token, takedTokens, i, -i);
+                ++i;
+            }
+
+            finish = false;
+            takedTokens.Clear();
+            i = 1;
+            while (!finish)
+            {
+                finish = CheckOnePossibleMove(token, takedTokens, i, 0);
+                ++i;
+            }
+
+            finish = false;
+            takedTokens.Clear();
+            i = 1;
+            while (!finish)
+            {
+                finish = CheckOnePossibleMove(token, takedTokens, i, i);
+                ++i;
+            }
+
+            finish = false;
+            takedTokens.Clear();
+            i = 1;
+            while (!finish)
+            {
+                finish = CheckOnePossibleMove(token, takedTokens, 0, i);
                 ++i;
             }
 
@@ -332,13 +332,13 @@ namespace ArcOthelloMM
             tokens.Add(newToken);
 
             // Is on board
-            if (x < 0 || x >= COLUMN || y < 0 || y >= ROW)
+            if (x < 0 || x >= COLUMN || y < 0 || y >= ROW || CurrentPlayer.Tokens.Contains(newToken))
             {
                 finished = true;
             }
             else if (!OpponentPlayer.Tokens.Contains(newToken))
             {
-                if (!CurrentPlayer.Tokens.Contains(newToken) && Math.Abs(offsetX) > 1 || Math.Abs(offsetY) > 1)
+                if (Math.Abs(offsetX) > 1 || Math.Abs(offsetY) > 1)
                 {
                     SavePossibleMove(tokens, newToken); // save valid move
                 }
@@ -360,11 +360,27 @@ namespace ArcOthelloMM
             // with a depth copy
 
             if (!ListPossibleMove.ContainsKey(key))
-                ListPossibleMove.Add(key, new HashSet<Tuple<int, int>>());
-
-            foreach (Tuple<int, int> token in move)
             {
-                ListPossibleMove[key].Add(new Tuple<int, int>(token.Item1, token.Item2));
+                ListPossibleMove.Add(key, new HashSet<Tuple<int, int>>());
+                ListPossibleMove[key].Add(new Tuple<int, int>(key.Item1, key.Item2));
+            }
+
+
+            foreach (Tuple<int, int> tokenToAdd in move)
+            {
+                bool alreadyAdded = false;
+                foreach (Tuple<int, int> tokenAdded in ListPossibleMove[key])
+                {
+                    if (tokenToAdd.Item1 == tokenAdded.Item1 && tokenToAdd.Item2 == tokenAdded.Item2)
+                    {
+                        alreadyAdded = true;
+                        break;
+                    }
+
+                    
+                }
+                if (!alreadyAdded)
+                    ListPossibleMove[key].Add(new Tuple<int, int>(tokenToAdd.Item1, tokenToAdd.Item2));
             }
         }
 
@@ -412,7 +428,7 @@ namespace ArcOthelloMM
         /// <returns></returns>
         public bool PlayMove(int column, int line, bool isWhite)
         {
-            if (ListPossibleMoveLoaded)
+            if (!ListPossibleMoveLoaded)
                 GetListPossibleMove(isWhite);
 
             if (ListPossibleMove.Count == 0)
@@ -435,7 +451,7 @@ namespace ArcOthelloMM
                 Archive.RemoveRange(IndexHistory, Archive.Count - IndexHistory);
 
             AddArchive(isWhite, Board);
-            return (ListPossibleMove.Count > 0);
+            return true;
         }
 
         public Tuple<int, int> GetNextMove(int[,] game, int level, bool whiteTurn)
