@@ -5,7 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ArcOthelloMM"
         mc:Ignorable="d"
-        Title="OthelloBoard" d:DesignWidth="800" d:DesignHeight="450" MinWidth="800" MinHeight="450" SizeChanged="Board_SizeChanged">
+        Title="HE-Arc Othello : Margueron - Mottier " d:DesignWidth="800" d:DesignHeight="450" MinWidth="800" MinHeight="450" SizeChanged="Board_SizeChanged" WindowStartupLocation="CenterScreen" Padding="0" Icon="icon.ico">
+    <Window.Background>
+        <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+            <GradientStop Color="#FF616FFF" Offset="1"/>
+            <GradientStop Color="#FFFF6161"/>
+        </LinearGradientBrush>
+    </Window.Background>
     <Grid Margin="10px">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="250"/>
@@ -16,44 +22,46 @@
         </Grid.RowDefinitions>
         <Border Grid.Row="0" Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,1,0" >
             <StackPanel Orientation="Vertical">
-                <StackPanel Orientation="Vertical" Margin="5 0">
-                    <Button Name="btnNewGame" Content="Nouvelle partie joueur contre joueur" Click="btnNewGame_Click" Margin="0 0 0 2"/>
-                    <Button Name="btnNewGameAI" Content="Nouvelle partie joueur contre ordinateur" Margin="0 2" IsEnabled="False"/>
-                    <Button Name="btnSave" Content="Sauvegarder" Margin="0 2" Click="btnSave_Click"/>
-                    <Button Name="btnLoad" Content="Charger une partie" Margin="0 2" Click="btnLoad_Click"/>
+                <StackPanel Orientation="Vertical" Margin="5, 0, 5, 5">
+                    <Button Name="btnNewGame" Content="Nouvelle partie joueur contre joueur" Click="btnNewGame_Click" Margin="0 0 0 2" HorizontalContentAlignment="Center" Height="25"/>
+                    <Button Name="btnNewGameAI" Content="Nouvelle partie joueur contre ordinateur" Margin="0 2" IsEnabled="False" HorizontalContentAlignment="Center" Height="25"/>
+                    <Button Name="btnSave" Content="Sauvegarder" Margin="0 2" Click="btnSave_Click" HorizontalContentAlignment="Center" Height="25"/>
+                    <Button Name="btnLoad" Content="Charger une partie" Margin="0 2" Click="btnLoad_Click" HorizontalContentAlignment="Center" Height="25"/>
                     <Grid HorizontalAlignment="Stretch" Margin="0 2">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="2"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Button Name="btnUndo" IsEnabled="False" Grid.Column="0" Content="Annuler" Click="btnUndo_Click"/>
-                        <Button Name="btnRedo" IsEnabled="False" Grid.Column="2"  Content="Rejouer" Click="btnRedo_Click"/>
+                        <Button Name="btnUndo" IsEnabled="False" Grid.Column="0" Content="Annuler" Click="btnUndo_Click" HorizontalContentAlignment="Center" Height="25"/>
+                        <Button Name="btnRedo" IsEnabled="False" Grid.Column="2"  Content="Rejouer" Click="btnRedo_Click" HorizontalContentAlignment="Center" Height="25"/>
                     </Grid>
                 </StackPanel>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <Label Grid.Column="0" Grid.Row="0">Tour</Label>
-                    <Label Grid.Column="1" Grid.Row="0" Name="lblTurn">Couleur</Label>
-                    <Label Grid.Column="0" Grid.Row="1">Temps écoulé joueur noir</Label>
-                    <Label Grid.Column="1" Grid.Row="1" Name="lblTimeBlack">0:00:00</Label>
-                    <Label Grid.Column="0" Grid.Row="2">Temps écoulé joueur blanc</Label>
-                    <Label Grid.Column="1" Grid.Row="2" Name="lblTimeWhite">0:00:00</Label>
-                    <Label Grid.Column="0" Grid.Row="3">Nombre de pièces noires</Label>
-                    <Label Grid.Column="1" Grid.Row="3" Name="lblNbTokenBlack" Content="{Binding BlackScore}"></Label>
-                    <Label Grid.Column="0" Grid.Row="4">Nombre de pièces blanches</Label>
-                    <Label Grid.Column="1" Grid.Row="4" Name="lblNbTokenWhite" Content="{Binding WhiteScore}"></Label>
-                </Grid>
+                <Border BorderBrush="Black" BorderThickness="0,1,0,0" Margin="5,0,0,0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Label Grid.Column="0" Grid.Row="0">Tour</Label>
+                        <Label Grid.Column="1" Grid.Row="0" Name="lblTurn">Couleur</Label>
+                        <Label Grid.Column="0" Grid.Row="1">Temps écoulé joueur noir</Label>
+                        <Label Grid.Column="1" Grid.Row="1" Name="lblTimeBlack">0:00:00</Label>
+                        <Label Grid.Column="0" Grid.Row="2">Temps écoulé joueur blanc</Label>
+                        <Label Grid.Column="1" Grid.Row="2" Name="lblTimeWhite">0:00:00</Label>
+                        <Label Grid.Column="0" Grid.Row="3">Nombre de pièces noires</Label>
+                        <Label Grid.Column="1" Grid.Row="3" Name="lblNbTokenBlack" Content="{Binding BlackScore}"></Label>
+                        <Label Grid.Column="0" Grid.Row="4">Nombre de pièces blanches</Label>
+                        <Label Grid.Column="1" Grid.Row="4" Name="lblNbTokenWhite" Content="{Binding WhiteScore}"></Label>
+                    </Grid>
+                </Border>
             </StackPanel>
         </Border>
         <Border Name="border" Grid.Row="0" Grid.Column="1" BorderThickness="0">

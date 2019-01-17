@@ -530,7 +530,7 @@ namespace ArcOthelloMM
         }
 
         public int GetWhiteScore()
-        { 
+        {
             return Player.WhitePlayer.Score;
         }
 
