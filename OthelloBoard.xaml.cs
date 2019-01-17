@@ -14,6 +14,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
@@ -209,23 +210,12 @@ namespace ArcOthelloMM
             float percentageBlack = Player.BlackPlayer.Score / (float)(Player.BlackPlayer.Score + Player.WhitePlayer.Score);
             float percentageWhite = 1 - percentageBlack;
 
-            GradientStopCollection gsc = new GradientStopCollection();
+            GradientStopCollection gradientStops = new GradientStopCollection();
 
-            if (percentageBlack > percentageWhite)
-            {
-                gsc.Add(new GradientStop(Player.BlackPlayer.Color, percentageBlack));
-                gsc.Add(new GradientStop(Player.WhitePlayer.Color, 1));
-            }
-            else
-            {
-                gsc.Add(new GradientStop(Player.BlackPlayer.Color, 0));
-                gsc.Add(new GradientStop(Player.WhitePlayer.Color, percentageWhite));
-            }
+            gradientStops.Add(new GradientStop(Player.BlackPlayer.Color, (percentageBlack - 0.5)));
+            gradientStops.Add(new GradientStop(Player.WhitePlayer.Color, (percentageWhite + 0.5)));
 
-            LinearGradientBrush linearGradientBrush = new LinearGradientBrush(gsc, 90.0);
-
-
-            
+            LinearGradientBrush linearGradientBrush = new LinearGradientBrush(gradientStops, 90.0);
             
             this.Background = linearGradientBrush;
         }
