@@ -32,7 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="IPlayable">
-      <HintPath>..\ArcOthelloMM\bin\Debug\IPlayable.dll</HintPath>
+      <HintPath>.\IPlayable.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
