@@ -4,6 +4,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.28010.2048
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArcOthelloMM", "ArcOthelloMM.csproj", "{B1371DA2-491A-483F-9589-DE73FED4612D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6FA8FB8C-F2AB-4CB1-BF65-64975D20906C} = {6FA8FB8C-F2AB-4CB1-BF65-64975D20906C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IAMargueronMottier", "..\IAMargueronMottier\IAMargueronMottier.csproj", "{6FA8FB8C-F2AB-4CB1-BF65-64975D20906C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +20,10 @@ Global
 		{B1371DA2-491A-483F-9589-DE73FED4612D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B1371DA2-491A-483F-9589-DE73FED4612D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B1371DA2-491A-483F-9589-DE73FED4612D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FA8FB8C-F2AB-4CB1-BF65-64975D20906C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FA8FB8C-F2AB-4CB1-BF65-64975D20906C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FA8FB8C-F2AB-4CB1-BF65-64975D20906C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FA8FB8C-F2AB-4CB1-BF65-64975D20906C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
