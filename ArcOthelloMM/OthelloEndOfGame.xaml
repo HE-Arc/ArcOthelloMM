@@ -7,7 +7,9 @@
         mc:Ignorable="d"
         Title="Fin de partie" Height="200" Width="400" Icon="icon.ico" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
     <StackPanel Orientation="Vertical">
-        <Label Name="msg" HorizontalAlignment="Center" Margin="0,50,0,0" FontSize="20" BorderBrush="White">Joueur XXXX a gagné !</Label>
-        <Button HorizontalAlignment="Center" Width="100" Margin="0,25,0,0" Foreground="White" BorderBrush="#FFFFFF" Background="#7F000000">Ok</Button>
+        <Border Margin="0,50,0,0" Width="250" CornerRadius="20" Background="#7F000000" >
+            <Label Name="msg" HorizontalAlignment="Center"  FontSize="20" BorderBrush="White" Foreground="White">Joueur XXXX a gagné !</Label>
+        </Border>
+       <Button HorizontalAlignment="Center" Width="100" Margin="0,25,0,0" Foreground="White" BorderBrush="#FFFFFF" Background="#7F000000" Click="Button_Click">Ok</Button>
     </StackPanel>
 </Window>

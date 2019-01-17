@@ -69,14 +69,14 @@ namespace ArcOthelloMM
         static Brush borderColorEllipseLastPlay= BrushFromColor(Color.FromRgb(111, 255, 97), 255);
         static Brush transparent = BrushFromColor(Color.FromRgb(0, 0, 0), 0);
 
-        static Brush backgroundColor = BrushFromColor(Color.FromRgb(0, 0, 0), 127);
-        static Brush borderColor = BrushFromColor(Color.FromRgb(255, 255, 255), 127);
+        static Brush backgroundColor = BrushFromColor(Color.FromRgb(0, 0, 0), 160);
+        static Brush borderColor = BrushFromColor(Color.FromRgb(255, 255, 255), 160);
 
         static int normalSize = 100;
         static byte normalOpacity = 220;
 
         static int previewSize = (int)(0.75*normalSize);
-        static byte previewOpacity = (byte)(0.25 * normalOpacity);
+        static byte previewOpacity = (byte)(0.50 * normalOpacity);
 
 
         static OthelloGridCell()

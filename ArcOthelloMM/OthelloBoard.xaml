@@ -52,13 +52,13 @@
                         </Grid.RowDefinitions>
                         <Label Grid.Column="0" Grid.Row="0" Foreground="White" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center">Tour</Label>
                         <Label Grid.Column="1" Grid.Row="0" Foreground="White" Name="lblTurn" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center">Couleur</Label>
-                        <Label Grid.Column="0" Grid.Row="1" Foreground="White" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center">Temps écoulé joueur noir</Label>
+                        <Label Grid.Column="0" Grid.Row="1" Foreground="White" Name="lblTimeBlackText" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center">Temps écoulé joueur noir</Label>
                         <Label Grid.Column="1" Grid.Row="1" Foreground="White" Name="lblTimeBlack" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center">0:00:00</Label>
-                        <Label Grid.Column="0" Grid.Row="2" Foreground="White" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center">Temps écoulé joueur blanc</Label>
+                        <Label Grid.Column="0" Grid.Row="2" Foreground="White" Name="lblTimeWhiteText" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center">Temps écoulé joueur blanc</Label>
                         <Label Grid.Column="1" Grid.Row="2" Foreground="White" Name="lblTimeWhite" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center">0:00:00</Label>
-                        <Label Grid.Column="0" Grid.Row="3" Foreground="White" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center">Nombre de pièces noires</Label>
+                        <Label Grid.Column="0" Grid.Row="3" Foreground="White" Name="lblNbTokenBlackText" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center">Nombre de pièces noires</Label>
                         <Label Grid.Column="1" Grid.Row="3" Foreground="White" Name="lblNbTokenBlack" Content="{Binding BlackScore}" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
-                        <Label Grid.Column="0" Grid.Row="4" Foreground="White" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center">Nombre de pièces blanches</Label>
+                        <Label Grid.Column="0" Grid.Row="4" Foreground="White" Name="lblNbTokenWhiteText" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center">Nombre de pièces blanches</Label>
                         <Label Grid.Column="1" Grid.Row="4" Foreground="White" Name="lblNbTokenWhite" Content="{Binding WhiteScore}" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
                     </Grid>
                 </Border>

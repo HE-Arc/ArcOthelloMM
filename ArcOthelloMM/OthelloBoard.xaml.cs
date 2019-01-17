@@ -20,7 +20,10 @@ namespace ArcOthelloMM
         private bool playerVsPlayer;
         private Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> currentPossibleMoves; // to optimize calls
 
-        Timer timerUpdateGui;
+        private Timer timerUpdateGui;
+
+        private const string timeElapsedText = "Temps écoulé joueur ";
+        private const string nbTokensText = "Nombre de pièces ";
 
         public OthelloBoard()
         {
@@ -30,6 +33,11 @@ namespace ArcOthelloMM
             timerUpdateGui.Interval = 0.1;
             timerUpdateGui.Elapsed += TimerUpdateGui_Elapsed;
             timerUpdateGui.Start();
+
+            lblTimeBlackText.Content = timeElapsedText + Player.BlackPlayer.Name;
+            lblTimeWhiteText.Content = timeElapsedText + Player.WhitePlayer.Name;
+            lblNbTokenBlackText.Content = nbTokensText + Player.BlackPlayer.Name;
+            lblNbTokenWhiteText.Content = nbTokensText + Player.WhitePlayer.Name;
 
             DataContext = LogicalBoard.Instance;
 
@@ -242,7 +250,18 @@ namespace ArcOthelloMM
 
                 if (currentPossibleMoves.Count <= 0)
                 {
-                    Console.WriteLine("Game End :" + currentPossibleMoves.Count);
+                    OthelloEndOfGame othelloEndOfGame;
+                    if (Player.BlackPlayer.Score != Player.WhitePlayer.Score)
+                    {
+                        Player playerWin = Player.BlackPlayer.Score > Player.WhitePlayer.Score ? Player.BlackPlayer : Player.WhitePlayer;
+                        Player playerLose = Player.BlackPlayer.Score > Player.WhitePlayer.Score ? Player.WhitePlayer : Player.BlackPlayer;
+                        othelloEndOfGame = new OthelloEndOfGame(playerWin, playerLose);
+                    }
+                    else //tied
+                    {
+                        othelloEndOfGame = new OthelloEndOfGame(null, null);
+                    }
+                    othelloEndOfGame.ShowDialog();
                 }
                 else
                 {

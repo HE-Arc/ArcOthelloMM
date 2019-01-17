@@ -19,10 +19,32 @@ namespace ArcOthelloMM
     /// </summary>
     public partial class OthelloEndOfGame : Window
     {
-        public OthelloEndOfGame(Player player)
+        public OthelloEndOfGame(Player playerWin, Player playerLose)
         {
             InitializeComponent();
-            //msg.Content = "Joueur " + player.Name + " a gagné !";
+            if (playerWin != null && playerLose != null)
+            {
+                GradientStopCollection gradientStops = new GradientStopCollection();
+                gradientStops.Add(new GradientStop(playerLose.Color, 0));
+                gradientStops.Add(new GradientStop(playerWin.Color, 0.30));
+                RadialGradientBrush radialGradientBrush = new RadialGradientBrush(gradientStops);
+                Background = radialGradientBrush;
+                msg.Content = "Joueur " + playerWin.Name + " a gagné !";
+            }
+            else
+            {
+                GradientStopCollection gradientStops = new GradientStopCollection();
+                gradientStops.Add(new GradientStop(Player.BlackPlayer.Color, 0));
+                gradientStops.Add(new GradientStop(Player.WhitePlayer.Color, 1));
+                LinearGradientBrush radialGradientBrush = new LinearGradientBrush(gradientStops, 90.0);
+                Background = radialGradientBrush;
+                msg.Content = "Egalité !";
+            }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }
