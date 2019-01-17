@@ -1,0 +1,71 @@
+﻿<Window x:Class="ArcOthelloMM.OthelloBoard"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ArcOthelloMM"
+        mc:Ignorable="d"
+        Title="HE-Arc Othello : Margueron - Mottier " d:DesignWidth="800" d:DesignHeight="450" MinWidth="800" MinHeight="450" SizeChanged="Board_SizeChanged" WindowStartupLocation="CenterScreen" Padding="0" Icon="icon.ico">
+    <Window.Background>
+        <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+            <GradientStop Color="#FF616FFF" Offset="1"/>
+            <GradientStop Color="#FFFF6161"/>
+        </LinearGradientBrush>
+    </Window.Background>
+    <Grid Margin="10px">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="350"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Border Grid.Row="0" Grid.Column="0" BorderBrush="White" BorderThickness="0,0,2,0" >
+            <StackPanel Orientation="Vertical">
+                <StackPanel Orientation="Vertical" Margin="0, 0, 10, 10">
+                    <Button Name="btnNewGame" Content="Nouvelle partie joueur contre joueur" Click="btnNewGame_Click" Margin="0 0 0 2" HorizontalContentAlignment="Center" Height="32" BorderBrush="#7FFFFFFF" Background="#7F000000" Foreground="White" FontSize="14"/>
+                    <Button Name="btnNewGameAI" Content="Nouvelle partie joueur contre ordinateur" Margin="0 2" IsEnabled="False" HorizontalContentAlignment="Center" Height="32" BorderBrush="#7FFFFFFF" Background="#7F000000" Foreground="White" FontSize="14"/>
+                    <Button Name="btnSave" Content="Sauvegarder" Margin="0 2" Click="btnSave_Click" HorizontalContentAlignment="Center" Height="32" BorderBrush="#7FFFFFFF" Background="#7F000000" Foreground="White" FontSize="14"/>
+                    <Button Name="btnLoad" Content="Charger une partie" Margin="0 2" Click="btnLoad_Click" HorizontalContentAlignment="Center" Height="32" BorderBrush="#7FFFFFFF" Background="#7F000000" Foreground="White" FontSize="14"/>
+                    <Grid HorizontalAlignment="Stretch" Margin="0 2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Name="btnUndo" IsEnabled="False" Grid.Column="0" Content="Annuler" Click="btnUndo_Click" HorizontalContentAlignment="Center" Height="32" BorderBrush="#7FFFFFFF" Background="#7F000000" Foreground="White" FontSize="14"/>
+                        <Button Name="btnRedo" IsEnabled="False" Grid.Column="2"  Content="Rejouer" Click="btnRedo_Click" HorizontalContentAlignment="Center" Height="32" BorderBrush="#7FFFFFFF" Background="#7F000000" Foreground="White" FontSize="14"/>
+                    </Grid>
+                </StackPanel>
+                <Border BorderBrush="White" BorderThickness="0, 2, 0, 0">
+                    <Grid Background="#7F000000">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1.3*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Label Grid.Column="0" Grid.Row="0" Foreground="White" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center">Tour</Label>
+                        <Label Grid.Column="1" Grid.Row="0" Foreground="White" Name="lblTurn" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center">Couleur</Label>
+                        <Label Grid.Column="0" Grid.Row="1" Foreground="White" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center">Temps écoulé joueur noir</Label>
+                        <Label Grid.Column="1" Grid.Row="1" Foreground="White" Name="lblTimeBlack" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center">0:00:00</Label>
+                        <Label Grid.Column="0" Grid.Row="2" Foreground="White" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center">Temps écoulé joueur blanc</Label>
+                        <Label Grid.Column="1" Grid.Row="2" Foreground="White" Name="lblTimeWhite" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center">0:00:00</Label>
+                        <Label Grid.Column="0" Grid.Row="3" Foreground="White" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center">Nombre de pièces noires</Label>
+                        <Label Grid.Column="1" Grid.Row="3" Foreground="White" Name="lblNbTokenBlack" Content="{Binding BlackScore}" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+                        <Label Grid.Column="0" Grid.Row="4" Foreground="White" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center">Nombre de pièces blanches</Label>
+                        <Label Grid.Column="1" Grid.Row="4" Foreground="White" Name="lblNbTokenWhite" Content="{Binding WhiteScore}" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+                    </Grid>
+                </Border>
+            </StackPanel>
+        </Border>
+        <Border Name="border" Grid.Row="0" Grid.Column="1" BorderThickness="0">
+            <Grid x:Name="graphicalBoard" />
+        </Border>
+    </Grid>
+</Window>
