@@ -200,8 +200,10 @@ namespace ArcOthelloMM
 
             GradientStopCollection gradientStops = new GradientStopCollection();
 
-            gradientStops.Add(new GradientStop(Player.BlackPlayer.Color, (percentageBlack - 0.5)));
-            gradientStops.Add(new GradientStop(Player.WhitePlayer.Color, (percentageWhite + 0.5)));
+            float diff = Math.Abs(percentageBlack - percentageWhite);
+
+            gradientStops.Add(new GradientStop(Player.BlackPlayer.Color, percentageBlack > percentageWhite ? 1 - diff : 0));
+            gradientStops.Add(new GradientStop(Player.WhitePlayer.Color, percentageBlack > percentageWhite ? 1 : 1 - diff));
 
             LinearGradientBrush linearGradientBrush = new LinearGradientBrush(gradientStops, 90.0);
 
