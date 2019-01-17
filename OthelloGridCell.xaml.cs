@@ -57,7 +57,7 @@ namespace ArcOthelloMM
             set
             {
                 _lastPlay = value;
-                tokenContent.Stroke = _lastPlay ? borderColorEllipseLastPlay : borderColorEllipse;
+                tokenContent.Stroke = _lastPlay ? borderColorEllipseLastPlay : transparent;
             }
         }
 
@@ -66,30 +66,27 @@ namespace ArcOthelloMM
         static Dictionary<States, Brush> colors;
         static Dictionary<States, int> sizes;
 
-        static Color colorPlayer1 = Color.FromRgb(255, 255, 255);
-        static Color colorPlayer2 = Color.FromRgb(0, 0, 0);
+        static Brush borderColorEllipseLastPlay= BrushFromColor(Color.FromRgb(111, 255, 97), 255);
+        static Brush transparent = BrushFromColor(Color.FromRgb(0, 0, 0), 0);
 
-        static Brush borderColorEllipseLastPlay = BrushFromColor(Color.FromRgb(244, 101, 66), 255);
-        static Brush borderColorEllipse = BrushFromColor(Color.FromRgb(0, 0, 0), 0);
-
-        static Brush backgroundColor = BrushFromColor(Color.FromRgb(31, 125, 64), 255);
-        static Brush borderColor = BrushFromColor(Color.FromRgb(194, 220, 89), 255);
+        static Brush backgroundColor = BrushFromColor(Color.FromRgb(0, 0, 0), 127);
+        static Brush borderColor = BrushFromColor(Color.FromRgb(255, 255, 255), 127);
 
         static int normalSize = 100;
-        static byte normalOpacity = 255;
+        static byte normalOpacity = 220;
 
-        static int previewSize = 75;
-        static byte previewOpacity = 63;
+        static int previewSize = (int)(0.75*normalSize);
+        static byte previewOpacity = (byte)(0.25 * normalOpacity);
 
 
         static OthelloGridCell()
         {
             colors = new Dictionary<States, Brush>();
-            colors.Add(States.Empty, BrushFromColor(colorPlayer1, 0));
-            colors.Add(States.Player1, BrushFromColor(colorPlayer1, normalOpacity));
-            colors.Add(States.Player2, BrushFromColor(colorPlayer2, normalOpacity));
-            colors.Add(States.PreviewPlayer1, BrushFromColor(colorPlayer1, previewOpacity));
-            colors.Add(States.PreviewPlayer2, BrushFromColor(colorPlayer2, previewOpacity));
+            colors.Add(States.Empty, BrushFromColor(Color.FromRgb(0,0,0), 0));
+            colors.Add(States.Player1, BrushFromColor(Player.WhitePlayer.Color2, normalOpacity));
+            colors.Add(States.Player2, BrushFromColor(Player.BlackPlayer.Color2, normalOpacity));
+            colors.Add(States.PreviewPlayer1, BrushFromColor(Player.WhitePlayer.Color2, previewOpacity));
+            colors.Add(States.PreviewPlayer2, BrushFromColor(Player.BlackPlayer.Color2, previewOpacity));
             sizes = new Dictionary<States, int>();
             sizes.Add(States.Empty, 0);
             sizes.Add(States.Player1, normalSize);
@@ -114,7 +111,7 @@ namespace ArcOthelloMM
             button.BorderBrush = borderColor;
             button.Click += ButtonClick; // Adding the click on the parent of the button
         }
-        
+
         private void ButtonClick(object sender, RoutedEventArgs e)
         {
             Click?.Invoke(this, e); // trigger the parent click event on the button (children) event trigger

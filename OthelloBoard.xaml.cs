@@ -6,6 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace ArcOthelloMM
 {
@@ -144,12 +145,12 @@ namespace ArcOthelloMM
                     Tuple<int, int> pos = new Tuple<int, int>(x, y);
                     OthelloGridCell gcell = othelloGridCells[x, y];
 
-                    int lcell = lboard[x,y];
+                    int lcell = lboard[x, y];
                     if (lcell == 1)
                         gcell.State = OthelloGridCell.States.Player1;
                     else if (lcell == 0)
                         gcell.State = OthelloGridCell.States.Player2;
-                    else if(lcell == -1 && currentPossibleMoves.ContainsKey(pos))
+                    else if (lcell == -1 && currentPossibleMoves.ContainsKey(pos))
                     {
                         if (LogicalBoard.Instance.CurrentPlayerTurn)
                             gcell.State = OthelloGridCell.States.PreviewPlayer1;
@@ -158,7 +159,7 @@ namespace ArcOthelloMM
                     }
                     else
                         gcell.State = OthelloGridCell.States.Empty;
-                    
+
                     gcell.LastPlay = LogicalBoard.Instance.LastPlay != null && pos.Item1 == LogicalBoard.Instance.LastPlay.Item1 && pos.Item2 == LogicalBoard.Instance.LastPlay.Item2;
                 }
             }
@@ -183,12 +184,39 @@ namespace ArcOthelloMM
             UpdateBoard();
             UpdateGameData();
             UpdateControls();
+            UpdateGradiant();
         }
 
         private void UpdateGameData()
         {
             UpdateTimers();
             lblTurn.Content = LogicalBoard.Instance.CurrentPlayerTurn ? Player.WhitePlayer.Name : Player.BlackPlayer.Name;
+        }
+
+        private void UpdateGradiant()
+        {
+            float percentageBlack = Player.BlackPlayer.Score / (float)(Player.BlackPlayer.Score + Player.WhitePlayer.Score);
+            float percentageWhite = 1 - percentageBlack;
+
+            GradientStopCollection gsc = new GradientStopCollection();
+
+            if (percentageBlack > percentageWhite)
+            {
+                gsc.Add(new GradientStop(Player.BlackPlayer.Color, percentageBlack));
+                gsc.Add(new GradientStop(Player.WhitePlayer.Color, 1));
+            }
+            else
+            {
+                gsc.Add(new GradientStop(Player.BlackPlayer.Color, 0));
+                gsc.Add(new GradientStop(Player.WhitePlayer.Color, percentageWhite));
+            }
+
+            LinearGradientBrush linearGradientBrush = new LinearGradientBrush(gsc, 90.0);
+
+
+            
+            
+            this.Background = linearGradientBrush;
         }
 
         private void UpdateTimers()

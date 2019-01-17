@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.Serialization;
+using System.Windows.Media;
 
 namespace ArcOthelloMM
 {
@@ -11,10 +12,13 @@ namespace ArcOthelloMM
         public List<Tuple<int, int>> Tokens { get; set; }
         public int Value { get; set; }
         public string Name { get; set; }
+        public Color Color { get; }
+        public Color Color2 { get; }
 
         private Stopwatch Stopwatch { get; set; }
 
         private long PreviousTime { get; set; }
+
 
         private static Player whitePlayer;
         private static Player blackPlayer;
@@ -22,12 +26,14 @@ namespace ArcOthelloMM
         /// <summary>
         /// Instanciate the white player
         /// </summary>
-        private Player(int value, string name)
+        private Player(int value, string name, Color color, Color color2)
         {
             Reset();
             Value = value;
             Name = name;
             PreviousTime = 0;
+            Color = color;
+            Color2 = color2;
         }
 
         public static Player WhitePlayer
@@ -35,10 +41,9 @@ namespace ArcOthelloMM
             get
             {
                 if (whitePlayer == null)
-                    whitePlayer = new Player(1, "Blanc");
+                    whitePlayer = new Player(1, "Bleu", Color.FromRgb(97, 111, 255), Color.FromRgb(68, 82, 233));
                 return whitePlayer;
             }
-
             set
             {
                 whitePlayer = value;
@@ -50,7 +55,7 @@ namespace ArcOthelloMM
             get
             {
                 if (blackPlayer == null)
-                    blackPlayer = new Player(0, "Noir");
+                    blackPlayer = new Player(0, "Rouge", Color.FromRgb(255, 97, 97), Color.FromRgb(233, 68, 82));
                 return blackPlayer;
             }
 
@@ -69,8 +74,10 @@ namespace ArcOthelloMM
             return Value;
         }
 
-        public int Score {
-            get {
+        public int Score
+        {
+            get
+            {
                 return Tokens.Count;
             }
         }
