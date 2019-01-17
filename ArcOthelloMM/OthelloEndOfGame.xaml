@@ -1,0 +1,13 @@
+﻿<Window x:Class="ArcOthelloMM.OthelloEndOfGame"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ArcOthelloMM"
+        mc:Ignorable="d"
+        Title="Fin de partie" Height="200" Width="400" Icon="icon.ico" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+    <StackPanel Orientation="Vertical">
+        <Label Name="msg" HorizontalAlignment="Center" Margin="0,50,0,0" FontSize="20" BorderBrush="White">Joueur XXXX a gagné !</Label>
+        <Button HorizontalAlignment="Center" Width="100" Margin="0,25,0,0" Foreground="White" BorderBrush="#FFFFFF" Background="#7F000000">Ok</Button>
+    </StackPanel>
+</Window>
