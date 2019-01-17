@@ -52,7 +52,7 @@
                     <Label Grid.Column="0" Grid.Row="3">Nombre de pièces noires</Label>
                     <Label Grid.Column="1" Grid.Row="3" Name="lblNbTokenBlack" Content="{Binding BlackScore}"></Label>
                     <Label Grid.Column="0" Grid.Row="4">Nombre de pièces blanches</Label>
-                    <Label Grid.Column="1" Grid.Row="4" Name="lblNbTokenWhite" Content="{Binding WhiteScore}"></Label>
+                    <Label Grid.Column="1" Grid.Row="4" Name="lblNbTokenWhite" Content="{Binding WhiteScore, UpdateSourceTrigger=Explicit}"></Label>
                 </Grid>
             </StackPanel>
         </Border>

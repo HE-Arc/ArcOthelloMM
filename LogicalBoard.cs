@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.ComponentModel;
 using System.Runtime.Serialization;
 
 namespace ArcOthelloMM
@@ -9,7 +9,7 @@ namespace ArcOthelloMM
     /// Class to manage the game
     /// </summary>
     [Serializable]
-    class LogicalBoard : IPlayable.IPlayable, ISerializable
+    class LogicalBoard : IPlayable.IPlayable, ISerializable, INotifyPropertyChanged
     {
         private static LogicalBoard instance = null;
 
@@ -32,12 +32,49 @@ namespace ArcOthelloMM
         private const int ROW = 7;
         private const int COLUMN = 9;
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private int blackScore;
+        public int BlackScore
+        {
+            get
+            {
+                return blackScore;
+            }
+            set
+            {
+                blackScore = value;
+                NotifyPropertyChanged("BlackScore");
+            }
+        }
+
+        private int whiteScore;
+        public int WhiteScore
+        {
+            get
+            {
+                return whiteScore;
+            }
+            set
+            {
+                whiteScore = value;
+                NotifyPropertyChanged("WhiteScore");
+            }
+        }
+
+        private void NotifyPropertyChanged(String info)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(info));
+            }
+        }
         /// <summary>
         /// Class to manage logical game
         /// </summary>
         public LogicalBoard()
         {
-            ResetGame();
+            Init();
         }
 
         /// <summary>
@@ -68,12 +105,15 @@ namespace ArcOthelloMM
         {
             return COLUMN;
         }
-
-        public void ResetGame()
+        
+        private void Init()
         {
             // Create players
             Player.WhitePlayer.Reset();
             Player.BlackPlayer.Reset();
+
+            WhiteScore = 0;
+            BlackScore = 0;
 
             LastPlay = null;
 
@@ -86,6 +126,11 @@ namespace ArcOthelloMM
                     Board[x, y] = -1;
                 }
             }
+        }
+
+        public void ResetGame()
+        {
+            Init();
 
             // Set start tokens
             int px = COLUMN / 2 - 1;
@@ -100,6 +145,9 @@ namespace ArcOthelloMM
             Player.BlackPlayer.Tokens.Add(new Tuple<int, int>(px, py + 1));
             Board[px + 1, py] = Player.BlackPlayer.Value;
             Player.BlackPlayer.Tokens.Add(new Tuple<int, int>(px + 1, py));
+
+            WhiteScore = Player.WhitePlayer.Score;
+            BlackScore = Player.BlackPlayer.Score;
 
             // Init others
             ListPossibleMove = new Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>>();
@@ -413,6 +461,9 @@ namespace ArcOthelloMM
 
             LastPlay = new Tuple<int, int>(column, line);
             AddArchive(isWhite, Board, LastPlay);
+
+            WhiteScore = Player.WhitePlayer.Score;
+            BlackScore = Player.BlackPlayer.Score;
             return true;
         }
 
@@ -428,21 +479,6 @@ namespace ArcOthelloMM
         public int[,] GetBoard()
         {
             return Board;
-        }
-
-        public int BlackScore {
-            get
-            {
-                return Player.BlackPlayer.Score;
-            }
-        }
-
-        public int WhiteScore
-        {
-            get
-            {
-                return Player.WhitePlayer.Score;
-            }
         }
 
         public Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> CurrentPossibleMoves
@@ -531,12 +567,12 @@ namespace ArcOthelloMM
 
         public int GetWhiteScore()
         { 
-            return Player.WhitePlayer.Score;
+            return WhiteScore;
         }
 
         public int GetBlackScore()
         {
-            return Player.BlackPlayer.Score;
+            return BlackScore;
         }
 
 
