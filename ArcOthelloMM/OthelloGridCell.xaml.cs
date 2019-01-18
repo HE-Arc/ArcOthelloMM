@@ -37,8 +37,15 @@ namespace ArcOthelloMM
             get { return _state; }
             set
             {
+                Color previousColor = colors[_state].Color;
+                
                 _state = value;
-                tokenContent.Fill = colors[_state];
+                
+                //animation
+                ColorAnimation ca = new ColorAnimation(colors[_state].Color, new Duration(TimeSpan.FromSeconds(0.5))); //to this
+                tokenContent.Fill = new SolidColorBrush(previousColor); // from previous color
+                tokenContent.Fill.BeginAnimation(SolidColorBrush.ColorProperty, ca);
+
                 tokenContent.Width = sizes[_state];
                 tokenContent.Height = sizes[_state];
             }
@@ -63,7 +70,7 @@ namespace ArcOthelloMM
 
         public event EventHandler Click;
 
-        static Dictionary<States, Brush> colors;
+        static Dictionary<States, SolidColorBrush> colors;
         static Dictionary<States, int> sizes;
 
         static Brush borderColorEllipseLastPlay= BrushFromColor(Color.FromRgb(111, 255, 97), 255);
@@ -75,13 +82,13 @@ namespace ArcOthelloMM
         static int normalSize = 100;
         static byte normalOpacity = 220;
 
-        static int previewSize = (int)(0.75*normalSize);
+        static int previewSize = (int)(0.60*normalSize);
         static byte previewOpacity = (byte)(0.50 * normalOpacity);
 
 
         static OthelloGridCell()
         {
-            colors = new Dictionary<States, Brush>();
+            colors = new Dictionary<States, SolidColorBrush>();
             colors.Add(States.Empty, BrushFromColor(Color.FromRgb(0,0,0), 0));
             colors.Add(States.Player1, BrushFromColor(Player.WhitePlayer.Color2, normalOpacity));
             colors.Add(States.Player2, BrushFromColor(Player.BlackPlayer.Color2, normalOpacity));
