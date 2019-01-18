@@ -13,8 +13,8 @@ namespace ArcOthelloMM
     {
         private static LogicalBoard instance = null;
 
-        private Player CurrentPlayer { get { return currentPlayerTurn ? Player.WhitePlayer : Player.BlackPlayer; } }
-        private Player OpponentPlayer { get { return currentPlayerTurn ? Player.BlackPlayer : Player.WhitePlayer; } }
+        public Player CurrentPlayer { get { return currentPlayerTurn ? Player.WhitePlayer : Player.BlackPlayer; } }
+        public Player OpponentPlayer { get { return currentPlayerTurn ? Player.BlackPlayer : Player.WhitePlayer; } }
 
         private int[,] Board { get; set; }
         private List<Tuple<bool, int[,], Tuple<int, int>>> Archive { get; set; }

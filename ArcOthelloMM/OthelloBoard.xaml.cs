@@ -7,6 +7,7 @@ using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 
 namespace ArcOthelloMM
 {
@@ -23,6 +24,7 @@ namespace ArcOthelloMM
         private Timer timerUpdateGui;
 
         private const string timeElapsedText = "Temps écoulé joueur ";
+        private const string playAgainText = " peut rejouer !";
         private const string nbTokensText = "Nombre de pièces ";
 
         public OthelloBoard()
@@ -265,7 +267,23 @@ namespace ArcOthelloMM
                 }
                 else
                 {
-                    Console.WriteLine("Turn skiped :" + currentPossibleMoves.Count);
+                    // can play again animation
+                    lblPlayAgain.Content = LogicalBoard.Instance.CurrentPlayer.Name + playAgainText;
+                    Storyboard sb = new Storyboard();
+
+                    DoubleAnimation da1 = new DoubleAnimation() { From = 0.0, To = 1.0, Duration = TimeSpan.FromSeconds(0.5) };
+                    Storyboard.SetTargetName(da1, playAgain.Name);
+                    Storyboard.SetTargetProperty(da1, new PropertyPath(Border.OpacityProperty));
+
+                    DoubleAnimation da2 = new DoubleAnimation() { From = 1.0, To = 0.0, Duration = TimeSpan.FromSeconds(0.5) };
+                    da2.BeginTime = TimeSpan.FromSeconds(3);
+                    Storyboard.SetTargetName(da2, playAgain.Name);
+                    Storyboard.SetTargetProperty(da2, new PropertyPath(Border.OpacityProperty));
+
+                    sb.Children.Add(da1);
+                    sb.Children.Add(da2);
+
+                    sb.Begin(this);
                 }
             }
 
