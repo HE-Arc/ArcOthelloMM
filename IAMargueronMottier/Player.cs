@@ -37,6 +37,9 @@ namespace ArcOthelloMM
             Color2 = color2;
         }
 
+        /// <summary>
+        /// Singleton of the white player
+        /// </summary>
         public static Player WhitePlayer
         {
             get
@@ -51,6 +54,9 @@ namespace ArcOthelloMM
             }
         }
 
+        /// <summary>
+        /// Singleton of the black player
+        /// </summary>
         public static Player BlackPlayer
         {
             get
@@ -67,7 +73,7 @@ namespace ArcOthelloMM
         }
 
         /// <summary>
-        /// Return the value of white player
+        /// Return the value of the player
         /// </summary>
         /// <returns></returns>
         public int GetValue()
@@ -75,6 +81,9 @@ namespace ArcOthelloMM
             return Value;
         }
 
+        /// <summary>
+        /// Return the score of the player
+        /// </summary>
         public int Score
         {
             get
@@ -83,6 +92,9 @@ namespace ArcOthelloMM
             }
         }
 
+        /// <summary>
+        /// Reset the player
+        /// </summary>
         public void Reset()
         {
             Tokens = new List<Tuple<int, int>>();
@@ -90,6 +102,11 @@ namespace ArcOthelloMM
             PreviousTime = 0;
         }
 
+        /// <summary>
+        /// constructor for deserialization
+        /// </summary>
+        /// <param name="info"></param>
+        /// <param name="context"></param>
         protected Player(SerializationInfo info, StreamingContext context)
         {
             Tokens = (List<Tuple<int, int>>)info.GetValue("Tokens", typeof(List<Tuple<int, int>>));
@@ -99,6 +116,11 @@ namespace ArcOthelloMM
             PreviousTime = (long)info.GetValue("PreviousTime", typeof(long)); //mini hack to avoid stopwatch not serializable
         }
 
+        /// <summary>
+        /// Implementation serialization
+        /// </summary>
+        /// <param name="info"></param>
+        /// <param name="context"></param>
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue("Tokens", Tokens);
@@ -107,16 +129,26 @@ namespace ArcOthelloMM
             info.AddValue("PreviousTime", GetTime());
         }
 
+        /// <summary>
+        /// Get the time
+        /// </summary>
+        /// <returns></returns>
         public long GetTime()
         {
             return Stopwatch.ElapsedMilliseconds + PreviousTime;
         }
 
+        /// <summary>
+        /// Start the timer
+        /// </summary>
         public void Start()
         {
             Stopwatch.Start();
         }
 
+        /// <summary>
+        /// Stop the timer
+        /// </summary>
         public void Stop()
         {
             Stopwatch.Stop();

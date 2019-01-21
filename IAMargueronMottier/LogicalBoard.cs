@@ -23,6 +23,8 @@ namespace ArcOthelloMM
         public Tuple<int, int> LastPlay { get; set; }
 
         private Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> ListPossibleMove;
+        
+        // to avoid to get two times the possible moves
         private bool ListPossibleMoveLoaded;
         
         private bool currentPlayerTurn; // true == white / false == black
@@ -32,8 +34,14 @@ namespace ArcOthelloMM
         private const int ROW = 7;
         private const int COLUMN = 9;
 
+        /// <summary>
+        /// Event for binding the score
+        /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
+        /// <summary>
+        /// Property to bind
+        /// </summary>
         private int blackScore;
         public int BlackScore
         {
@@ -48,6 +56,9 @@ namespace ArcOthelloMM
             }
         }
 
+        /// <summary>
+        /// Property to bind
+        /// </summary>
         private int whiteScore;
         public int WhiteScore
         {
@@ -62,6 +73,10 @@ namespace ArcOthelloMM
             }
         }
 
+        /// <summary>
+        /// Notify the modification for the binding
+        /// </summary>
+        /// <param name="info"></param>
         private void NotifyPropertyChanged(String info)
         {
             if (PropertyChanged != null)
@@ -78,7 +93,7 @@ namespace ArcOthelloMM
         }
 
         /// <summary>
-        /// Assure there is one white player
+        /// Assure there is one instance
         /// </summary>
         /// <returns></returns>
         public static LogicalBoard Instance
@@ -96,16 +111,27 @@ namespace ArcOthelloMM
             }
         }
 
+        /// <summary>
+        /// Get the number of row of board
+        /// </summary>
+        /// <returns></returns>
         public int GetRow()
         {
             return ROW;
         }
 
+        /// <summary>
+        /// Get the number of column of board
+        /// </summary>
+        /// <returns></returns>
         public int GetCol()
         {
             return COLUMN;
         }
         
+        /// <summary>
+        /// Init the class
+        /// </summary>
         private void Init()
         {
             // Create players
@@ -128,6 +154,9 @@ namespace ArcOthelloMM
             }
         }
 
+        /// <summary>
+        /// Restart a game
+        /// </summary>
         public void ResetGame()
         {
             Init();
@@ -177,7 +206,7 @@ namespace ArcOthelloMM
         /// </summary>
         /// <param name="isWhite"></param>
         /// <returns></returns>
-        public Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> GetListPossibleMove(bool isWhite)
+        private Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> GetListPossibleMove(bool isWhite)
         {
             foreach (Tuple<int, int> token in CurrentPlayer.Tokens)
             {
@@ -196,66 +225,14 @@ namespace ArcOthelloMM
         private void CheckAllPossibleMove(Tuple<int, int> token)
         {
             // Algo :
-            //      Loop and check in every direction
+            //      Loop for each direction
             //      if the case is ennemy continue to check in the direction
             //      if the case is empty and the increment is greater than 1
             //      => it means there is only one or more token of the opponent between the token
             //         and a possible token to play
             //      else move impossible
 
-            /*int i = 1;
-            bool leftFinished = false;
-            bool topFinished = false;
-            bool rightFinished = false;
-            bool bottomFinished = false;
-
-            // Diagonal
-            bool leftTopFinished = false;
-            bool rightTopFinished = false;
-            bool leftBottomFinished = false;
-            bool rightBottomFinished = false;
-
-            // pieces affected by possible move in every direction
-            HashSet<Tuple<int, int>> listLeft = new HashSet<Tuple<int, int>>();
-            HashSet<Tuple<int, int>> listTop = new HashSet<Tuple<int, int>>();
-            HashSet<Tuple<int, int>> listRight = new HashSet<Tuple<int, int>>();
-            HashSet<Tuple<int, int>> listBottom = new HashSet<Tuple<int, int>>();
-            HashSet<Tuple<int, int>> listLeftTop = new HashSet<Tuple<int, int>>();
-            HashSet<Tuple<int, int>> listRightTop = new HashSet<Tuple<int, int>>();
-            HashSet<Tuple<int, int>> listLeftBottom = new HashSet<Tuple<int, int>>();
-            HashSet<Tuple<int, int>> listRightBottom = new HashSet<Tuple<int, int>>();
-
-            // continue until all direction was checked
-            do
-            {
-                if (!leftFinished)
-                    leftFinished = CheckOnePossibleMove(token, listLeft, -i, 0);
-                if (!rightFinished)
-                    rightFinished = CheckOnePossibleMove(token, listRight, i, 0);
-                if (!topFinished)
-                    topFinished = CheckOnePossibleMove(token, listTop, 0, -i);
-                if (!bottomFinished)
-                    bottomFinished = CheckOnePossibleMove(token, listBottom, 0, i);
-                if (!leftTopFinished)
-                    leftTopFinished = CheckOnePossibleMove(token, listLeftTop, -i, -i);
-                if (!rightTopFinished)
-                    rightTopFinished = CheckOnePossibleMove(token, listRightTop, i, -i);
-                if (!leftBottomFinished)
-                    leftBottomFinished = CheckOnePossibleMove(token, listLeftBottom, -i, i);
-                if (!rightBottomFinished)
-                    rightBottomFinished = CheckOnePossibleMove(token, listRightBottom, i, i);
-
-                ++i;
-            } while (!leftFinished
-                || !topFinished
-                || !rightFinished
-                || !bottomFinished
-                || !leftTopFinished
-                || !rightTopFinished
-                || !leftBottomFinished
-                || !rightBottomFinished); // check if all direction is finished
-            */
-
+            // Left
             bool finish = false;
             HashSet<Tuple<int, int>> takedTokens = new HashSet<Tuple<int, int>>();
             int i = 1;
@@ -265,6 +242,7 @@ namespace ArcOthelloMM
                 ++i;
             }
 
+            // Left-top
             finish = false;
             takedTokens.Clear();
             i = 1;
@@ -274,6 +252,7 @@ namespace ArcOthelloMM
                 ++i;
             }
 
+            // Top
             finish = false;
             takedTokens.Clear();
             i = 1;
@@ -283,6 +262,7 @@ namespace ArcOthelloMM
                 ++i;
             }
 
+            // Right-top
             finish = false;
             takedTokens.Clear();
             i = 1;
@@ -292,6 +272,7 @@ namespace ArcOthelloMM
                 ++i;
             }
 
+            // Right
             finish = false;
             takedTokens.Clear();
             i = 1;
@@ -301,6 +282,7 @@ namespace ArcOthelloMM
                 ++i;
             }
 
+            // Right-bottom
             finish = false;
             takedTokens.Clear();
             i = 1;
@@ -310,6 +292,7 @@ namespace ArcOthelloMM
                 ++i;
             }
 
+            // Bottom
             finish = false;
             takedTokens.Clear();
             i = 1;
@@ -319,6 +302,7 @@ namespace ArcOthelloMM
                 ++i;
             }
 
+            // Left-bottom
             finish = false;
             takedTokens.Clear();
             i = 1;
@@ -354,6 +338,7 @@ namespace ArcOthelloMM
             }
             else if (!OpponentPlayer.Tokens.Contains(newToken))
             {
+                // Check if there is token between the start and the current token
                 if (Math.Abs(offsetX) > 1 || Math.Abs(offsetY) > 1)
                 {
                     SavePossibleMove(tokens, newToken); // save valid move
@@ -415,16 +400,8 @@ namespace ArcOthelloMM
         {
             GetListPossibleMove(isWhite);
 
-            if (Board[line, column] != 0)
-            {
-                foreach (KeyValuePair<Tuple<int, int>, HashSet<Tuple<int, int>>> possibleMove in ListPossibleMove)
-                {
-                    if (possibleMove.Value.Contains(new Tuple<int, int>(column, line)))
-                    {
-                        return true;
-                    }
-                }
-            }
+            if (Board[line, column] != 0 || ListPossibleMove.ContainsKey(new Tuple<int, int>(column, line)))
+                return true;
 
             return false;
         }
@@ -454,19 +431,29 @@ namespace ArcOthelloMM
             ListPossibleMoveLoaded = false;
             currentPlayerTurn = !isWhite;
 
+            // Remove useless moves if there was undo before the play
             ++IndexHistory;
             if (IndexHistory < Archive.Count)
                 Archive.RemoveRange(IndexHistory, Archive.Count - IndexHistory);
 
-
+            // Archive the move
             LastPlay = new Tuple<int, int>(column, line);
             AddArchive(isWhite, Board, LastPlay);
 
+            // Update the scrore
             WhiteScore = Player.WhitePlayer.Score;
             BlackScore = Player.BlackPlayer.Score;
+
             return true;
         }
 
+        /// <summary>
+        /// Return the move of the IA
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="level"></param>
+        /// <param name="whiteTurn"></param>
+        /// <returns></returns>
         public Tuple<int, int> GetNextMove(int[,] game, int level, bool whiteTurn)
         {
             return IA.GetInstance().GetNextMove(game, level, whiteTurn);
@@ -481,6 +468,9 @@ namespace ArcOthelloMM
             return Board;
         }
 
+        /// <summary>
+        /// Property to get the list of possible moves for a player
+        /// </summary>
         public Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> CurrentPossibleMoves
         {
             get
@@ -489,6 +479,9 @@ namespace ArcOthelloMM
             }
         }
 
+        /// <summary>
+        /// Ride up the archive for an undo
+        /// </summary>
         public void Undo()
         {
             if (CanUndo())
@@ -498,6 +491,9 @@ namespace ArcOthelloMM
             }
         }
 
+        /// <summary>
+        /// Ride down the archive for an redo
+        /// </summary>
         public void Redo()
         {
             if (CanRedo())
@@ -507,20 +503,34 @@ namespace ArcOthelloMM
             }
         }
 
+        /// <summary>
+        /// Check if undo is possible
+        /// </summary>
+        /// <returns></returns>
         public bool CanUndo()
         {
             return IndexHistory > 0;
         }
 
+        /// <summary>
+        /// Check if redo is possible
+        /// </summary>
+        /// <returns></returns>
         public bool CanRedo()
         {
             return IndexHistory < Archive.Count - 1;
         }
 
+        /// <summary>
+        /// Save a move in the archive
+        /// </summary>
+        /// <param name="isWhite"></param>
+        /// <param name="Board"></param>
+        /// <param name="lastPlay"></param>
         public void AddArchive(bool isWhite, int[,]  Board, Tuple<int, int> lastPlay)
         {
+            // Depth copy
             int[,] BoardCopy = new int[COLUMN, ROW];
-
             for (int x = 0; x < COLUMN; ++x)
             {
                 for (int y = 0; y < ROW; ++y)
@@ -529,25 +539,25 @@ namespace ArcOthelloMM
                 }
             }
 
+            // Archive copy
             Archive.Add(new Tuple<bool, int[,], Tuple<int,int>>(isWhite, BoardCopy, lastPlay));
         }
 
+        /// <summary>
+        /// Load an archive from the current index of the archive
+        /// </summary>
         public void LoadArchive()
         {
             Player.WhitePlayer.Tokens.Clear();
             Player.BlackPlayer.Tokens.Clear();
 
-            if (IndexHistory < Archive.Count - 1)
-            {
-                currentPlayerTurn = Archive[IndexHistory + 1].Item1;
-            }
-            else
-            {
-                currentPlayerTurn = !Archive[IndexHistory].Item1; // Last Redo
-            }
+            // Get the turn
+            currentPlayerTurn = Archive[IndexHistory].Item1;
 
+            // Get the last play
             LastPlay = Archive[IndexHistory].Item3;
 
+            // Give palyers tokens
             for (int x = 0; x < COLUMN; ++x)
             {
                 for (int y = 0; y < ROW; ++y)
@@ -565,11 +575,19 @@ namespace ArcOthelloMM
             GetListPossibleMove(!currentPlayerTurn);
         }
 
+        /// <summary>
+        /// Return the white score
+        /// </summary>
+        /// <returns></returns>
         public int GetWhiteScore()
         { 
             return WhiteScore;
         }
 
+        /// <summary>
+        /// Return the black score
+        /// </summary>
+        /// <returns></returns>
         public int GetBlackScore()
         {
             return BlackScore;
@@ -595,7 +613,7 @@ namespace ArcOthelloMM
         }
 
         /// <summary>
-        /// Constructor for serialization
+        /// Constructor for deserialization
         /// </summary>
         /// <param name="info"></param>
         /// <param name="context"></param>
