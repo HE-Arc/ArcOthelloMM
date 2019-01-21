@@ -187,6 +187,11 @@ namespace ArcOthelloMM
                 NextTurn();
                 UpdateGui();
             }
+
+            if (!playerVsPlayer && !LogicalBoard.Instance.CurrentPlayerTurn)
+            {
+                LogicalBoard.Instance.PlayAI();
+            }
         }
 
         private void UpdateGui()

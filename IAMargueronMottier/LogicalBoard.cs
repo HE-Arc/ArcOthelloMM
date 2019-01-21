@@ -313,6 +313,12 @@ namespace ArcOthelloMM
             }
         }
 
+        public void PlayAI()
+        {
+            Tuple<int, int> move = IA.GetInstance().GetNextMove(Board, 0, CurrentPlayerTurn);
+            LogicalBoard.Instance.PlayMove(move.Item1, move.Item2, CurrentPlayerTurn);
+        }
+
         /// <summary>
         /// Check move in one direction
         /// </summary>

@@ -8,7 +8,7 @@ namespace ArcOthelloMM
 {
     class IA
     {
-        public static IA Instance;
+        private static IA Instance;
 
         private IA()
         {
@@ -24,7 +24,16 @@ namespace ArcOthelloMM
 
         public Tuple<int, int> GetNextMove(int[,] game, int level, bool whiteTurn)
         {
-            return null;
+            return StupidAI(game, level, whiteTurn);
+        }
+
+        public Tuple<int, int> StupidAI(int[,] game, int level, bool whiteTurn)
+        {
+            Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> moves = LogicalBoard.Instance.CurrentPossibleMoves;
+            List<Tuple<int, int>> keys = new List<Tuple<int, int>>(moves.Keys);
+            Random random = new Random();
+            int move = random.Next(moves.Count);
+            return keys[move];
         }
     }
 }
