@@ -87,7 +87,7 @@ namespace ArcOthelloMM
         static Brush borderColor = BrushFromColor(Color.FromRgb(255, 255, 255), 160);
 
         static int normalSize = 100;
-        static byte normalOpacity = 220;
+        static byte normalOpacity = 200;
 
         static int previewSize = (int)(0.60*normalSize);
         static byte previewOpacity = (byte)(0.50 * normalOpacity);
@@ -97,10 +97,10 @@ namespace ArcOthelloMM
         {
             colors = new Dictionary<States, SolidColorBrush>();
             colors.Add(States.Empty, BrushFromColor(Color.FromRgb(0,0,0), 0));
-            colors.Add(States.Player1, BrushFromColor(Player.WhitePlayer.Color2, normalOpacity));
-            colors.Add(States.Player2, BrushFromColor(Player.BlackPlayer.Color2, normalOpacity));
-            colors.Add(States.PreviewPlayer1, BrushFromColor(Player.WhitePlayer.Color2, previewOpacity));
-            colors.Add(States.PreviewPlayer2, BrushFromColor(Player.BlackPlayer.Color2, previewOpacity));
+            colors.Add(States.Player1, BrushFromColor(Player.WhitePlayer.Color, normalOpacity));
+            colors.Add(States.Player2, BrushFromColor(Player.BlackPlayer.Color, normalOpacity));
+            colors.Add(States.PreviewPlayer1, BrushFromColor(Player.WhitePlayer.Color, previewOpacity));
+            colors.Add(States.PreviewPlayer2, BrushFromColor(Player.BlackPlayer.Color, previewOpacity));
             sizes = new Dictionary<States, int>();
             sizes.Add(States.Empty, 0);
             sizes.Add(States.Player1, normalSize);

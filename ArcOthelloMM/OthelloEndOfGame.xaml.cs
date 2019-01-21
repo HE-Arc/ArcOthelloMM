@@ -30,8 +30,8 @@ namespace ArcOthelloMM
             if (playerWin != null && playerLose != null)
             {
                 GradientStopCollection gradientStops = new GradientStopCollection();
-                gradientStops.Add(new GradientStop(playerLose.Color1, 0));
-                gradientStops.Add(new GradientStop(playerWin.Color1, 0.30));
+                gradientStops.Add(new GradientStop(playerLose.Color, 0));
+                gradientStops.Add(new GradientStop(playerWin.Color, 0.45));
                 RadialGradientBrush radialGradientBrush = new RadialGradientBrush(gradientStops);
                 Background = radialGradientBrush;
                 msg.Content = "Joueur " + playerWin.Name + " a gagné !";
@@ -39,8 +39,8 @@ namespace ArcOthelloMM
             else
             {
                 GradientStopCollection gradientStops = new GradientStopCollection();
-                gradientStops.Add(new GradientStop(Player.BlackPlayer.Color1, 0));
-                gradientStops.Add(new GradientStop(Player.WhitePlayer.Color1, 1));
+                gradientStops.Add(new GradientStop(Player.BlackPlayer.Color, 0));
+                gradientStops.Add(new GradientStop(Player.WhitePlayer.Color, 1));
                 LinearGradientBrush radialGradientBrush = new LinearGradientBrush(gradientStops, 90.0);
                 Background = radialGradientBrush;
                 msg.Content = "Egalité !";

@@ -47,6 +47,7 @@ namespace ArcOthelloMM
             DataContext = LogicalBoard.Instance;
 
             GenerateGrid();
+            UpdateGradiant(true);
         }
 
         private void GenerateGrid()
@@ -206,12 +207,12 @@ namespace ArcOthelloMM
             lblTurn.Content = LogicalBoard.Instance.CurrentPlayerTurn ? Player.WhitePlayer.Name : Player.BlackPlayer.Name;
         }
 
-        private void UpdateGradiant()
+        private void UpdateGradiant(bool _default = false)
         {
-            float percentageBlack = Player.BlackPlayer.Score / (float)(Player.BlackPlayer.Score + Player.WhitePlayer.Score);
-            float percentageWhite = 1 - percentageBlack;
-
-            LinearGradientBrush linearGradientBrush = new LinearGradientBrush(Player.BlackPlayer.Color1, Player.WhitePlayer.Color1, 0);
+            float percentageBlack = _default ? 0.5f : Player.BlackPlayer.Score / (float)(Player.BlackPlayer.Score + Player.WhitePlayer.Score);
+            float percentageWhite = _default ? 0.5f : 1 - percentageBlack;
+            
+            LinearGradientBrush linearGradientBrush = new LinearGradientBrush(Player.BlackPlayer.Color, Player.WhitePlayer.Color, 0);
             linearGradientBrush.StartPoint = new Point(0, percentageBlack - 0.5);
             linearGradientBrush.EndPoint = new Point(0, 1 - (percentageWhite - 0.5));
 

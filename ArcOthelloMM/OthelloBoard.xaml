@@ -6,12 +6,6 @@
         xmlns:local="clr-namespace:ArcOthelloMM"
         mc:Ignorable="d"
         Title="HE-Arc Othello : Margueron - Mottier " d:DesignWidth="800" d:DesignHeight="450" MinWidth="800" MinHeight="450" SizeChanged="Board_SizeChanged" WindowStartupLocation="CenterScreen" Padding="0" Icon="icon.ico">
-    <Window.Background>
-        <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
-            <GradientStop Color="#FF616FFF" Offset="1"/>
-            <GradientStop Color="#FFFF6161"/>
-        </LinearGradientBrush>
-    </Window.Background>
     <Grid Margin="10px">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="350"/>

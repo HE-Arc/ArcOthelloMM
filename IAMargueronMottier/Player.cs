@@ -14,19 +14,18 @@ namespace ArcOthelloMM
         public int Value { get; set; }
         public string Name { get; set; }
 
-        private Color color1;
-        private Color color2;
-        public Color Color1 { get { return color1; } }
-        public Color Color2 { get { return color2; } }
+        private Color color;
+        public Color Color { get { return color; } }
 
         private Stopwatch Stopwatch { get; set; }
 
         private long PreviousTime { get; set; }
 
-        private static Player whitePlayer;
-        private static Player blackPlayer;
+        //Double singleton (one for player 0 and another for player 1)
+        private static Player player0;
+        private static Player player1;
 
-        private static Dictionary<int, Tuple<string, Color, Color>> dictPlayers;
+        private static readonly Dictionary<int, Tuple<string, Color>> dictPlayers;
 
         /// <summary>
         /// Instanciate the white player
@@ -41,30 +40,31 @@ namespace ArcOthelloMM
 
         static Player()
         {
-            dictPlayers.Add(0, new Tuple<string, Color, Color>("Rouge", Color.FromRgb(255, 97, 97), Color.FromRgb(233, 68, 82)));
-            dictPlayers.Add(1, new Tuple<string, Color, Color>("Bleu", Color.FromRgb(97, 111, 255), Color.FromRgb(68, 82, 233)));
+            dictPlayers = new Dictionary<int, Tuple<string, Color>>
+            {
+                { 0, new Tuple<string, Color>("Rouge", Color.FromRgb(233, 68, 82)) },
+                { 1, new Tuple<string, Color>("Bleu", Color.FromRgb(68, 82, 233)) }
+            };
         }
 
         private void InitPlayerById(int id)
         {
-            Console.WriteLine(id);
             Name = dictPlayers[id].Item1;
-            color1 = dictPlayers[id].Item2;
-            color2 = dictPlayers[id].Item3;
+            color = dictPlayers[id].Item2;
         }
 
         public static Player BlackPlayer
         {
             get
             {
-                if (blackPlayer == null)
-                    blackPlayer = new Player(0);
-                return blackPlayer;
+                if (player0 == null)
+                    player0 = new Player(0);
+                return player0;
             }
 
             set
             {
-                blackPlayer = value;
+                player0 = value;
             }
         }
 
@@ -72,13 +72,13 @@ namespace ArcOthelloMM
         {
             get
             {
-                if (whitePlayer == null)
-                    whitePlayer = new Player(1);
-                return whitePlayer;
+                if (player1 == null)
+                    player1 = new Player(1);
+                return player1;
             }
             set
             {
-                whitePlayer = value;
+                player1 = value;
             }
         }
 
