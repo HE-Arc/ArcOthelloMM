@@ -13,42 +13,44 @@ namespace ArcOthelloMM
         public List<Tuple<int, int>> Tokens { get; set; }
         public int Value { get; set; }
         public string Name { get; set; }
-        public Color Color { get; }
-        public Color Color2 { get; }
+
+        private Color color1;
+        private Color color2;
+        public Color Color1 { get { return color1; } }
+        public Color Color2 { get { return color2; } }
 
         private Stopwatch Stopwatch { get; set; }
 
         private long PreviousTime { get; set; }
 
-
         private static Player whitePlayer;
         private static Player blackPlayer;
+
+        private static Dictionary<int, Tuple<string, Color, Color>> dictPlayers;
 
         /// <summary>
         /// Instanciate the white player
         /// </summary>
-        private Player(int value, string name, Color color, Color color2)
+        private Player(int value)
         {
             Reset();
             Value = value;
-            Name = name;
+            InitPlayerById(value);
             PreviousTime = 0;
-            Color = color;
-            Color2 = color2;
         }
 
-        public static Player WhitePlayer
+        static Player()
         {
-            get
-            {
-                if (whitePlayer == null)
-                    whitePlayer = new Player(1, "Bleu", Color.FromRgb(97, 111, 255), Color.FromRgb(68, 82, 233));
-                return whitePlayer;
-            }
-            set
-            {
-                whitePlayer = value;
-            }
+            dictPlayers.Add(0, new Tuple<string, Color, Color>("Rouge", Color.FromRgb(255, 97, 97), Color.FromRgb(233, 68, 82)));
+            dictPlayers.Add(1, new Tuple<string, Color, Color>("Bleu", Color.FromRgb(97, 111, 255), Color.FromRgb(68, 82, 233)));
+        }
+
+        private void InitPlayerById(int id)
+        {
+            Console.WriteLine(id);
+            Name = dictPlayers[id].Item1;
+            color1 = dictPlayers[id].Item2;
+            color2 = dictPlayers[id].Item3;
         }
 
         public static Player BlackPlayer
@@ -56,13 +58,27 @@ namespace ArcOthelloMM
             get
             {
                 if (blackPlayer == null)
-                    blackPlayer = new Player(0, "Rouge", Color.FromRgb(255, 97, 97), Color.FromRgb(233, 68, 82));
+                    blackPlayer = new Player(0);
                 return blackPlayer;
             }
 
             set
             {
                 blackPlayer = value;
+            }
+        }
+
+        public static Player WhitePlayer
+        {
+            get
+            {
+                if (whitePlayer == null)
+                    whitePlayer = new Player(1);
+                return whitePlayer;
+            }
+            set
+            {
+                whitePlayer = value;
             }
         }
 
@@ -75,6 +91,9 @@ namespace ArcOthelloMM
             return Value;
         }
 
+        /// <summary>
+        /// Return the score of a player as a sum of the element of the list
+        /// </summary>
         public int Score
         {
             get
@@ -94,16 +113,15 @@ namespace ArcOthelloMM
         {
             Tokens = (List<Tuple<int, int>>)info.GetValue("Tokens", typeof(List<Tuple<int, int>>));
             Value = (int)info.GetValue("Value", typeof(int));
-            Name = (string)info.GetValue("Name", typeof(string));
             Stopwatch = new Stopwatch(); // not serializable
             PreviousTime = (long)info.GetValue("PreviousTime", typeof(long)); //mini hack to avoid stopwatch not serializable
+            InitPlayerById(Value);
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue("Tokens", Tokens);
             info.AddValue("Value", Value);
-            info.AddValue("Name", Name);
             info.AddValue("PreviousTime", GetTime());
         }
 

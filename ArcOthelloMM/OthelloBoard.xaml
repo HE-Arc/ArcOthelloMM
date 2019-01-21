@@ -67,7 +67,7 @@
         <Border Name="border" Grid.Row="0" Grid.Column="1" BorderThickness="0">
             <Grid x:Name="graphicalBoard" />
         </Border>
-        <Border x:Name="playAgain" Background="#7F000000" Grid.Row="0" Grid.Column="1" BorderThickness="0" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="30" Opacity="0">
+        <Border x:Name="playAgain" Background="#7F000000" Grid.Row="0" Grid.Column="1" BorderThickness="0" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="30" Opacity="0" Panel.ZIndex="-1000">
             <Label x:Name="lblPlayAgain"  Foreground="White" FontSize="40" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">Couleur peut rejouer</Label>
         </Border>
     </Grid>

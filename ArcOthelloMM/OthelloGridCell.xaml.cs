@@ -32,6 +32,9 @@ namespace ArcOthelloMM
 
         private States _state;
 
+        /// <summary>
+        /// Set the new state of the cell, make a color transition
+        /// </summary>
         public States State
         {
             get { return _state; }
@@ -55,6 +58,10 @@ namespace ArcOthelloMM
         public int Y { get; }
 
         private bool _lastPlay;
+
+        /// <summary>
+        /// Is this cells the last one played (show a circler border)
+        /// </summary>
         public bool LastPlay
         {
             get
@@ -107,6 +114,12 @@ namespace ArcOthelloMM
             return new SolidColorBrush(Color.FromArgb(alpha, color.R, color.G, color.B));
         }
 
+        /// <summary>
+        /// Create new cell for the othello game
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="states"></param>
         public OthelloGridCell(int x, int y, States states = States.Empty)
         {
             InitializeComponent();

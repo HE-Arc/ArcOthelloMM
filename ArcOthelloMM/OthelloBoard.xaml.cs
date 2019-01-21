@@ -27,6 +27,9 @@ namespace ArcOthelloMM
         private const string playAgainText = " peut rejouer !";
         private const string nbTokensText = "Nombre de pièces ";
 
+        /// <summary>
+        /// Create a new graphical board
+        /// </summary>
         public OthelloBoard()
         {
             InitializeComponent();
@@ -208,14 +211,9 @@ namespace ArcOthelloMM
             float percentageBlack = Player.BlackPlayer.Score / (float)(Player.BlackPlayer.Score + Player.WhitePlayer.Score);
             float percentageWhite = 1 - percentageBlack;
 
-            GradientStopCollection gradientStops = new GradientStopCollection();
-
-            float diff = Math.Abs(percentageBlack - percentageWhite);
-
-            gradientStops.Add(new GradientStop(Player.BlackPlayer.Color, percentageBlack > percentageWhite ? 1 - diff : 0));
-            gradientStops.Add(new GradientStop(Player.WhitePlayer.Color, percentageBlack > percentageWhite ? 1 : 1 - diff));
-
-            LinearGradientBrush linearGradientBrush = new LinearGradientBrush(gradientStops, 90.0);
+            LinearGradientBrush linearGradientBrush = new LinearGradientBrush(Player.BlackPlayer.Color1, Player.WhitePlayer.Color1, 0);
+            linearGradientBrush.StartPoint = new Point(0, percentageBlack - 0.5);
+            linearGradientBrush.EndPoint = new Point(0, 1 - (percentageWhite - 0.5));
 
             this.Background = linearGradientBrush;
         }
@@ -243,6 +241,7 @@ namespace ArcOthelloMM
 
         private void NextTurn()
         {
+            bool endOfGame = false;
             currentPossibleMoves = LogicalBoard.Instance.CurrentPossibleMoves;
 
             if (currentPossibleMoves.Count <= 0)
@@ -252,6 +251,12 @@ namespace ArcOthelloMM
 
                 if (currentPossibleMoves.Count <= 0)
                 {
+                    endOfGame = true; //only switch the timers if it's the end of the game
+
+                    Player.BlackPlayer.Stop();
+                    Player.WhitePlayer.Stop();
+
+                    UpdateGui();
                     OthelloEndOfGame othelloEndOfGame;
                     if (Player.BlackPlayer.Score != Player.WhitePlayer.Score)
                     {
@@ -280,22 +285,37 @@ namespace ArcOthelloMM
                     Storyboard.SetTargetName(da2, playAgain.Name);
                     Storyboard.SetTargetProperty(da2, new PropertyPath(Border.OpacityProperty));
 
+                    //Index animation
+                    Int32Animation daIndex1 = new Int32Animation() { From = -1000, To = 1000, Duration = TimeSpan.FromSeconds(0.1) };
+                    Storyboard.SetTargetName(daIndex1, playAgain.Name);
+                    Storyboard.SetTargetProperty(daIndex1, new PropertyPath(Panel.ZIndexProperty));
+
+                    Int32Animation daIndex2 = new Int32Animation() { From = 1000, To = -1000, Duration = TimeSpan.FromSeconds(0.1) };
+                    daIndex2.BeginTime = TimeSpan.FromSeconds(da2.BeginTime.Value.Seconds + da2.Duration.TimeSpan.Seconds); //start at the end of da2
+                    Storyboard.SetTargetName(daIndex2, playAgain.Name);
+                    Storyboard.SetTargetProperty(daIndex2, new PropertyPath(Panel.ZIndexProperty));
+
                     sb.Children.Add(da1);
                     sb.Children.Add(da2);
+                    sb.Children.Add(daIndex1);
+                    sb.Children.Add(daIndex2);
 
                     sb.Begin(this);
                 }
             }
 
-            if (LogicalBoard.Instance.CurrentPlayerTurn)
+            if (!endOfGame)
             {
-                Player.WhitePlayer.Start();
-                Player.BlackPlayer.Stop();
-            }
-            else
-            {
-                Player.WhitePlayer.Stop();
-                Player.BlackPlayer.Start();
+                if (LogicalBoard.Instance.CurrentPlayerTurn)
+                {
+                    Player.WhitePlayer.Start();
+                    Player.BlackPlayer.Stop();
+                }
+                else
+                {
+                    Player.WhitePlayer.Stop();
+                    Player.BlackPlayer.Start();
+                }
             }
         }
 
