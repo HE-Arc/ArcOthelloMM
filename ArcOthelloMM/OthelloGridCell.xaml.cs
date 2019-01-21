@@ -97,10 +97,10 @@ namespace ArcOthelloMM
         {
             colors = new Dictionary<States, SolidColorBrush>();
             colors.Add(States.Empty, BrushFromColor(Color.FromRgb(0,0,0), 0));
-            colors.Add(States.Player1, BrushFromColor(Player.WhitePlayer.Color, normalOpacity));
-            colors.Add(States.Player2, BrushFromColor(Player.BlackPlayer.Color, normalOpacity));
-            colors.Add(States.PreviewPlayer1, BrushFromColor(Player.WhitePlayer.Color, previewOpacity));
-            colors.Add(States.PreviewPlayer2, BrushFromColor(Player.BlackPlayer.Color, previewOpacity));
+            colors.Add(States.Player1, BrushFromColor(Player.Player1.Color, normalOpacity));
+            colors.Add(States.Player2, BrushFromColor(Player.Player0.Color, normalOpacity));
+            colors.Add(States.PreviewPlayer1, BrushFromColor(Player.Player1.Color, previewOpacity));
+            colors.Add(States.PreviewPlayer2, BrushFromColor(Player.Player0.Color, previewOpacity));
             sizes = new Dictionary<States, int>();
             sizes.Add(States.Empty, 0);
             sizes.Add(States.Player1, normalSize);

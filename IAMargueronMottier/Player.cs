@@ -14,22 +14,21 @@ namespace ArcOthelloMM
         public int Value { get; set; }
         public string Name { get; set; }
 
-        private Color color;
-        public Color Color { get { return color; } }
+        public Color Color { get; internal set; }
 
         private Stopwatch Stopwatch { get; set; }
-
         private long PreviousTime { get; set; }
 
         //Double singleton (one for player 0 and another for player 1)
         private static Player player0;
         private static Player player1;
-
+        
         private static readonly Dictionary<int, Tuple<string, Color>> dictPlayers;
-
+        
         /// <summary>
-        /// Instanciate the white player
+        /// Create a player with a value
         /// </summary>
+        /// <param name="value"></param>
         private Player(int value)
         {
             Reset();
@@ -37,7 +36,10 @@ namespace ArcOthelloMM
             InitPlayerById(value);
             PreviousTime = 0;
         }
-
+        
+        /// <summary>
+        /// Initalize static field for both players
+        /// </summary>
         static Player()
         {
             dictPlayers = new Dictionary<int, Tuple<string, Color>>
@@ -47,13 +49,20 @@ namespace ArcOthelloMM
             };
         }
 
+        /// <summary>
+        /// Initialize the player with player dicionary (function use for the unserialization)
+        /// </summary>
+        /// <param name="id"></param>
         private void InitPlayerById(int id)
         {
             Name = dictPlayers[id].Item1;
-            color = dictPlayers[id].Item2;
+            Color = dictPlayers[id].Item2;
         }
 
-        public static Player BlackPlayer
+        /// <summary>
+        /// Singleton for player 0
+        /// </summary>
+        public static Player Player0
         {
             get
             {
@@ -68,7 +77,10 @@ namespace ArcOthelloMM
             }
         }
 
-        public static Player WhitePlayer
+        /// <summary>
+        /// Singleton for player 1
+        /// </summary>
+        public static Player Player1
         {
             get
             {
@@ -83,7 +95,7 @@ namespace ArcOthelloMM
         }
 
         /// <summary>
-        /// Return the value of white player
+        /// Return the value of the player
         /// </summary>
         /// <returns></returns>
         public int GetValue()
@@ -91,9 +103,6 @@ namespace ArcOthelloMM
             return Value;
         }
 
-        /// <summary>
-        /// Return the score of a player as a sum of the element of the list
-        /// </summary>
         public int Score
         {
             get
@@ -102,6 +111,9 @@ namespace ArcOthelloMM
             }
         }
 
+        /// <summary>
+        /// Reset the player
+        /// </summary>
         public void Reset()
         {
             Tokens = new List<Tuple<int, int>>();
@@ -109,6 +121,11 @@ namespace ArcOthelloMM
             PreviousTime = 0;
         }
 
+        /// <summary>
+        /// constructor for deserialization
+        /// </summary>
+        /// <param name="info"></param>
+        /// <param name="context"></param>
         protected Player(SerializationInfo info, StreamingContext context)
         {
             Tokens = (List<Tuple<int, int>>)info.GetValue("Tokens", typeof(List<Tuple<int, int>>));
@@ -118,6 +135,11 @@ namespace ArcOthelloMM
             InitPlayerById(Value);
         }
 
+        /// <summary>
+        /// Implementation serialization
+        /// </summary>
+        /// <param name="info"></param>
+        /// <param name="context"></param>
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue("Tokens", Tokens);
@@ -125,16 +147,26 @@ namespace ArcOthelloMM
             info.AddValue("PreviousTime", GetTime());
         }
 
+        /// <summary>
+        /// Get the time
+        /// </summary>
+        /// <returns></returns>
         public long GetTime()
         {
             return Stopwatch.ElapsedMilliseconds + PreviousTime;
         }
 
+        /// <summary>
+        /// Start the timer
+        /// </summary>
         public void Start()
         {
             Stopwatch.Start();
         }
 
+        /// <summary>
+        /// Stop the timer
+        /// </summary>
         public void Stop()
         {
             Stopwatch.Stop();

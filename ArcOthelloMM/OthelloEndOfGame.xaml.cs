@@ -39,8 +39,8 @@ namespace ArcOthelloMM
             else
             {
                 GradientStopCollection gradientStops = new GradientStopCollection();
-                gradientStops.Add(new GradientStop(Player.BlackPlayer.Color, 0));
-                gradientStops.Add(new GradientStop(Player.WhitePlayer.Color, 1));
+                gradientStops.Add(new GradientStop(Player.Player0.Color, 0));
+                gradientStops.Add(new GradientStop(Player.Player1.Color, 1));
                 LinearGradientBrush radialGradientBrush = new LinearGradientBrush(gradientStops, 90.0);
                 Background = radialGradientBrush;
                 msg.Content = "Egalité !";
