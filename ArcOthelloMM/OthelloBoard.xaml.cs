@@ -44,10 +44,15 @@ namespace ArcOthelloMM
             lblScorePlayer0Text.Content = scoreText + Player.Player0.Name;
             lblScorePlayer1Text.Content = scoreText + Player.Player1.Name;
 
-            DataContext = LogicalBoard.Instance;
+            UpdateDataContext();
 
             GenerateGrid();
             UpdateGradiant(true);
+        }
+
+        private void UpdateDataContext()
+        {
+            DataContext = LogicalBoard.Instance;
         }
 
         /// <summary>
@@ -445,6 +450,7 @@ namespace ArcOthelloMM
                 fs.Close();
                 UpdateGui();
             }
+            UpdateDataContext();
         }
 
         /// <summary>

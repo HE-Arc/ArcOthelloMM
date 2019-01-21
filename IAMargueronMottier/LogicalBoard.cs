@@ -614,6 +614,7 @@ namespace ArcOthelloMM
             Archive = (List<Tuple<bool, int[,], Tuple<int, int>>>)info.GetValue("BoardHistory", typeof(List<Tuple<bool, int[,], Tuple<int, int>>>));
             IndexHistory = (int)info.GetValue("IndexHistory", typeof(int));
             LastMovePosition = (Tuple<int, int>)info.GetValue("LastMovePosition", typeof(Tuple<int, int>));
+            UpdateScores();
         }
     }
 }
