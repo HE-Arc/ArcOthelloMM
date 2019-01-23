@@ -6,4 +6,6 @@ Plus d'informations dans le wiki ->
 
 # Captures d'écran
 
+![](https://github.com/HE-Arc/ArcOthelloMM/wiki/img/interface.png)
 ![](https://github.com/HE-Arc/ArcOthelloMM/wiki/img/board.png)
+![](https://github.com/HE-Arc/ArcOthelloMM/wiki/img/menu.png)
