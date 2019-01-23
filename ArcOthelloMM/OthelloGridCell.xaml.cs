@@ -80,7 +80,7 @@ namespace ArcOthelloMM
         static Dictionary<States, SolidColorBrush> colors;
         static Dictionary<States, int> sizes;
 
-        static Brush borderColorEllipseLastPlay= BrushFromColor(Color.FromRgb(111, 255, 97), 255);
+        static Brush borderColorEllipseLastPlay= BrushFromColor(Color.FromRgb(84, 252, 89), 255);
         static Brush transparent = BrushFromColor(Color.FromRgb(0, 0, 0), 0);
 
         static Brush backgroundColor = BrushFromColor(Color.FromRgb(0, 0, 0), 160);

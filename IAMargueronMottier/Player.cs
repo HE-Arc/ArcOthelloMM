@@ -44,8 +44,8 @@ namespace ArcOthelloMM
         {
             dictPlayers = new Dictionary<int, Tuple<string, Color>>
             {
-                { 0, new Tuple<string, Color>("Rouge", Color.FromRgb(233, 68, 82)) },
-                { 1, new Tuple<string, Color>("Bleu", Color.FromRgb(68, 82, 233)) }
+                { 0, new Tuple<string, Color>("Rouge", Color.FromRgb(252, 89, 84)) },
+                { 1, new Tuple<string, Color>("Bleu", Color.FromRgb(89, 84, 252)) }
             };
         }
 
