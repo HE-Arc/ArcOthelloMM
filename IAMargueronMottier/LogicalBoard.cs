@@ -13,8 +13,12 @@ namespace ArcOthelloMM
     {
         private static LogicalBoard instance = null;
 
+        public bool PlayerVsPlayer { get; internal set; }
+
         public Player CurrentPlayer { get { return CurrentPlayerTurn ? Player.Player1 : Player.Player0; } }
         public Player OpponentPlayer { get { return CurrentPlayerTurn ? Player.Player0 : Player.Player1; } }
+
+        public bool TurnAI { get { return CurrentPlayer.IsAI; } }
 
         private int[,] Board { get; set; }
         private List<Tuple<bool, int[,], Tuple<int, int>>> Archive { get; set; }
@@ -90,7 +94,7 @@ namespace ArcOthelloMM
         /// </summary>
         public LogicalBoard()
         {
-            ResetGame();
+            //ResetGame();
         }
 
         /// <summary>
@@ -131,20 +135,11 @@ namespace ArcOthelloMM
         }
 
         /// <summary>
-        /// Restart a game
+        /// Reset a part of the logic
         /// </summary>
-        public void ResetGame()
+        private void ResetGame()
         {
-            // Create players
-            Player.Player1.Reset();
-            Player.Player0.Reset();
-
-            Player1Score = 0;
-            Player0Score = 0;
-
-            LastMovePosition = null;
-
-            // Init Board
+            // Init int Board
             Board = new int[COLUMN, ROW];
             for (int x = 0; x < COLUMN; ++x)
             {
@@ -158,17 +153,15 @@ namespace ArcOthelloMM
             int px = COLUMN / 2 - 1;
             int py = ROW / 2;
 
-            Board[px, py] = Player.Player1.Value;
-            Player.Player1.Tokens.Add(new Tuple<int, int>(px, py));
-            Board[px + 1, py + 1] = Player.Player1.Value;
-            Player.Player1.Tokens.Add(new Tuple<int, int>(px + 1, py + 1));
-
             Board[px, py + 1] = Player.Player0.Value;
             Player.Player0.Tokens.Add(new Tuple<int, int>(px, py + 1));
             Board[px + 1, py] = Player.Player0.Value;
             Player.Player0.Tokens.Add(new Tuple<int, int>(px + 1, py));
 
-            
+            Board[px, py] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(px, py));
+            Board[px + 1, py + 1] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(px + 1, py + 1));
 
             // Init others
             ListPossibleMove = new Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>>();
@@ -178,6 +171,25 @@ namespace ArcOthelloMM
             AddArchive();
 
             UpdateScores();
+        }
+
+        /// <summary>
+        /// Restart a game with specific players
+        /// </summary>
+        public void ResetGame(bool playerVsPlayer, bool aiIsPlayer0)
+        {
+            PlayerVsPlayer = playerVsPlayer;
+
+            // Create players
+            Player.Player0.Reset(aiIsPlayer0);
+            Player.Player1.Reset(!aiIsPlayer0);
+
+            Player0Score = 0;
+            Player1Score = 0;
+
+            LastMovePosition = null;
+
+            ResetGame();
         }
 
         /// <summary>

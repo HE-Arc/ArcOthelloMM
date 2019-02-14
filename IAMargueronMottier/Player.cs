@@ -16,6 +16,8 @@ namespace ArcOthelloMM
 
         public Color Color { get; internal set; }
 
+        public bool IsAI { get; internal set; }
+
         private Stopwatch Stopwatch { get; set; }
         private long PreviousTime { get; set; }
 
@@ -31,7 +33,7 @@ namespace ArcOthelloMM
         /// <param name="value"></param>
         private Player(int value)
         {
-            Reset();
+            Reset(false);
             Value = value;
             InitPlayerById(value);
             PreviousTime = 0;
@@ -134,8 +136,9 @@ namespace ArcOthelloMM
         /// <summary>
         /// Reset the player
         /// </summary>
-        public void Reset()
+        public void Reset(bool isAI)
         {
+            IsAI = isAI;
             Tokens = new List<Tuple<int, int>>();
             Stopwatch = new Stopwatch();
             PreviousTime = 0;
@@ -148,8 +151,9 @@ namespace ArcOthelloMM
         /// <param name="context"></param>
         protected Player(SerializationInfo info, StreamingContext context)
         {
+            IsAI = info.GetBoolean("IsAi");
             Tokens = (List<Tuple<int, int>>)info.GetValue("Tokens", typeof(List<Tuple<int, int>>));
-            Value = (int)info.GetValue("Value", typeof(int));
+            Value = info.GetInt32("Value");
             Stopwatch = new Stopwatch(); // not serializable
             PreviousTime = (long)info.GetValue("PreviousTime", typeof(long)); //mini hack to avoid stopwatch not serializable
             InitPlayerById(Value);
@@ -162,6 +166,7 @@ namespace ArcOthelloMM
         /// <param name="context"></param>
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
+            info.AddValue("IsAi", IsAI);
             info.AddValue("Tokens", Tokens);
             info.AddValue("Value", Value);
             info.AddValue("PreviousTime", GetTime());

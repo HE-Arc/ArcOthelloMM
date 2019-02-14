@@ -18,8 +18,6 @@ namespace ArcOthelloMM
     {
         private OthelloGridCell[,] othelloGridCells; // to change their states
 
-        private bool playerVsPlayer;
-        private bool aiIsPlayer0 = false;
         private Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> currentPossibleMoves; // to optimize calls
 
         private Timer timerUpdateGui;
@@ -127,8 +125,7 @@ namespace ArcOthelloMM
         /// <param name="playerVsPlayer">true : player vs player / falst : player vs ia</param>
         private void NewGame(bool playerVsPlayer)
         {
-            this.playerVsPlayer = playerVsPlayer;
-            LogicalBoard.Instance.ResetGame();
+            LogicalBoard.Instance.ResetGame(playerVsPlayer, true);
             currentPossibleMoves = LogicalBoard.Instance.CurrentPossibleMoves;
 
             UpdateGui();
@@ -344,7 +341,7 @@ namespace ArcOthelloMM
 
         private void HandleAITurn()
         {
-            if (!playerVsPlayer && LogicalBoard.Instance.CurrentPlayerTurn == aiIsPlayer0)
+            if (!LogicalBoard.Instance.PlayerVsPlayer && LogicalBoard.Instance.TurnAI)
             {
                 PlayAI();
                 NextTurn();
@@ -479,7 +476,7 @@ namespace ArcOthelloMM
         private void btnRedo_Click(object sender, RoutedEventArgs e)
         {
             LogicalBoard.Instance.Redo();
-            if (!playerVsPlayer)
+            if (!LogicalBoard.Instance.PlayerVsPlayer)
                 LogicalBoard.Instance.Redo(); //redo the turn of the ai to avoid playing at his turn
             UpdateGui();
         }
@@ -492,7 +489,7 @@ namespace ArcOthelloMM
         private void btnUndo_Click(object sender, RoutedEventArgs e)
         {
             LogicalBoard.Instance.Undo();
-            if (!playerVsPlayer)
+            if (!LogicalBoard.Instance.PlayerVsPlayer)
                 LogicalBoard.Instance.Undo(); //undo the turn of the ai to avoid playing at his turn
             UpdateGui();
         }
