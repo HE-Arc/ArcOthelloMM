@@ -9,10 +9,11 @@ namespace ArcOthelloMM
     class IA
     {
         private static IA Instance;
+        private Random random;
 
         private IA()
         {
-            
+            random = new Random();
         }
 
         public static IA GetInstance()
@@ -31,7 +32,6 @@ namespace ArcOthelloMM
         {
             Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> moves = LogicalBoard.Instance.CurrentPossibleMoves;
             List<Tuple<int, int>> keys = new List<Tuple<int, int>>(moves.Keys);
-            Random random = new Random();
             int move = random.Next(moves.Count);
             return keys[move];
         }

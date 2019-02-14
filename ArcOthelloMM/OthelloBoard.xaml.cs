@@ -19,6 +19,7 @@ namespace ArcOthelloMM
         private OthelloGridCell[,] othelloGridCells; // to change their states
 
         private bool playerVsPlayer;
+        private bool aiIsPlayer0 = false;
         private Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> currentPossibleMoves; // to optimize calls
 
         private Timer timerUpdateGui;
@@ -151,6 +152,7 @@ namespace ArcOthelloMM
         private void btnNewGameAI_Click(object sender, RoutedEventArgs e)
         {
             NewGame(false);
+            HandleAITurn();
         }
 
         /// <summary>
@@ -224,11 +226,6 @@ namespace ArcOthelloMM
                 LogicalBoard.Instance.PlayMove(x, y, LogicalBoard.Instance.CurrentPlayerTurn);
                 NextTurn();
                 UpdateGui();
-            }
-
-            if (!playerVsPlayer && !LogicalBoard.Instance.CurrentPlayerTurn)
-            {
-                LogicalBoard.Instance.PlayAI();
             }
         }
 
@@ -320,18 +317,7 @@ namespace ArcOthelloMM
                     Player.Player1.Stop();
 
                     UpdateGui();
-                    OthelloEndOfGame othelloEndOfGame;
-                    if (Player.Player0.Score != Player.Player1.Score)
-                    {
-                        Player playerWin = Player.Player0.Score > Player.Player1.Score ? Player.Player0 : Player.Player1;
-                        Player playerLose = Player.Player0.Score > Player.Player1.Score ? Player.Player1 : Player.Player0;
-                        othelloEndOfGame = new OthelloEndOfGame(playerWin, playerLose);
-                    }
-                    else //tied
-                    {
-                        othelloEndOfGame = new OthelloEndOfGame(null, null);
-                    }
-                    othelloEndOfGame.ShowDialog();
+                    ShowEndOfGameMessage();
                 }
                 else
                 {
@@ -351,7 +337,34 @@ namespace ArcOthelloMM
                     Player.Player1.Stop();
                     Player.Player0.Start();
                 }
+
+                HandleAITurn();
             }
+        }
+
+        private void HandleAITurn()
+        {
+            if (!playerVsPlayer && LogicalBoard.Instance.CurrentPlayerTurn == aiIsPlayer0)
+            {
+                PlayAI();
+                NextTurn();
+            }
+        }
+        
+        private void PlayAI()
+        {
+            LogicalBoard.Instance.PlayAI();
+            UpdateGui();
+        }
+
+        /// <summary>
+        /// Display a end of game message dialog
+        /// </summary>
+        private void ShowEndOfGameMessage()
+        {
+            OthelloEndOfGame othelloEndOfGame;
+            othelloEndOfGame = new OthelloEndOfGame(Player.Winner, Player.Loser);
+            othelloEndOfGame.ShowDialog();
         }
 
         /// <summary>
@@ -466,6 +479,8 @@ namespace ArcOthelloMM
         private void btnRedo_Click(object sender, RoutedEventArgs e)
         {
             LogicalBoard.Instance.Redo();
+            if (!playerVsPlayer)
+                LogicalBoard.Instance.Redo(); //redo the turn of the ai to avoid playing at his turn
             UpdateGui();
         }
 
@@ -477,6 +492,8 @@ namespace ArcOthelloMM
         private void btnUndo_Click(object sender, RoutedEventArgs e)
         {
             LogicalBoard.Instance.Undo();
+            if (!playerVsPlayer)
+                LogicalBoard.Instance.Undo(); //undo the turn of the ai to avoid playing at his turn
             UpdateGui();
         }
     }

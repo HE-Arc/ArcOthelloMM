@@ -94,6 +94,26 @@ namespace ArcOthelloMM
             }
         }
 
+        public static Player Winner
+        {
+            get
+            {
+                if (Player.Player0.Score == Player.Player1.Score) // when tied
+                    return null;
+                return Player.Player0.Score > Player.Player1.Score ? Player.Player0 : Player.Player1;
+            }
+        }
+
+        public static Player Loser
+        {
+            get
+            {
+                if (Player.Player0.Score == Player.Player1.Score) // when tied
+                    return null;
+                return Player.Player0.Score > Player.Player1.Score ? Player.Player1 : Player.Player0;
+            }
+        }
+
         /// <summary>
         /// Return the value of the player
         /// </summary>
