@@ -13,62 +13,84 @@ namespace ArcOthelloMM
         public List<Tuple<int, int>> Tokens { get; set; }
         public int Value { get; set; }
         public string Name { get; set; }
-        public Color Color { get; }
-        public Color Color2 { get; }
+
+        public Color Color { get; internal set; }
 
         private Stopwatch Stopwatch { get; set; }
-
         private long PreviousTime { get; set; }
 
-
-        private static Player whitePlayer;
-        private static Player blackPlayer;
-
+        //Double singleton (one for player 0 and another for player 1)
+        private static Player player0;
+        private static Player player1;
+        
+        private static readonly Dictionary<int, Tuple<string, Color>> dictPlayers;
+        
         /// <summary>
-        /// Instanciate the white player
+        /// Create a player with a value
         /// </summary>
-        private Player(int value, string name, Color color, Color color2)
+        /// <param name="value"></param>
+        private Player(int value)
         {
             Reset();
             Value = value;
-            Name = name;
+            InitPlayerById(value);
             PreviousTime = 0;
-            Color = color;
-            Color2 = color2;
+        }
+        
+        /// <summary>
+        /// Initalize static field for both players
+        /// </summary>
+        static Player()
+        {
+            dictPlayers = new Dictionary<int, Tuple<string, Color>>
+            {
+                { 0, new Tuple<string, Color>("Rouge", Color.FromRgb(252, 89, 84)) },
+                { 1, new Tuple<string, Color>("Bleu", Color.FromRgb(89, 84, 252)) }
+            };
         }
 
         /// <summary>
-        /// Singleton of the white player
+        /// Initialize the player with player dicionary (function use for the unserialization)
         /// </summary>
-        public static Player WhitePlayer
+        /// <param name="id"></param>
+        private void InitPlayerById(int id)
+        {
+            Name = dictPlayers[id].Item1;
+            Color = dictPlayers[id].Item2;
+        }
+
+        /// <summary>
+        /// Singleton for player 0
+        /// </summary>
+        public static Player Player0
         {
             get
             {
-                if (whitePlayer == null)
-                    whitePlayer = new Player(1, "Bleu", Color.FromRgb(97, 111, 255), Color.FromRgb(68, 82, 233));
-                return whitePlayer;
+                if (player0 == null)
+                    player0 = new Player(0);
+                return player0;
             }
+
             set
             {
-                whitePlayer = value;
+                player0 = value;
             }
         }
 
         /// <summary>
-        /// Singleton of the black player
+        /// Singleton for player 1
         /// </summary>
-        public static Player BlackPlayer
+        public static Player Player1
         {
             get
             {
-                if (blackPlayer == null)
-                    blackPlayer = new Player(0, "Rouge", Color.FromRgb(255, 97, 97), Color.FromRgb(233, 68, 82));
-                return blackPlayer;
+                if (player1 == null)
+                    player1 = new Player(1);
+                return player1;
             }
-
             set
             {
-                blackPlayer = value;
+                player1 = value;
             }
         }
 
@@ -81,9 +103,6 @@ namespace ArcOthelloMM
             return Value;
         }
 
-        /// <summary>
-        /// Return the score of the player
-        /// </summary>
         public int Score
         {
             get
@@ -111,9 +130,9 @@ namespace ArcOthelloMM
         {
             Tokens = (List<Tuple<int, int>>)info.GetValue("Tokens", typeof(List<Tuple<int, int>>));
             Value = (int)info.GetValue("Value", typeof(int));
-            Name = (string)info.GetValue("Name", typeof(string));
             Stopwatch = new Stopwatch(); // not serializable
             PreviousTime = (long)info.GetValue("PreviousTime", typeof(long)); //mini hack to avoid stopwatch not serializable
+            InitPlayerById(Value);
         }
 
         /// <summary>
@@ -125,7 +144,6 @@ namespace ArcOthelloMM
         {
             info.AddValue("Tokens", Tokens);
             info.AddValue("Value", Value);
-            info.AddValue("Name", Name);
             info.AddValue("PreviousTime", GetTime());
         }
 

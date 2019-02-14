@@ -25,8 +25,11 @@ namespace ArcOthelloMM
 
         private const string timeElapsedText = "Temps écoulé joueur ";
         private const string playAgainText = " peut rejouer !";
-        private const string nbTokensText = "Nombre de pièces ";
+        private const string scoreText = "Nombre de pièces ";
 
+        /// <summary>
+        /// Create a new graphical board
+        /// </summary>
         public OthelloBoard()
         {
             InitializeComponent();
@@ -36,16 +39,25 @@ namespace ArcOthelloMM
             timerUpdateGui.Elapsed += TimerUpdateGui_Elapsed;
             timerUpdateGui.Start();
 
-            lblTimeBlackText.Content = timeElapsedText + Player.BlackPlayer.Name;
-            lblTimeWhiteText.Content = timeElapsedText + Player.WhitePlayer.Name;
-            lblNbTokenBlackText.Content = nbTokensText + Player.BlackPlayer.Name;
-            lblNbTokenWhiteText.Content = nbTokensText + Player.WhitePlayer.Name;
+            lblTimePlayer0Text.Content = timeElapsedText + Player.Player0.Name;
+            lblTimePlayer1Text.Content = timeElapsedText + Player.Player1.Name;
+            lblScorePlayer0Text.Content = scoreText + Player.Player0.Name;
+            lblScorePlayer1Text.Content = scoreText + Player.Player1.Name;
 
-            DataContext = LogicalBoard.Instance;
+            UpdateDataContext();
 
             GenerateGrid();
+            UpdateGradiant(true);
         }
 
+        private void UpdateDataContext()
+        {
+            DataContext = LogicalBoard.Instance;
+        }
+
+        /// <summary>
+        /// Generate the grid with labels and cells
+        /// </summary>
         private void GenerateGrid()
         {
             othelloGridCells = new OthelloGridCell[LogicalBoard.Instance.GetCol(), LogicalBoard.Instance.GetRow()];
@@ -53,7 +65,6 @@ namespace ArcOthelloMM
             graphicalBoard.ColumnDefinitions.Clear();
             graphicalBoard.RowDefinitions.Clear();
             graphicalBoard.Children.Clear();
-
 
             //define columns
             for (int i = 0; i <= LogicalBoard.Instance.GetCol(); i++)
@@ -109,6 +120,10 @@ namespace ArcOthelloMM
             }
         }
 
+        /// <summary>
+        /// Launch a new game
+        /// </summary>
+        /// <param name="playerVsPlayer">true : player vs player / falst : player vs ia</param>
         private void NewGame(bool playerVsPlayer)
         {
             this.playerVsPlayer = playerVsPlayer;
@@ -118,16 +133,31 @@ namespace ArcOthelloMM
             UpdateGui();
         }
 
+        /// <summary>
+        /// Launch the game with a player
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnNewGame_Click(object sender, RoutedEventArgs e)
         {
             NewGame(true);
         }
 
+        /// <summary>
+        /// Launch the game with an ia
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnNewGameAI_Click(object sender, RoutedEventArgs e)
         {
             NewGame(false);
         }
 
+        /// <summary>
+        /// Update the timers
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void TimerUpdateGui_Elapsed(object sender, ElapsedEventArgs e)
         {
             try
@@ -143,6 +173,9 @@ namespace ArcOthelloMM
             }
         }
 
+        /// <summary>
+        /// Update the board according to the logic
+        /// </summary>
         private void UpdateBoard()
         {
             currentPossibleMoves = LogicalBoard.Instance.CurrentPossibleMoves;
@@ -170,11 +203,16 @@ namespace ArcOthelloMM
                     else
                         gcell.State = OthelloGridCell.States.Empty;
 
-                    gcell.LastPlay = LogicalBoard.Instance.LastPlay != null && pos.Item1 == LogicalBoard.Instance.LastPlay.Item1 && pos.Item2 == LogicalBoard.Instance.LastPlay.Item2;
+                    gcell.LastPlay = LogicalBoard.Instance.LastMovePosition != null && pos.Item1 == LogicalBoard.Instance.LastMovePosition.Item1 && pos.Item2 == LogicalBoard.Instance.LastMovePosition.Item2;
                 }
             }
         }
 
+        /// <summary>
+        /// handle the click of a cell (inform the logic and update the gui)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Cell_Click(object sender, EventArgs e)
         {
             OthelloGridCell s = (OthelloGridCell)sender;
@@ -194,6 +232,9 @@ namespace ArcOthelloMM
             }
         }
 
+        /// <summary>
+        /// A general purpose method to update gui
+        /// </summary>
         private void UpdateGui()
         {
             UpdateBoard();
@@ -202,41 +243,54 @@ namespace ArcOthelloMM
             UpdateGradiant();
         }
 
+        /// <summary>
+        /// Update the game data (on the left of the board)
+        /// </summary>
         private void UpdateGameData()
         {
             UpdateTimers();
-            lblTurn.Content = LogicalBoard.Instance.CurrentPlayerTurn ? Player.WhitePlayer.Name : Player.BlackPlayer.Name;
+            lblTurn.Content = LogicalBoard.Instance.CurrentPlayer.Name;
         }
 
-        private void UpdateGradiant()
+        /// <summary>
+        /// Updathe the gradiant
+        /// </summary>
+        /// <param name="_default">true : half, half gradiant</param>
+        private void UpdateGradiant(bool _default = false)
         {
-            float percentageBlack = Player.BlackPlayer.Score / (float)(Player.BlackPlayer.Score + Player.WhitePlayer.Score);
-            float percentageWhite = 1 - percentageBlack;
-
-            GradientStopCollection gradientStops = new GradientStopCollection();
-
-            float diff = Math.Abs(percentageBlack - percentageWhite);
-
-            gradientStops.Add(new GradientStop(Player.BlackPlayer.Color, percentageBlack > percentageWhite ? 1 - diff : 0));
-            gradientStops.Add(new GradientStop(Player.WhitePlayer.Color, percentageBlack > percentageWhite ? 1 : 1 - diff));
-
-            LinearGradientBrush linearGradientBrush = new LinearGradientBrush(gradientStops, 90.0);
+            float percentageBlack = _default ? 0.5f : Player.Player0.Score / (float)(Player.Player0.Score + Player.Player1.Score);
+            float percentageWhite = _default ? 0.5f : 1 - percentageBlack;
+            
+            LinearGradientBrush linearGradientBrush = new LinearGradientBrush(Player.Player0.Color, Player.Player1.Color, 0);
+            linearGradientBrush.StartPoint = new Point(0, percentageBlack - 0.5);
+            linearGradientBrush.EndPoint = new Point(0, 1 - (percentageWhite - 0.5));
 
             this.Background = linearGradientBrush;
         }
 
+        /// <summary>
+        /// Update the two timers
+        /// </summary>
         private void UpdateTimers()
         {
-            UpdateTimer(Player.BlackPlayer, lblTimeBlack);
-            UpdateTimer(Player.WhitePlayer, lblTimeWhite);
+            UpdateTimer(Player.Player0, lblTimePlayer0);
+            UpdateTimer(Player.Player1, lblTimePlayer1);
         }
 
+        /// <summary>
+        /// Update the undo redo buttons
+        /// </summary>
         private void UpdateControls()
         {
             btnUndo.IsEnabled = LogicalBoard.Instance.CanUndo();
             btnRedo.IsEnabled = LogicalBoard.Instance.CanRedo();
         }
 
+        /// <summary>
+        /// Update the timer
+        /// </summary>
+        /// <param name="p"></param>
+        /// <param name="lbl"></param>
         private void UpdateTimer(Player p, Label lbl)
         {
             if (p != null)
@@ -246,8 +300,12 @@ namespace ArcOthelloMM
             }
         }
 
+        /// <summary>
+        /// Next turn button
+        /// </summary>
         private void NextTurn()
         {
+            bool endOfGame = false;
             currentPossibleMoves = LogicalBoard.Instance.CurrentPossibleMoves;
 
             if (currentPossibleMoves.Count <= 0)
@@ -257,11 +315,16 @@ namespace ArcOthelloMM
 
                 if (currentPossibleMoves.Count <= 0)
                 {
+                    endOfGame = true; //only switch the timers if it's the end of the game
+                    Player.Player0.Stop();
+                    Player.Player1.Stop();
+
+                    UpdateGui();
                     OthelloEndOfGame othelloEndOfGame;
-                    if (Player.BlackPlayer.Score != Player.WhitePlayer.Score)
+                    if (Player.Player0.Score != Player.Player1.Score)
                     {
-                        Player playerWin = Player.BlackPlayer.Score > Player.WhitePlayer.Score ? Player.BlackPlayer : Player.WhitePlayer;
-                        Player playerLose = Player.BlackPlayer.Score > Player.WhitePlayer.Score ? Player.WhitePlayer : Player.BlackPlayer;
+                        Player playerWin = Player.Player0.Score > Player.Player1.Score ? Player.Player0 : Player.Player1;
+                        Player playerLose = Player.Player0.Score > Player.Player1.Score ? Player.Player1 : Player.Player0;
                         othelloEndOfGame = new OthelloEndOfGame(playerWin, playerLose);
                     }
                     else //tied
@@ -272,38 +335,66 @@ namespace ArcOthelloMM
                 }
                 else
                 {
-                    // can play again animation
-                    lblPlayAgain.Content = LogicalBoard.Instance.CurrentPlayer.Name + playAgainText;
-                    Storyboard sb = new Storyboard();
-
-                    DoubleAnimation da1 = new DoubleAnimation() { From = 0.0, To = 1.0, Duration = TimeSpan.FromSeconds(0.5) };
-                    Storyboard.SetTargetName(da1, playAgain.Name);
-                    Storyboard.SetTargetProperty(da1, new PropertyPath(Border.OpacityProperty));
-
-                    DoubleAnimation da2 = new DoubleAnimation() { From = 1.0, To = 0.0, Duration = TimeSpan.FromSeconds(0.5) };
-                    da2.BeginTime = TimeSpan.FromSeconds(3);
-                    Storyboard.SetTargetName(da2, playAgain.Name);
-                    Storyboard.SetTargetProperty(da2, new PropertyPath(Border.OpacityProperty));
-
-                    sb.Children.Add(da1);
-                    sb.Children.Add(da2);
-
-                    sb.Begin(this);
+                    ShowPlayAgainMessage();
                 }
             }
 
-            if (LogicalBoard.Instance.CurrentPlayerTurn)
+            if (!endOfGame)
             {
-                Player.WhitePlayer.Start();
-                Player.BlackPlayer.Stop();
-            }
-            else
-            {
-                Player.WhitePlayer.Stop();
-                Player.BlackPlayer.Start();
+                if (LogicalBoard.Instance.CurrentPlayerTurn)
+                {
+                    Player.Player1.Start();
+                    Player.Player0.Stop();
+                }
+                else
+                {
+                    Player.Player1.Stop();
+                    Player.Player0.Start();
+                }
             }
         }
 
+        /// <summary>
+        /// Show a message when a turn is skipped
+        /// </summary>
+        private void ShowPlayAgainMessage()
+        {
+            // can play again animation
+            lblPlayAgain.Content = LogicalBoard.Instance.CurrentPlayer.Name + playAgainText;
+            Storyboard sb = new Storyboard();
+
+            DoubleAnimation da1 = new DoubleAnimation() { From = 0.0, To = 1.0, Duration = TimeSpan.FromSeconds(0.5) };
+            Storyboard.SetTargetName(da1, playAgain.Name);
+            Storyboard.SetTargetProperty(da1, new PropertyPath(Border.OpacityProperty));
+
+            DoubleAnimation da2 = new DoubleAnimation() { From = 1.0, To = 0.0, Duration = TimeSpan.FromSeconds(0.5) };
+            da2.BeginTime = TimeSpan.FromSeconds(3);
+            Storyboard.SetTargetName(da2, playAgain.Name);
+            Storyboard.SetTargetProperty(da2, new PropertyPath(Border.OpacityProperty));
+
+            //Index animation
+            Int32Animation daIndex1 = new Int32Animation() { From = -1000, To = 1000, Duration = TimeSpan.FromSeconds(0.1) };
+            Storyboard.SetTargetName(daIndex1, playAgain.Name);
+            Storyboard.SetTargetProperty(daIndex1, new PropertyPath(Panel.ZIndexProperty));
+
+            Int32Animation daIndex2 = new Int32Animation() { From = 1000, To = -1000, Duration = TimeSpan.FromSeconds(0.1) };
+            daIndex2.BeginTime = TimeSpan.FromSeconds(da2.BeginTime.Value.Seconds + da2.Duration.TimeSpan.Seconds); //start at the end of da2
+            Storyboard.SetTargetName(daIndex2, playAgain.Name);
+            Storyboard.SetTargetProperty(daIndex2, new PropertyPath(Panel.ZIndexProperty));
+
+            sb.Children.Add(da1);
+            sb.Children.Add(da2);
+            sb.Children.Add(daIndex1);
+            sb.Children.Add(daIndex2);
+
+            sb.Begin(this);
+        }
+
+        /// <summary>
+        /// Keep the board with square sizes and make it responsive
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Board_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             int row = graphicalBoard.RowDefinitions.Count;
@@ -323,6 +414,11 @@ namespace ArcOthelloMM
             graphicalBoard.Margin = new Thickness(w, h, w, h);
         }
 
+        /// <summary>
+        /// Save the game file
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
@@ -339,6 +435,11 @@ namespace ArcOthelloMM
             }
         }
 
+        /// <summary>
+        /// Load a game file
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnLoad_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -354,14 +455,25 @@ namespace ArcOthelloMM
                 fs.Close();
                 UpdateGui();
             }
+            UpdateDataContext();
         }
 
+        /// <summary>
+        /// Redo button handling
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnRedo_Click(object sender, RoutedEventArgs e)
         {
             LogicalBoard.Instance.Redo();
             UpdateGui();
         }
 
+        /// <summary>
+        /// Undo button handling
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnUndo_Click(object sender, RoutedEventArgs e)
         {
             LogicalBoard.Instance.Undo();

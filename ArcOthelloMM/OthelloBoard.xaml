@@ -6,12 +6,6 @@
         xmlns:local="clr-namespace:ArcOthelloMM"
         mc:Ignorable="d"
         Title="HE-Arc Othello : Margueron - Mottier " d:DesignWidth="800" d:DesignHeight="450" MinWidth="800" MinHeight="450" SizeChanged="Board_SizeChanged" WindowStartupLocation="CenterScreen" Padding="0" Icon="icon.ico">
-    <Window.Background>
-        <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
-            <GradientStop Color="#FF616FFF" Offset="1"/>
-            <GradientStop Color="#FFFF6161"/>
-        </LinearGradientBrush>
-    </Window.Background>
     <Grid Margin="10px">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="350"/>
@@ -52,14 +46,14 @@
                         </Grid.RowDefinitions>
                         <Label Grid.Column="0" Grid.Row="0" Foreground="White" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center">Tour</Label>
                         <Label Grid.Column="1" Grid.Row="0" Foreground="White" Name="lblTurn" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center">Couleur</Label>
-                        <Label Grid.Column="0" Grid.Row="1" Foreground="White" Name="lblTimeBlackText" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center">Temps écoulé joueur noir</Label>
-                        <Label Grid.Column="1" Grid.Row="1" Foreground="White" Name="lblTimeBlack" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center">0:00:00</Label>
-                        <Label Grid.Column="0" Grid.Row="2" Foreground="White" Name="lblTimeWhiteText" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center">Temps écoulé joueur blanc</Label>
-                        <Label Grid.Column="1" Grid.Row="2" Foreground="White" Name="lblTimeWhite" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center">0:00:00</Label>
-                        <Label Grid.Column="0" Grid.Row="3" Foreground="White" Name="lblNbTokenBlackText" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center">Nombre de pièces noires</Label>
-                        <Label Grid.Column="1" Grid.Row="3" Foreground="White" Name="lblNbTokenBlack" Content="{Binding BlackScore}" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
-                        <Label Grid.Column="0" Grid.Row="4" Foreground="White" Name="lblNbTokenWhiteText" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center">Nombre de pièces blanches</Label>
-                        <Label Grid.Column="1" Grid.Row="4" Foreground="White" Name="lblNbTokenWhite" Content="{Binding WhiteScore}" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+                        <Label Grid.Column="0" Grid.Row="1" Foreground="White" Name="lblTimePlayer0Text" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center"></Label>
+                        <Label Grid.Column="1" Grid.Row="1" Foreground="White" Name="lblTimePlayer0" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center">0:00:00</Label>
+                        <Label Grid.Column="0" Grid.Row="2" Foreground="White" Name="lblTimePlayer1Text" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center"></Label>
+                        <Label Grid.Column="1" Grid.Row="2" Foreground="White" Name="lblTimePlayer1" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center">0:00:00</Label>
+                        <Label Grid.Column="0" Grid.Row="3" Foreground="White" Name="lblScorePlayer0Text" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center"></Label>
+                        <Label Grid.Column="1" Grid.Row="3" Foreground="White" Name="lblNbTokenBlack" Content="{Binding Player0Score}" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+                        <Label Grid.Column="0" Grid.Row="4" Foreground="White" Name="lblScorePlayer1Text" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center"></Label>
+                        <Label Grid.Column="1" Grid.Row="4" Foreground="White" Name="lblNbTokenWhite" Content="{Binding Player1Score}" Height="34" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
                     </Grid>
                 </Border>
             </StackPanel>
@@ -67,7 +61,7 @@
         <Border Name="border" Grid.Row="0" Grid.Column="1" BorderThickness="0">
             <Grid x:Name="graphicalBoard" />
         </Border>
-        <Border x:Name="playAgain" Background="#7F000000" Grid.Row="0" Grid.Column="1" BorderThickness="0" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="30" Opacity="0">
+        <Border x:Name="playAgain" Background="#7F000000" Grid.Row="0" Grid.Column="1" BorderThickness="0" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="30" Opacity="0" Panel.ZIndex="-1000">
             <Label x:Name="lblPlayAgain"  Foreground="White" FontSize="40" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">Couleur peut rejouer</Label>
         </Border>
     </Grid>

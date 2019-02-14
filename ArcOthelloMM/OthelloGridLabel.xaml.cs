@@ -17,6 +17,10 @@ namespace ArcOthelloMM
 {
     public partial class OthelloGridLabel : UserControl
     {
+        /// <summary>
+        /// Create a label for the othello grid
+        /// </summary>
+        /// <param name="content"></param>
         public OthelloGridLabel(String content)
         {
             InitializeComponent();
