@@ -46,7 +46,7 @@ namespace ArcOthelloMM
             AiMinMaxPlayerValue = (whiteTurn) ? Player.Player1.Value : Player.Player0.Value;
 
             TreeNode root = new TreeNode(game, AiMinMaxPlayerValue);
-
+            root.Show();
             return AlphaBeta(root, level, GetMinOrMax(root), int.MinValue).Item2;
 
             //return StupidAI(game, level, whiteTurn);

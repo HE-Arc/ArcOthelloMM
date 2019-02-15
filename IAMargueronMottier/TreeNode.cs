@@ -54,14 +54,14 @@ namespace IAMargueronMottier
             // CurrentPlayerValue Copy
             CurrentPlayerValue = treeNode.CurrentPlayerValue;
 
-            // CurrentPlayerTokens Copy
+            // Inversion CurrentPlayerTokens Copy
             CurrentPlayerTokens = new List<Tuple<int, int>>();
-            foreach (Tuple<int, int> token in treeNode.CurrentPlayerTokens)
+            foreach (Tuple<int, int> token in treeNode.OpponentPlayerTokens)
                 CurrentPlayerTokens.Add(new Tuple<int, int>(token.Item1, token.Item2));
 
-            // OpponentPlayerTokens Copy
+            // Inversion OpponentPlayerTokens Copy
             OpponentPlayerTokens = new List<Tuple<int, int>>();
-            foreach (Tuple<int, int> token in treeNode.OpponentPlayerTokens)
+            foreach (Tuple<int, int> token in treeNode.CurrentPlayerTokens)
                 OpponentPlayerTokens.Add(new Tuple<int, int>(token.Item1, token.Item2));
         }
 
@@ -289,7 +289,7 @@ namespace IAMargueronMottier
             tokens.Add(newToken);
 
             // Is on board
-            if (x < 0 || x >= Board.GetLength(1) || y < 0 || y >= Board.GetLength(0) || CurrentPlayerTokens.Contains(newToken))
+            if (x < 0 || x >= Board.GetLength(0) || y < 0 || y >= Board.GetLength(1) || CurrentPlayerTokens.Contains(newToken))
             {
                 finished = true;
             }
