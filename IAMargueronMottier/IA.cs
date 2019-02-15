@@ -26,25 +26,42 @@ namespace ArcOthelloMM
         }
 
         private static Random random;
-        private int CurrentPlayerValue;
+        private int AiMinMaxPlayerValue;
 
         static IA()
         {
             random = new Random();
         }
 
+        private int GetMinOrMax(TreeNode treeNode)
+        {
+            if (treeNode.CurrentPlayerValue == AiMinMaxPlayerValue)
+                return 1; // it's your turn maximize your outcome
+            else
+                return -1; //it's his turn, he will minimize your outcome
+        }
+
         public Tuple<int, int> GetNextMove(int[,] game, int level, bool whiteTurn)
         {
-            CurrentPlayerValue = (whiteTurn) ? Player.Player1.Value : Player.Player0.Value;
+            AiMinMaxPlayerValue = (whiteTurn) ? Player.Player1.Value : Player.Player0.Value;
 
-            return AlphaBeta(new TreeNode(game, CurrentPlayerValue), level, 1, int.MinValue).Item2;
+            TreeNode root = new TreeNode(game, AiMinMaxPlayerValue);
+
+            return AlphaBeta(root, level, GetMinOrMax(root), int.MinValue).Item2;
+
             //return StupidAI(game, level, whiteTurn);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="root"></param>
+        /// <param name="level"></param>
+        /// <param name="minOrMax">1 => maximize, -1 => minimize</param>
+        /// <param name="parentValue"></param>
+        /// <returns></returns>
         private Tuple<int, Tuple<int, int>> AlphaBeta(TreeNode root, int level, int minOrMax, int parentValue)
         {
-            // minOrMax = 1 => maximize
-            // minOrMax = -1 => minimize
 
             Console.WriteLine("Level : " + level + ", isFinal : " + root.Final());
 
@@ -59,12 +76,13 @@ namespace ArcOthelloMM
             ShowMoves(ops);
             Console.WriteLine("Total : " + ops.Count);
 
-            // Loop on key of possible move
             foreach (Tuple<int, int> op in ops)
             {
                 TreeNode newNode = root.Apply(op);
                 Console.WriteLine("Selected exploration mode : " + op);
-                Tuple<int, Tuple<int, int>> res = AlphaBeta(newNode, level - 1, minOrMax * -1, optVal);
+                Console.WriteLine("Maxmin : " + GetMinOrMax(newNode));
+                //maximize or minimaze depending of the turn
+                Tuple<int, Tuple<int, int>> res = AlphaBeta(newNode, level - 1, GetMinOrMax(newNode), optVal);
                 Console.WriteLine("Current move : " + op);
                 ShowBoard(newNode.Board);
                 Console.WriteLine("Score : " + res.Item1);

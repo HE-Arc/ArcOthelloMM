@@ -9,16 +9,23 @@ namespace IAMargueronMottier
     {
         private Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> ListPossibleMove { get; set; }
         public int[,] Board;
-        private int CurrentPlayerValue;
+        public int CurrentPlayerValue;
         private List<Tuple<int, int>> CurrentPlayerTokens;
         private List<Tuple<int, int>> OpponentPlayerTokens;
+
+        private const int COEF_EVAL_SCORE = 1;
+        private const int COEF_EVAL_POSITION = 1;
+        private const int COEF_POSITION_ANGLE = 5;
+        private const int COEF_POSITION_EDGE = 3;
+        private const int COEF_EVAL_BORDER = 3;
+        private const int COEF_BORDER = -2;
 
         private static Dictionary<Tuple<int,int>, int[,]> PonderationGrids;
 
         static TreeNode()
         {
             PonderationGrids = new Dictionary<Tuple<int, int>, int[,]>();
-            // for other dimension grid add the ponderation grid here
+            // for other dimension grid add the ponderation grid here, because the strategies is not the same on every dimension
             PonderationGrids[new Tuple<int, int>(9, 7)] = new int[,] {
                 {20, 03, 07, 05, 07, 05, 07, 03, 20},
                 {03, 01, 01, 01, 01, 01, 01, 01, 03},
@@ -86,6 +93,7 @@ namespace IAMargueronMottier
         public int Evaluate()
         {
             return EvaluatePositionsWithPonderation();
+            //return Eval_Score() + Eval_Position() + Eval_Border();
         }
 
         public int EvaluatePositionsWithPonderation()
@@ -105,7 +113,7 @@ namespace IAMargueronMottier
 
         public bool Final()
         {
-            return (ListPossibleMove.Count == 0);
+            return (CurrentPlayerTokens.Count + OpponentPlayerTokens.Count == Board.Length);
         }
 
         public List<Tuple<int, int>> Ops()
@@ -310,6 +318,235 @@ namespace IAMargueronMottier
                 if (!alreadyAdded)
                     ListPossibleMove[key].Add(new Tuple<int, int>(tokenToAdd.Item1, tokenToAdd.Item2));
             }
+        }
+
+        private int Eval_Score()
+        {
+            return COEF_EVAL_SCORE * (CurrentPlayerTokens.Count - OpponentPlayerTokens.Count);
+        }
+
+        private int Eval_Position()
+        {
+            int value = 0;
+            foreach (Tuple<int, int> token in CurrentPlayerTokens)
+            {
+                int x = token.Item1;
+                int y = token.Item2;
+
+                if ((x == 0 && y == 0)
+                    || (x == 0 && y == Board.GetLength(1) - 1)
+                    || (x == Board.GetLength(0) - 1 && y == 0)
+                    || (x == Board.GetLength(0) - 1 && y == Board.GetLength(1) - 1))
+                {
+                    value += COEF_POSITION_ANGLE;
+                }
+                else if ((x == 0 && y == 1)
+                    || (x == 1 && y == 0)
+                    || (x == 0 && y == Board.GetLength(1) - 2)
+                    || (x == 1 && y == Board.GetLength(1) - 1)
+                    || (x == Board.GetLength(0) - 2 && y == 0)
+                    || (x == Board.GetLength(0) - 1 && y == 1)
+                    || (x == Board.GetLength(0) - 1 && y == Board.GetLength(1) - 2)
+                    || (x == Board.GetLength(0) - 2 && y == Board.GetLength(1) - 1))
+                {
+                    value -= COEF_POSITION_EDGE;
+                }
+                else if ((x == 1 && y == 1)
+                    || (x == 1 && y == Board.GetLength(1) - 2)
+                    || (x == Board.GetLength(0) - 2 && y == 1)
+                    || (x == Board.GetLength(0) - 2 && y == Board.GetLength(1) - 2))
+                {
+                    value -= COEF_POSITION_ANGLE;
+                }
+                else if (x == 0
+                    || y == 0
+                    || x == Board.GetLength(0) - 1
+                    || y == Board.GetLength(1) - 1)
+                {
+                    value += COEF_POSITION_EDGE;
+                }
+            }
+
+            return COEF_EVAL_POSITION * value;
+        }
+
+        private int Eval_Border()
+        {
+            int value = 0;
+            int opponentPlayerValue = (CurrentPlayerValue == Player.Player0.Value) ? Player.Player1.Value : Player.Player0.Value;
+            
+            foreach (Tuple<int, int> token in CurrentPlayerTokens)
+            {
+                // Left
+                bool isBorder = false;
+                if (token.Item1 - 1 >= 0 && Board[token.Item1 - 1, token.Item2] == -1)
+                {
+                    int i = 1;
+                    while (token.Item1 + i < Board.GetLength(0))
+                    {
+                        if (Board[token.Item1 + i, token.Item2] == opponentPlayerValue)
+                        {
+                            isBorder = true;
+                        }
+                        ++i;
+                    }
+
+                    if (isBorder)
+                    {
+                        value += COEF_BORDER;
+                        continue;
+                    }
+                }
+
+                // LeftTop
+                isBorder = false;
+                if (token.Item1 - 1 >= 0 && token.Item2 - 1 >= 0 && Board[token.Item1 - 1, token.Item2 - 1] == -1)
+                {
+                    int i = 1;
+                    while (token.Item1 + i < Board.GetLength(0) && token.Item2 + i < Board.GetLength(1))
+                    {
+                        if (Board[token.Item1 + i, token.Item2 + i] == opponentPlayerValue)
+                        {
+                            isBorder = true;
+                        }
+                        ++i;
+                    }
+
+                    if (isBorder)
+                    {
+                        value += COEF_BORDER;
+                        continue;
+                    }
+                }
+
+                // Top
+                isBorder = false;
+                if (token.Item2 - 1 >= 0 && Board[token.Item1, token.Item2 - 1] == -1)
+                {
+                    int i = 1;
+                    while (token.Item2 + i < Board.GetLength(1))
+                    {
+                        if (Board[token.Item1, token.Item2 + i] == opponentPlayerValue)
+                        {
+                            isBorder = true;
+                        }
+                        ++i;
+                    }
+
+                    if (isBorder)
+                    {
+                        value += COEF_BORDER;
+                        continue;
+                    }
+                }
+
+                // RightTop
+                isBorder = false;
+                if (token.Item1 + 1 < Board.GetLength(0) && token.Item2 - 1 >= 0 && Board[token.Item1 + 1, token.Item2 - 1] == -1)
+                {
+                    int i = 1;
+                    while (token.Item1 - i >= 0 && token.Item2 + i < Board.GetLength(1))
+                    {
+                        if (Board[token.Item1 - i, token.Item2 + i] == opponentPlayerValue)
+                        {
+                            isBorder = true;
+                        }
+                        ++i;
+                    }
+
+                    if (isBorder)
+                    {
+                        value += COEF_BORDER;
+                        continue;
+                    }
+                }
+
+                // Right
+                isBorder = false;
+                if (token.Item1 + 1 < Board.GetLength(0) && Board[token.Item1 + 1, token.Item2] == -1)
+                {
+                    int i = 1;
+                    while (token.Item1 - i >= 0)
+                    {
+                        if (Board[token.Item1 - i, token.Item2] == opponentPlayerValue)
+                        {
+                            isBorder = true;
+                        }
+                        ++i;
+                    }
+
+                    if (isBorder)
+                    {
+                        value += COEF_BORDER;
+                        continue;
+                    }
+                }
+
+                // RightBottom
+                isBorder = false;
+                if (token.Item1 + 1 < Board.GetLength(0) && token.Item2 + 1 < Board.GetLength(1) && Board[token.Item1 + 1, token.Item2 + 1] == -1)
+                {
+                    int i = 1;
+                    while (token.Item1 - i >= 0 && token.Item2 - i >= 0)
+                    {
+                        if (Board[token.Item1 - i, token.Item2 - i] == opponentPlayerValue)
+                        {
+                            isBorder = true;
+                        }
+                        ++i;
+                    }
+
+                    if (isBorder)
+                    {
+                        value += COEF_BORDER;
+                        continue;
+                    }
+                }
+
+                // Bottom
+                isBorder = false;
+                if (token.Item2 + 1 < Board.GetLength(1) && Board[token.Item1, token.Item2 + 1] == -1)
+                {
+                    int i = 1;
+                    while (token.Item2 - i >= 0)
+                    {
+                        if (Board[token.Item1, token.Item2 - i] == opponentPlayerValue)
+                        {
+                            isBorder = true;
+                        }
+                        ++i;
+                    }
+
+                    if (isBorder)
+                    {
+                        value += COEF_BORDER;
+                        continue;
+                    }
+                }
+
+                // LeftBottom
+                isBorder = false;
+                if (token.Item1 - 1 >= 0 && token.Item2 + 1 < Board.GetLength(1) && Board[token.Item1 - 1, token.Item2 + 1] == -1)
+                {
+                    int i = 1;
+                    while (token.Item1 + i < Board.GetLength(0) && token.Item2 - i >= 0)
+                    {
+                        if (Board[token.Item1 + i, token.Item2 - i] == opponentPlayerValue)
+                        {
+                            isBorder = true;
+                        }
+                        ++i;
+                    }
+
+                    if (isBorder)
+                    {
+                        value += COEF_BORDER;
+                        continue;
+                    }
+                }
+            }
+
+            return COEF_EVAL_BORDER * value;
         }
     }
 }
