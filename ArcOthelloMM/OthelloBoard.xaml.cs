@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Timers;
@@ -29,7 +30,7 @@ namespace ArcOthelloMM
         /// <summary>
         /// Create a new graphical board
         /// </summary>
-        public OthelloBoard()
+        public OthelloBoard(string savePath = null)
         {
             InitializeComponent();
 
@@ -437,12 +438,14 @@ namespace ArcOthelloMM
             saveFileDialog.ShowDialog();
 
             if (saveFileDialog.FileName != "")
-            {
-                IFormatter formatter = new BinaryFormatter();
-                System.IO.FileStream fs = (System.IO.FileStream)saveFileDialog.OpenFile();
+                SaveGameSave(saveFileDialog.FileName);
+        }
+
+        public void SaveGameSave(string path)
+        {
+            IFormatter formatter = new BinaryFormatter();
+            using (FileStream fs = File.OpenRead(path))
                 formatter.Serialize(fs, LogicalBoard.Instance);
-                fs.Close();
-            }
         }
 
         /// <summary>
@@ -458,14 +461,23 @@ namespace ArcOthelloMM
             openFileDialog.ShowDialog();
 
             if (openFileDialog.FileName != "")
+                LoadGameSave(openFileDialog.FileName);
+        }
+
+        public void LoadGameSave(string path)
+        {
+            if (File.Exists(path))
             {
                 IFormatter formatter = new BinaryFormatter();
-                System.IO.FileStream fs = (System.IO.FileStream)openFileDialog.OpenFile();
-                LogicalBoard.Instance = (LogicalBoard)formatter.Deserialize(fs);
-                fs.Close();
+                using (FileStream fs = File.OpenRead(path))
+                    LogicalBoard.Instance = (LogicalBoard)formatter.Deserialize(fs);
+                UpdateDataContext();
                 UpdateGui();
             }
-            UpdateDataContext();
+            else
+            {
+                MessageBox.Show("File \"" + path + "\" doesnt exist !", "File error", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
 
         /// <summary>
