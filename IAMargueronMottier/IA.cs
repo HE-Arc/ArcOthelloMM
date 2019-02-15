@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace ArcOthelloMM
 {
@@ -34,6 +35,19 @@ namespace ArcOthelloMM
             List<Tuple<int, int>> keys = new List<Tuple<int, int>>(moves.Keys);
             int move = random.Next(moves.Count);
             return keys[move];
+        }
+
+        public Tuple<int, int> MinMaxAI(int[,] game, int level, bool whiteTurn)
+        {
+            return new Tuple<int, int>(0, 0);
+        }
+
+        private Tuple<int, int> min(TreeNode root, int depth)
+        {
+            if(depth == 0 || root.final())
+            {
+                return 
+            }
         }
     }
 }
