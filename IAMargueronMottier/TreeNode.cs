@@ -25,7 +25,6 @@ namespace IAMargueronMottier
         static TreeNode()
         {
             PonderationGrids = new Dictionary<Tuple<int, int>, int[,]>();
-            // for other dimension grid add the ponderation grid here, because the strategies is not the same on every dimension
             PonderationGrids[new Tuple<int, int>(9, 7)] = new int[,] {
                 {20, 03, 07, 05, 07, 05, 07, 03, 20},
                 {03, 01, 01, 01, 01, 01, 01, 01, 03},
@@ -39,28 +38,28 @@ namespace IAMargueronMottier
 
         public TreeNode(TreeNode treeNode)
         {
-            //ListPossibleMove Copy
+            // ListPossibleMove Copy
             ListPossibleMove = new Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>>();
             foreach (KeyValuePair<Tuple<int, int>, HashSet<Tuple<int, int>>> entry in ListPossibleMove)
             {
                 ListPossibleMove[entry.Key] = new HashSet<Tuple<int, int>>(entry.Value);
             }
 
-            //Board copy
+            // Board copy
             Board = new int[treeNode.Board.GetLength(0), treeNode.Board.GetLength(1)];
             for (int x = 0; x < Board.GetLength(0); x++)
                 for (int y = 0; y < Board.GetLength(1); y++)
                     Board[x, y] = treeNode.Board[x, y];
 
-            //CurrentPlayerValue Copy
+            // CurrentPlayerValue Copy
             CurrentPlayerValue = treeNode.CurrentPlayerValue;
 
-            //CurrentPlayerTokens Copy
+            // CurrentPlayerTokens Copy
             CurrentPlayerTokens = new List<Tuple<int, int>>();
             foreach (Tuple<int, int> token in treeNode.CurrentPlayerTokens)
                 CurrentPlayerTokens.Add(new Tuple<int, int>(token.Item1, token.Item2));
 
-            //OpponentPlayerTokens Copy
+            // OpponentPlayerTokens Copy
             OpponentPlayerTokens = new List<Tuple<int, int>>();
             foreach (Tuple<int, int> token in treeNode.OpponentPlayerTokens)
                 OpponentPlayerTokens.Add(new Tuple<int, int>(token.Item1, token.Item2));
@@ -96,21 +95,6 @@ namespace IAMargueronMottier
             //return Eval_Score() + Eval_Position() + Eval_Border();
         }
 
-        public int EvaluatePositionsWithPonderation()
-        {
-            Tuple<int, int> gridDim = new Tuple<int, int>(Board.GetLength(0), Board.GetLength(1));
-            if (!PonderationGrids.ContainsKey(gridDim))
-                throw new Exception("grid dim not handled for the AI");
-
-            int[,] ponderationGrid = PonderationGrids[gridDim];
-            int sum = 0;
-            foreach(Tuple<int, int> pos in CurrentPlayerTokens)
-                sum += ponderationGrid[pos.Item1, pos.Item2];
-            foreach (Tuple<int, int> pos in OpponentPlayerTokens)
-                sum -= ponderationGrid[pos.Item1, pos.Item2];
-            return sum;
-        }
-
         public bool Final()
         {
             return (CurrentPlayerTokens.Count + OpponentPlayerTokens.Count == Board.Length);
@@ -143,10 +127,43 @@ namespace IAMargueronMottier
                 copy.SwitchPlayer();
                 copy.GetListPossibleMove();
                 //if(copy.ListPossibleMove.Count == 0)
-                  //  throw new Exception("Why did you ask the ai to play on a finished game");
+                  //  throw new Exception("cant play on a finished game");
             }
            
             return copy;
+        }
+        
+        
+        public void Show()
+        {
+            ShowMoves(ListPossibleMove.Keys.ToList<Tuple<int,int>>());
+            ShowBoard(Board);
+        }
+
+        private static void ShowMoves(List<Tuple<int, int>> moves)
+        {
+            if (moves.Count <= 0)
+                Console.WriteLine("no moves available");
+            foreach (Tuple<int, int> move in moves)
+            {
+                Console.WriteLine(move);
+            }
+        }
+
+        private static void ShowBoard(int[,] Board)
+        {
+            for (int y = 0; y < Board.GetLength(1); ++y)
+            {
+                for (int x = 0; x < Board.GetLength(0); ++x)
+                {
+                    int value = Board[x, y];
+                    if (value >= 0)
+                        Console.Write(value + " ");
+                    else
+                        Console.Write("- ");
+                }
+                Console.Write("\n");
+            }
         }
 
         public void SwitchPlayer()
@@ -318,6 +335,21 @@ namespace IAMargueronMottier
                 if (!alreadyAdded)
                     ListPossibleMove[key].Add(new Tuple<int, int>(tokenToAdd.Item1, tokenToAdd.Item2));
             }
+        }
+        
+        public int EvaluatePositionsWithPonderation()
+        {
+            Tuple<int, int> gridDim = new Tuple<int, int>(Board.GetLength(0), Board.GetLength(1));
+            if (!PonderationGrids.ContainsKey(gridDim))
+                throw new Exception("grid dim not handled for the AI");
+
+            int[,] ponderationGrid = PonderationGrids[gridDim];
+            int sum = 0;
+            foreach (Tuple<int, int> pos in CurrentPlayerTokens)
+                sum += ponderationGrid[pos.Item1, pos.Item2];
+            foreach (Tuple<int, int> pos in OpponentPlayerTokens)
+                sum -= ponderationGrid[pos.Item1, pos.Item2];
+            return sum;
         }
 
         private int Eval_Score()
