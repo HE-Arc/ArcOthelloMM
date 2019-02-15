@@ -8,8 +8,8 @@ namespace IAMargueronMottier
     class TreeNode
     {
         private Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> ListPossibleMove { get; set; }
-        private int[,] Board;
-        private readonly int CurrentPlayerValue;
+        public int[,] Board;
+        private int CurrentPlayerValue;
         private List<Tuple<int, int>> CurrentPlayerTokens;
         private List<Tuple<int, int>> OpponentPlayerTokens;
 
@@ -18,6 +18,7 @@ namespace IAMargueronMottier
         static TreeNode()
         {
             PonderationGrids = new Dictionary<Tuple<int, int>, int[,]>();
+            // for other dimension grid add the ponderation grid here
             PonderationGrids[new Tuple<int, int>(9, 7)] = new int[,] {
                 {20, 03, 07, 05, 07, 05, 07, 03, 20},
                 {03, 01, 01, 01, 01, 01, 01, 01, 03},
@@ -31,11 +32,34 @@ namespace IAMargueronMottier
 
         public TreeNode(TreeNode treeNode)
         {
-            this.Board = (int[,])treeNode.Board.Clone();
-            
+            //ListPossibleMove Copy
+            ListPossibleMove = new Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>>();
+            foreach (KeyValuePair<Tuple<int, int>, HashSet<Tuple<int, int>>> entry in ListPossibleMove)
+            {
+                ListPossibleMove[entry.Key] = new HashSet<Tuple<int, int>>(entry.Value);
+            }
+
+            //Board copy
+            Board = new int[treeNode.Board.GetLength(0), treeNode.Board.GetLength(1)];
+            for (int x = 0; x < Board.GetLength(0); x++)
+                for (int y = 0; y < Board.GetLength(1); y++)
+                    Board[x, y] = treeNode.Board[x, y];
+
+            //CurrentPlayerValue Copy
+            CurrentPlayerValue = treeNode.CurrentPlayerValue;
+
+            //CurrentPlayerTokens Copy
+            CurrentPlayerTokens = new List<Tuple<int, int>>();
+            foreach (Tuple<int, int> token in treeNode.CurrentPlayerTokens)
+                CurrentPlayerTokens.Add(new Tuple<int, int>(token.Item1, token.Item2));
+
+            //OpponentPlayerTokens Copy
+            OpponentPlayerTokens = new List<Tuple<int, int>>();
+            foreach (Tuple<int, int> token in treeNode.OpponentPlayerTokens)
+                OpponentPlayerTokens.Add(new Tuple<int, int>(token.Item1, token.Item2));
         }
 
-        public TreeNode(int[,] board, int currentPlayerValue, List<Tuple<int, int>> currentPlayerTokens = null, List<Tuple<int, int>> opponentPlayerTokens = null)
+        public TreeNode(int[,] board, int currentPlayerValue)
         {
             Board = board;
             CurrentPlayerValue = currentPlayerValue;
@@ -45,33 +69,17 @@ namespace IAMargueronMottier
             CurrentPlayerTokens = new List<Tuple<int, int>>();
             OpponentPlayerTokens = new List<Tuple<int, int>>();
 
-            if (currentPlayerTokens == null)
+            for (int x = 0; x < Board.GetLength(0); ++x)
             {
-                for (int x = 0; x < Board.GetLength(0); ++x)
+                for (int y = 0; y < Board.GetLength(1); ++y)
                 {
-                    for (int y = 0; y < Board.GetLength(1); ++y)
-                    {
-                        if (Board[x, y] == currentPlayerValue)
-                            CurrentPlayerTokens.Add(new Tuple<int, int>(x, y));
-                        else if (Board[x, y] != -1)
-                            OpponentPlayerTokens.Add(new Tuple<int, int>(x, y));
-                    }
-                }
-            }
-            else
-            {
-                foreach (Tuple<int, int> token in currentPlayerTokens)
-                {
-                    CurrentPlayerTokens.Add(new Tuple<int, int>(token.Item1, token.Item2));
-                }
-
-                foreach (Tuple<int, int> token in opponentPlayerTokens)
-                {
-                    OpponentPlayerTokens.Add(new Tuple<int, int>(token.Item1, token.Item2));
+                    if (Board[x, y] == currentPlayerValue)
+                        CurrentPlayerTokens.Add(new Tuple<int, int>(x, y));
+                    else if (Board[x, y] != -1)
+                        OpponentPlayerTokens.Add(new Tuple<int, int>(x, y));
                 }
             }
 
-            // Same as a real play move but without archive and modification of the state of the game
             GetListPossibleMove();
         }
 
@@ -82,7 +90,11 @@ namespace IAMargueronMottier
 
         public int EvaluatePositionsWithPonderation()
         {
-            int[,] ponderationGrid = PonderationGrids[new Tuple<int, int>(Board.GetLength(0), Board.GetLength(1))];
+            Tuple<int, int> gridDim = new Tuple<int, int>(Board.GetLength(0), Board.GetLength(1));
+            if (!PonderationGrids.ContainsKey(gridDim))
+                throw new Exception("grid dim not handled for the AI");
+
+            int[,] ponderationGrid = PonderationGrids[gridDim];
             int sum = 0;
             foreach(Tuple<int, int> pos in CurrentPlayerTokens)
                 sum += ponderationGrid[pos.Item1, pos.Item2];
@@ -98,37 +110,40 @@ namespace IAMargueronMottier
 
         public List<Tuple<int, int>> Ops()
         {
-            return ListPossibleMove.Keys.ToList<Tuple<int, int>>();
+            List<Tuple<int, int>> moves = ListPossibleMove.Keys.ToList<Tuple<int, int>>();
+            return moves;
         }
 
-        /// <summary>
-        /// Apply a move
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
         public TreeNode Apply(Tuple<int, int> key)
         {
-            // Depth copy
-            int[,] BoardCopy = new int[Board.GetLength(0), Board.GetLength(1)];
-            for (int x = 0; x < Board.GetLength(0); ++x)
-            {
-                for (int y = 0; y < Board.GetLength(1); ++y)
-                {
-                    BoardCopy[x, y] = Board[x, y];
-                }
-            }
+            TreeNode copy = new TreeNode(this);
 
-            // Apply the move
             foreach (Tuple<int, int> token in ListPossibleMove[key])
             {
-                BoardCopy[token.Item1, token.Item2] = CurrentPlayerValue;
-                CurrentPlayerTokens.Add(token);
-                if (OpponentPlayerTokens.Contains(token))
-                    OpponentPlayerTokens.Remove(token);
+                copy.CurrentPlayerTokens.Add(token);
+                copy.Board[token.Item1, token.Item2] = CurrentPlayerValue;
+
+                if (copy.OpponentPlayerTokens.Contains(token))
+                    copy.OpponentPlayerTokens.Remove(token);
             }
 
-            // Create new node for the algorithm
-            return new TreeNode(BoardCopy, CurrentPlayerValue == Player.Player0.Value ? Player.Player1.Value : Player.Player0.Value, OpponentPlayerTokens, CurrentPlayerTokens);
+            copy.SwitchPlayer();
+            copy.GetListPossibleMove();
+            
+            if (copy.ListPossibleMove.Count <= 0) //turn skiped
+            {
+                copy.SwitchPlayer();
+                copy.GetListPossibleMove();
+                //if(copy.ListPossibleMove.Count == 0)
+                  //  throw new Exception("Why did you ask the ai to play on a finished game");
+            }
+           
+            return copy;
+        }
+
+        public void SwitchPlayer()
+        {
+            CurrentPlayerValue = CurrentPlayerValue == Player.Player0.Value ? Player.Player1.Value : Player.Player0.Value;
         }
 
         private void GetListPossibleMove()

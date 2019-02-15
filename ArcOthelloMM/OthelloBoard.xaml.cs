@@ -83,7 +83,8 @@ namespace ArcOthelloMM
             //add columns labels
             for (int i = 1; i <= othelloGridCells.GetLength(0); i++)
             {
-                OthelloGridLabel label = new OthelloGridLabel("" + Convert.ToChar(i + 64));
+                //OthelloGridLabel label = new OthelloGridLabel("" + Convert.ToChar(i + 64));
+                OthelloGridLabel label = new OthelloGridLabel("" + (i - 1));
 
                 Grid.SetColumn(label, i);
                 Grid.SetRow(label, 0);
@@ -94,7 +95,8 @@ namespace ArcOthelloMM
             //add rows labels
             for (int i = 1; i <= othelloGridCells.GetLength(1); i++)
             {
-                OthelloGridLabel label = new OthelloGridLabel("" + i);
+                //OthelloGridLabel label = new OthelloGridLabel("" + i);
+                OthelloGridLabel label = new OthelloGridLabel("" + (i - 1));
 
                 Grid.SetColumn(label, 0);
                 Grid.SetRow(label, i);

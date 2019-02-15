@@ -46,17 +46,29 @@ namespace ArcOthelloMM
             // minOrMax = 1 => maximize
             // minOrMax = -1 => minimize
 
-            if (level == 0 || root.Final())
+            Console.WriteLine("Level : " + level + ", isFinal : " + root.Final());
+
+            if (level <= 0 || root.Final())
                 return new Tuple<int, Tuple<int, int>>(root.Evaluate(), null);
 
             int optVal = minOrMax * int.MinValue;
             Tuple<int, int> optOp = null;
 
+            List<Tuple<int, int>> ops = root.Ops();
+            Console.WriteLine("Possibles moves : ");
+            ShowMoves(ops);
+            Console.WriteLine("Total : " + ops.Count);
+
             // Loop on key of possible move
-            foreach (Tuple<int, int> op in root.Ops())
+            foreach (Tuple<int, int> op in ops)
             {
                 TreeNode newNode = root.Apply(op);
+                Console.WriteLine("Selected exploration mode : " + op);
                 Tuple<int, Tuple<int, int>> res = AlphaBeta(newNode, level - 1, minOrMax * -1, optVal);
+                Console.WriteLine("Current move : " + op);
+                ShowBoard(newNode.Board);
+                Console.WriteLine("Score : " + res.Item1);
+                Console.WriteLine("");
 
                 if (res.Item1 * minOrMax > optVal * minOrMax)
                 {
@@ -69,6 +81,31 @@ namespace ArcOthelloMM
             }
 
             return new Tuple<int, Tuple<int, int>>(root.Evaluate(), optOp);
+        }
+
+
+        private static void ShowMoves(List<Tuple<int, int>> moves)
+        {
+            foreach (Tuple<int, int> move in moves)
+            {
+                Console.WriteLine(move);
+            }
+        }
+
+        private static void ShowBoard(int[,] Board)
+        {
+            for (int y = 0; y < Board.GetLength(1); ++y)
+            {
+                for (int x = 0; x < Board.GetLength(0); ++x)
+                {
+                    int value = Board[x, y];
+                    if (value >= 0)
+                        Console.Write(value + " ");
+                    else
+                        Console.Write("- ");
+                }
+                Console.Write("\n");
+            }
         }
 
         public Tuple<int, int> StupidAI(int[,] game, int level, bool whiteTurn)
