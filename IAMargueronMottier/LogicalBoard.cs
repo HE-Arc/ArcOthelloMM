@@ -211,7 +211,7 @@ namespace ArcOthelloMM
         /// </summary>
         /// <param name="isWhite"></param>
         /// <returns></returns>
-        private Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> UpdatePossibleMove(bool isWhite)
+        private Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> UpdatePossibleMove()
         {
             ListPossibleMove.Clear();
             foreach (Tuple<int, int> token in CurrentPlayer.Tokens)
@@ -319,8 +319,9 @@ namespace ArcOthelloMM
 
         public void PlayAI()
         {
-            Tuple<int, int> move = IA.Instance.GetNextMove(Board, 0, CurrentPlayerTurn);
-            LogicalBoard.Instance.PlayMove(move.Item1, move.Item2, CurrentPlayerTurn);
+            Tuple<int, int> move = IA.Instance.GetNextMove(Board, 5, CurrentPlayerTurn);
+            if (move != null)
+                LogicalBoard.Instance.PlayMove(move.Item1, move.Item2, CurrentPlayerTurn);
         }
 
         /// <summary>
@@ -408,7 +409,7 @@ namespace ArcOthelloMM
         /// <returns></returns>
         public bool IsPlayable(int column, int line, bool isWhite)
         {
-            UpdatePossibleMove(isWhite);
+            UpdatePossibleMove();
 
             if (Board[line, column] != 0 || ListPossibleMove.ContainsKey(new Tuple<int, int>(column, line)))
                 return true;
@@ -425,7 +426,7 @@ namespace ArcOthelloMM
         /// <returns></returns>
         public bool PlayMove(int column, int line, bool isWhite)
         {
-            UpdatePossibleMove(isWhite);
+            UpdatePossibleMove();
 
             if (ListPossibleMove.Count == 0)
                 return false;
@@ -483,7 +484,7 @@ namespace ArcOthelloMM
         {
             get
             {
-                return UpdatePossibleMove(CurrentPlayerTurn);
+                return UpdatePossibleMove();
             }
         }
 
