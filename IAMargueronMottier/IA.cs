@@ -25,14 +25,20 @@ namespace ArcOthelloMM
             }
         }
 
-        private Random Random;
+        private static Random random;
         private int CurrentPlayerValue;
+
+        static IA()
+        {
+            random = new Random();
+        }
 
         public Tuple<int, int> GetNextMove(int[,] game, int level, bool whiteTurn)
         {
             CurrentPlayerValue = (whiteTurn) ? Player.Player1.Value : Player.Player0.Value;
 
             return AlphaBeta(new TreeNode(game, CurrentPlayerValue), level, 1, int.MinValue).Item2;
+            //return StupidAI(game, level, whiteTurn);
         }
 
         private Tuple<int, Tuple<int, int>> AlphaBeta(TreeNode root, int level, int minOrMax, int parentValue)
@@ -41,9 +47,7 @@ namespace ArcOthelloMM
             // minOrMax = -1 => minimize
 
             if (level == 0 || root.Final())
-            {
                 return new Tuple<int, Tuple<int, int>>(root.Evaluate(), null);
-            }
 
             int optVal = minOrMax * int.MinValue;
             Tuple<int, int> optOp = null;
@@ -60,9 +64,7 @@ namespace ArcOthelloMM
                     optOp = op;
 
                     if (res.Item1 * minOrMax > parentValue * minOrMax)
-                    {
                         break;
-                    }
                 }
             }
 
@@ -73,7 +75,7 @@ namespace ArcOthelloMM
         {
             Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> moves = LogicalBoard.Instance.CurrentPossibleMoves;
             List<Tuple<int, int>> keys = new List<Tuple<int, int>>(moves.Keys);
-            int move = Random.Next(moves.Count);
+            int move = random.Next(moves.Count);
             return keys[move];
         }
     }

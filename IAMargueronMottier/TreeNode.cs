@@ -9,9 +9,31 @@ namespace IAMargueronMottier
     {
         private Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> ListPossibleMove { get; set; }
         private int[,] Board;
-        private int CurrentPlayerValue;
+        private readonly int CurrentPlayerValue;
         private List<Tuple<int, int>> CurrentPlayerTokens;
         private List<Tuple<int, int>> OpponentPlayerTokens;
+
+        private static Dictionary<Tuple<int,int>, int[,]> PonderationGrids;
+
+        static TreeNode()
+        {
+            PonderationGrids = new Dictionary<Tuple<int, int>, int[,]>();
+            PonderationGrids[new Tuple<int, int>(9, 7)] = new int[,] {
+                {20, 03, 07, 05, 07, 05, 07, 03, 20},
+                {03, 01, 01, 01, 01, 01, 01, 01, 03},
+                {07, 01, 05, 05, 05, 05, 05, 01, 07},
+                {05, 01, 05, 05, 05, 05, 05, 01, 05},
+                {07, 01, 05, 05, 05, 05, 05, 01, 07},
+                {03, 01, 05, 05, 05, 05, 05, 01, 03},
+                {20, 03, 07, 05, 07, 05, 07, 03, 20},
+            };
+        }
+
+        public TreeNode(TreeNode treeNode)
+        {
+            this.Board = (int[,])treeNode.Board.Clone();
+            
+        }
 
         public TreeNode(int[,] board, int currentPlayerValue, List<Tuple<int, int>> currentPlayerTokens = null, List<Tuple<int, int>> opponentPlayerTokens = null)
         {
@@ -55,7 +77,18 @@ namespace IAMargueronMottier
 
         public int Evaluate()
         {
-            return 0;
+            return EvaluatePositionsWithPonderation();
+        }
+
+        public int EvaluatePositionsWithPonderation()
+        {
+            int[,] ponderationGrid = PonderationGrids[new Tuple<int, int>(Board.GetLength(0), Board.GetLength(1))];
+            int sum = 0;
+            foreach(Tuple<int, int> pos in CurrentPlayerTokens)
+                sum += ponderationGrid[pos.Item1, pos.Item2];
+            foreach (Tuple<int, int> pos in OpponentPlayerTokens)
+                sum -= ponderationGrid[pos.Item1, pos.Item2];
+            return sum;
         }
 
         public bool Final()
