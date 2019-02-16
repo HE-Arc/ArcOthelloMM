@@ -40,10 +40,6 @@ namespace IAMargueronMottier
         {
             // ListPossibleMove Copy
             ListPossibleMove = new Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>>();
-            foreach (KeyValuePair<Tuple<int, int>, HashSet<Tuple<int, int>>> entry in ListPossibleMove)
-            {
-                ListPossibleMove[entry.Key] = new HashSet<Tuple<int, int>>(entry.Value);
-            }
 
             // Board copy
             Board = new int[treeNode.Board.GetLength(0), treeNode.Board.GetLength(1)];
@@ -112,11 +108,12 @@ namespace IAMargueronMottier
 
             foreach (Tuple<int, int> token in ListPossibleMove[key])
             {
-                copy.CurrentPlayerTokens.Add(token);
+                if (!copy.OpponentPlayerTokens.Contains(token))
+                    copy.OpponentPlayerTokens.Add(token);
                 copy.Board[token.Item1, token.Item2] = CurrentPlayerValue;
 
-                if (copy.OpponentPlayerTokens.Contains(token))
-                    copy.OpponentPlayerTokens.Remove(token);
+                if (copy.CurrentPlayerTokens.Contains(token))
+                    copy.CurrentPlayerTokens.Remove(token);
             }
 
             copy.SwitchPlayer();

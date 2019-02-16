@@ -85,8 +85,8 @@ namespace ArcOthelloMM
                     optVal = res.Item1;
                     optOp = op;
 
-                    //if (res.Item1 * minOrMax > parentValue * minOrMax)
-                      //  break;
+                    if (res.Item1 * minOrMax > parentValue * minOrMax)
+                        break;
                 }
             }
 
