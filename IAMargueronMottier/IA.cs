@@ -33,65 +33,18 @@ namespace ArcOthelloMM
             random = new Random();
         }
 
-        private int GetMinOrMax(TreeNode treeNode)
+        private bool GetMinOrMax(TreeNode treeNode)
         {
-            if (treeNode.CurrentPlayerValue == AiMinMaxPlayerValue)
-                return 1; // it's your turn maximize your outcome
-            else
-                return -1; //it's his turn, he will minimize your outcome
-        }
-
-        private bool GetMinOrMax(TreeNode treeNode, bool b)
-        {
-            return treeNode.CurrentPlayerValue == AiMinMaxPlayerValue;
+            return treeNode.CurrentValue == AiMinMaxPlayerValue;
         }
 
         public Tuple<int, int> GetNextMove(int[,] game, int level, bool whiteTurn)
         {
+            Console.WriteLine("Next move");
             AiMinMaxPlayerValue = (whiteTurn) ? Player.Player1.Value : Player.Player0.Value;
                         
             return AlphaBetaWikipedia(game, 5);
             //return StupidAI(game, level, whiteTurn);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="root"></param>
-        /// <param name="level"></param>
-        /// <param name="minOrMax">1 => maximize, -1 => minimize</param>
-        /// <param name="parentValue"></param>
-        /// <returns></returns>
-        private Tuple<int, Tuple<int, int>> AlphaBeta(TreeNode root, int level, int minOrMax, int parentValue)
-        {
-            Console.WriteLine("Level : " + level + ", isFinal : " + root.Final());
-
-            if (level <= 0 || root.Final())
-                return new Tuple<int, Tuple<int, int>>(root.Evaluate(), null);
-
-            int optVal = minOrMax * int.MinValue;
-            Tuple<int, int> optOp = null;
-
-            List<Tuple<int, int>> ops = root.Ops();
-
-            foreach (Tuple<int, int> op in ops)
-            {
-                TreeNode newNode = root.Apply(op);
-                newNode.Show();
-                //maximize or minimaze depending of the turn
-                Tuple<int, Tuple<int, int>> res = AlphaBeta(newNode, level - 1, GetMinOrMax(newNode), optVal);
-
-                if (res.Item1 * minOrMax > optVal * minOrMax)
-                {
-                    optVal = res.Item1;
-                    optOp = op;
-
-                    if (res.Item1 * minOrMax > parentValue * minOrMax)
-                        break;
-                }
-            }
-
-            return new Tuple<int, Tuple<int, int>>(root.Evaluate(), optOp);
         }
 
         private Tuple<int, int> AlphaBetaWikipedia(int[,] game, int depth)
@@ -105,13 +58,13 @@ namespace ArcOthelloMM
             if (res.Item2 == null)
                 throw new Exception("no moves possibles for this player");
 
+            Console.WriteLine("move/heuristique : " + res);
+
             return res.Item2;
         }
 
         private Tuple<int, Tuple<int, int>> _AlphaBetaWikipedia(TreeNode node, int depth, int alpha = int.MinValue, int beta = int.MaxValue, bool maximizingPlayer = true)
         {
-            //Console.WriteLine("Level : " + depth);
-
             Tuple<int, int> move = null;
             int value;
 
@@ -124,10 +77,7 @@ namespace ArcOthelloMM
                 foreach (Tuple<int, int> op in node.Ops())
                 {
                     TreeNode child = node.Apply(op);
-                    //Console.WriteLine("move : " + op);
-                    //child.Show();
-                    Tuple<int, Tuple<int, int>> result = _AlphaBetaWikipedia(child, depth - 1, alpha, beta, GetMinOrMax(child, true));
-                    //Console.WriteLine("euristique : " + result.Item1);
+                    Tuple<int, Tuple<int, int>> result = _AlphaBetaWikipedia(child, depth - 1, alpha, beta, GetMinOrMax(child));
                     if (result.Item1 > value)
                     {
                         value = result.Item1;
@@ -147,10 +97,7 @@ namespace ArcOthelloMM
                 foreach (Tuple<int, int> op in node.Ops())
                 {
                     TreeNode child = node.Apply(op);
-                    //Console.WriteLine("move : " + op);
-                    //child.Show();
-                    Tuple<int, Tuple<int, int>> result = _AlphaBetaWikipedia(child, depth - 1, alpha, beta, GetMinOrMax(child, true));
-                    //Console.WriteLine("euristique : " + result.Item1);
+                    Tuple<int, Tuple<int, int>> result = _AlphaBetaWikipedia(child, depth - 1, alpha, beta, GetMinOrMax(child));
                     if (result.Item1 < value)
                     {
                         value = result.Item1;

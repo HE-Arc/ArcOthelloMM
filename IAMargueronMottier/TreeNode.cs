@@ -7,34 +7,141 @@ namespace IAMargueronMottier
 {
     class TreeNode
     {
-        private Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> ListPossibleMove { get; set; }
         public int[,] Board;
-        public int CurrentPlayerValue;
-        private List<Tuple<int, int>> CurrentPlayerTokens;
-        private List<Tuple<int, int>> OpponentPlayerTokens;
 
-        private static Dictionary<Tuple<int, int>, int[,]> PonderationGrids;
+        public int CurrentValue;
+        public int OpponentValue { get { return CurrentValue == 0 ? 1 : 0; } }
+        public const int EmptyValue = -1;
+
+        private List<Tuple<int, int>> TokenPlayer0;
+        private List<Tuple<int, int>> TokenPlayer1;
+
+        private List<Tuple<int, int>> CurrentToken { get { return CurrentValue == 0 ? TokenPlayer0 : TokenPlayer1; } }
+        private List<Tuple<int, int>> OpponentToken { get { return CurrentValue == 1 ? TokenPlayer0 : TokenPlayer1; } }
+
+        private Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> ListPossibleMove { get; set; }
+
+        private bool GameIsFinished;
+
+        private static readonly Dictionary<Tuple<int, int>, int[,]> PonderationGrids;
+        private static readonly List<Tuple<int, int>> directions;
 
         static TreeNode()
         {
-            PonderationGrids = new Dictionary<Tuple<int, int>, int[,]>();
-            PonderationGrids[new Tuple<int, int>(9, 7)] = new int[,] {
-                {100, 03, 09, 07, 09, 03, 100},
-                {03, 01, 03, 03, 03, 01, 03},
+            PonderationGrids = new Dictionary<Tuple<int, int>, int[,]>
+            {
+                [new Tuple<int, int>(9, 7)] = new int[,] {
+                {200, 03, 09, 07, 09, 03, 200},
+                {03, -200, 03, 03, 03, -200, 03},
                 {09, 03, 07, 07, 07, 03, 09},
                 {07, 03, 07, 07, 07, 03, 07},
                 {09, 03, 07, 07, 07, 03, 09},
                 {07, 03, 07, 07, 07, 03, 07},
                 {09, 03, 07, 07, 07, 03, 09},
-                {03, 01, 03, 03, 03, 01, 03},
-                {100, 03, 09, 07, 09, 03, 100},
+                {03, -200, 03, 03, 03, -200, 03},
+                {200, 01, 09, 07, 09, 03, 200},
+            }
             };
+
+            //C# dont have native vector2 class?
+            directions = new List<Tuple<int, int>>
+            {
+                new Tuple<int, int>(1, 1),
+                new Tuple<int, int>(-1, -1),
+                new Tuple<int, int>(0, 1),
+                new Tuple<int, int>(0, -1),
+                new Tuple<int, int>(1, 0),
+                new Tuple<int, int>(-1, 0),
+                new Tuple<int, int>(1, -1),
+                new Tuple<int, int>(-1, 1)
+            };
+
+            TestMoveDetection();
+        }
+
+        public static void TestMoveDetection()
+        {
+            //ExempleMoveNormal();
+            //Console.WriteLine("-----------");
+            //ExempleMoveSkip();
+            //Console.WriteLine("-----------");
+            //ExempleMoveFinish();
+            //Console.WriteLine("-----------");
+        }
+
+        private static void ExempleMoveNormal()
+        {
+            int[,] board = new int[,]
+            {
+                {-1, -1, -1, -1, -1, -1, -1},
+                {-1, -1, -1, -1, -1, -1, -1},
+                {-1, -1, -1, -1, -1, -1, -1},
+                {-1, -1,  1,  0, -1, -1, -1},
+                {-1, -1,  0,  1, -1, -1, -1},
+                {-1, -1, -1, -1, -1, -1, -1},
+                {-1, -1, -1, -1, -1, -1, -1},
+                {-1, -1, -1, -1, -1, -1, -1},
+                {-1, -1, -1, -1, -1, -1, -1},
+            };
+            TreeNode treeNode = new TreeNode(board, 0);
+            treeNode.Show();
+            Console.WriteLine("----");
+            treeNode = treeNode.Apply(new Tuple<int, int>(2, 2));
+            treeNode.Show();
+            treeNode = treeNode.Apply(new Tuple<int, int>(2, 3));
+            treeNode.Show();
+        }
+
+        private static void ExempleMoveSkip()
+        {
+            int[,] board = new int[,]
+            {
+                {-1, -1, -1, -1,  0,  0,  0},
+                {-1, -1, -1, -1,  1,  1,  0},
+                {-1, -1, -1, -1, -1, -1,  0},
+                {-1, -1, -1, -1, -1, -1,  0},
+                {-1, -1, -1, -1, -1, -1, -1},
+                {-1, -1, -1, -1, -1, -1, -1},
+                {-1, -1, -1, -1, -1, -1, -1},
+                {-1, -1, -1, -1, -1, -1, -1},
+                {-1, -1, -1, -1, -1, -1, -1},
+            };
+            TreeNode treeNode = new TreeNode(board, 0);
+            treeNode.Show();
+            Console.WriteLine("----");
+            treeNode = treeNode.Apply(new Tuple<int, int>(2, 5));
+            treeNode.Show();            
+        }
+
+        private static void ExempleMoveFinish()
+        {
+            int[,] board = new int[,]
+            {
+                {-1, -1, -1, -1, -1, -1, -1},
+                {-1, -1, -1, -1, -1, -1, -1},
+                {-1, -1, -1, -1, -1, -1, -1},
+                {-1, -1, -1,  0, -1, -1, -1},
+                {-1, -1, -1,  1, -1, -1, -1},
+                {-1, -1, -1,  1, -1, -1, -1},
+                {-1, -1, -1, -1, -1, -1, -1},
+                {-1, -1, -1, -1, -1, -1, -1},
+                {-1, -1, -1, -1, -1, -1, -1},
+            };
+            TreeNode treeNode = new TreeNode(board, 0);
+            treeNode.Show();
+            Console.WriteLine("----");
+            treeNode = treeNode.Apply(new Tuple<int, int>(6, 3));
+            treeNode.Show();
+
+            Console.WriteLine("-----------");
         }
 
         public TreeNode(TreeNode treeNode)
         {
             // ListPossibleMove Copy
             ListPossibleMove = new Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>>();
+            foreach (KeyValuePair<Tuple<int, int>, HashSet<Tuple<int, int>>> entry in treeNode.ListPossibleMove)
+                ListPossibleMove.Add(new Tuple<int, int>(entry.Key.Item1, entry.Key.Item2), new HashSet<Tuple<int, int>>(entry.Value));
 
             // Board copy
             Board = new int[treeNode.Board.GetLength(0), treeNode.Board.GetLength(1)];
@@ -43,51 +150,44 @@ namespace IAMargueronMottier
                     Board[x, y] = treeNode.Board[x, y];
 
             // CurrentPlayerValue Copy
-            CurrentPlayerValue = treeNode.CurrentPlayerValue;
+            CurrentValue = treeNode.CurrentValue;
 
             // CurrentPlayerTokens Copy
-            CurrentPlayerTokens = new List<Tuple<int, int>>();
-            foreach (Tuple<int, int> token in treeNode.CurrentPlayerTokens)
-                CurrentPlayerTokens.Add(new Tuple<int, int>(token.Item1, token.Item2));
+            TokenPlayer0 = new List<Tuple<int, int>>();
+            foreach (Tuple<int, int> token in treeNode.TokenPlayer0)
+                TokenPlayer0.Add(new Tuple<int, int>(token.Item1, token.Item2));
 
             // OpponentPlayerTokens Copy
-            OpponentPlayerTokens = new List<Tuple<int, int>>();
-            foreach (Tuple<int, int> token in treeNode.OpponentPlayerTokens)
-                OpponentPlayerTokens.Add(new Tuple<int, int>(token.Item1, token.Item2));
+            TokenPlayer1 = new List<Tuple<int, int>>();
+            foreach (Tuple<int, int> token in treeNode.TokenPlayer1)
+                TokenPlayer1.Add(new Tuple<int, int>(token.Item1, token.Item2));
+
+            GameIsFinished = treeNode.GameIsFinished;
         }
 
         public TreeNode(int[,] board, int currentPlayerValue)
         {
+            GameIsFinished = false;
             Board = board;
-            CurrentPlayerValue = currentPlayerValue;
+            CurrentValue = currentPlayerValue;
             ListPossibleMove = new Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>>();
 
             // Simulation of token possession of players
-            CurrentPlayerTokens = new List<Tuple<int, int>>();
-            OpponentPlayerTokens = new List<Tuple<int, int>>();
+            TokenPlayer0 = new List<Tuple<int, int>>();
+            TokenPlayer1 = new List<Tuple<int, int>>();
 
             for (int x = 0; x < Board.GetLength(0); ++x)
             {
                 for (int y = 0; y < Board.GetLength(1); ++y)
                 {
-                    if (Board[x, y] == currentPlayerValue)
-                        CurrentPlayerTokens.Add(new Tuple<int, int>(x, y));
-                    else if (Board[x, y] != -1)
-                        OpponentPlayerTokens.Add(new Tuple<int, int>(x, y));
+                    if (Board[x, y] == 0)
+                        TokenPlayer0.Add(new Tuple<int, int>(x, y));
+                    else if (Board[x, y] == 1)
+                        TokenPlayer1.Add(new Tuple<int, int>(x, y));
                 }
             }
 
-            GetListPossibleMove(CurrentPlayerTokens, OpponentPlayerTokens);
-        }
-
-        public int Evaluate()
-        {
-            return EvaluatePositionsWithPonderation() + EvaluatePossibleMove() + EvaluateWeakBorder();
-        }
-
-        public bool Final()
-        {
-            return (CurrentPlayerTokens.Count + OpponentPlayerTokens.Count == Board.Length);
+            UpdateListPossibleMove();
         }
 
         public List<Tuple<int, int>> Ops()
@@ -96,239 +196,163 @@ namespace IAMargueronMottier
             return moves;
         }
 
-        public TreeNode Apply(Tuple<int, int> key)
+        public TreeNode Apply(Tuple<int, int> move)
         {
+            if (GameIsFinished)
+            {
+                Show();
+                throw new Exception("Can't play this move, the game is finished");
+            }
+
+            if (!ListPossibleMove.Keys.Contains(move))
+                throw new Exception("Can't play this move, not a possible move");
+
             TreeNode copy = new TreeNode(this);
 
-            foreach (Tuple<int, int> token in ListPossibleMove[key])
+            foreach (Tuple<int, int> tokenToReverse in copy.ListPossibleMove[move])
             {
-                if (!copy.OpponentPlayerTokens.Contains(token))
-                    copy.OpponentPlayerTokens.Add(token);
-                copy.Board[token.Item1, token.Item2] = CurrentPlayerValue;
-
-                if (copy.CurrentPlayerTokens.Contains(token))
-                    copy.CurrentPlayerTokens.Remove(token);
+                copy.Board[tokenToReverse.Item1, tokenToReverse.Item2] = copy.CurrentValue;
+                if (!copy.CurrentToken.Contains(tokenToReverse))
+                    copy.CurrentToken.Add(tokenToReverse);
+                if (copy.OpponentToken.Contains(tokenToReverse))
+                    copy.OpponentToken.Remove(tokenToReverse);
             }
 
             copy.SwitchPlayer();
-            copy.GetListPossibleMove(CurrentPlayerTokens, OpponentPlayerTokens);
 
             if (copy.ListPossibleMove.Count <= 0) //turn skiped
             {
                 copy.SwitchPlayer();
-                copy.GetListPossibleMove(CurrentPlayerTokens, OpponentPlayerTokens);
-                //if(copy.ListPossibleMove.Count == 0)
-                //  throw new Exception("cant play on a finished game");
+                if (copy.ListPossibleMove.Count <= 0)
+                    copy.GameIsFinished = true;
             }
 
             return copy;
         }
 
+        public void SwitchPlayer()
+        {
+            CurrentValue = CurrentValue == Player.Player0.Value ? Player.Player1.Value : Player.Player0.Value;
+            UpdateListPossibleMove();
+        }
 
         public void Show()
         {
-            ShowMoves(ListPossibleMove.Keys.ToList<Tuple<int, int>>());
-            ShowBoard(Board);
-        }
+            Console.WriteLine("turn " + CurrentValue);
 
-        private static void ShowMoves(List<Tuple<int, int>> moves)
-        {
-            if (moves.Count <= 0)
-                Console.WriteLine("no moves available");
-            foreach (Tuple<int, int> move in moves)
-            {
-                Console.WriteLine(move);
-            }
-        }
-
-        private static void ShowBoard(int[,] Board)
-        {
+            List<Tuple<int, int>> moves = ListPossibleMove.Keys.ToList<Tuple<int, int>>();
             for (int y = 0; y < Board.GetLength(1); ++y)
             {
                 for (int x = 0; x < Board.GetLength(0); ++x)
                 {
                     int value = Board[x, y];
-                    if (value >= 0)
-                        Console.Write(value + " ");
+
+                    if (moves.Contains(new Tuple<int, int>(x, y)))
+                    {
+                        if (CurrentValue == 0)
+                            Console.Write("o");
+                        else
+                            Console.Write("x");
+                    }
                     else
-                        Console.Write("- ");
+                    {
+                        if (value >= 0)
+                            Console.Write(value);
+                        else
+                            Console.Write("-");
+                    }
+                    Console.Write(" ");
+
                 }
                 Console.Write("\n");
             }
         }
 
-        public void SwitchPlayer()
+        private void UpdateListPossibleMove()
         {
-            CurrentPlayerValue = CurrentPlayerValue == Player.Player0.Value ? Player.Player1.Value : Player.Player0.Value;
-        }
+            ListPossibleMove.Clear();
 
-        private void GetListPossibleMove(List<Tuple<int, int>> currentPlayerTokens, List<Tuple<int, int>> opponentPlayerTokens)
-        {
-            foreach (Tuple<int, int> token in currentPlayerTokens)
+            foreach (Tuple<int, int> tokenStart in CurrentToken)
             {
-                CheckAllPossibleMove(currentPlayerTokens, opponentPlayerTokens, token);
-            }
-        }
-
-        private void CheckAllPossibleMove(List<Tuple<int, int>> currentPlayerTokens, List<Tuple<int, int>> opponentPlayerTokens, Tuple<int, int> token)
-        {
-            // Algo :
-            //      Loop for each direction
-            //      if the case is ennemy continue to check in the direction
-            //      if the case is empty and the increment is greater than 1
-            //      => it means there is only one or more token of the opponent between the token
-            //         and a possible token to play
-            //      else move impossible
-
-            // Left
-            bool finish = false;
-            HashSet<Tuple<int, int>> takedTokens = new HashSet<Tuple<int, int>>();
-            int i = 1;
-            while (!finish)
-            {
-                finish = CheckOnePossibleMove(currentPlayerTokens, opponentPlayerTokens, token, takedTokens, -i, 0);
-                ++i;
-            }
-
-            // Left-top
-            finish = false;
-            takedTokens.Clear();
-            i = 1;
-            while (!finish)
-            {
-                finish = CheckOnePossibleMove(currentPlayerTokens, opponentPlayerTokens, token, takedTokens, -i, -i);
-                ++i;
-            }
-
-            // Top
-            finish = false;
-            takedTokens.Clear();
-            i = 1;
-            while (!finish)
-            {
-                finish = CheckOnePossibleMove(currentPlayerTokens, opponentPlayerTokens, token, takedTokens, 0, -i);
-                ++i;
-            }
-
-            // Right-top
-            finish = false;
-            takedTokens.Clear();
-            i = 1;
-            while (!finish)
-            {
-                finish = CheckOnePossibleMove(currentPlayerTokens, opponentPlayerTokens, token, takedTokens, i, -i);
-                ++i;
-            }
-
-            // Right
-            finish = false;
-            takedTokens.Clear();
-            i = 1;
-            while (!finish)
-            {
-                finish = CheckOnePossibleMove(currentPlayerTokens, opponentPlayerTokens, token, takedTokens, i, 0);
-                ++i;
-            }
-
-            // Right-bottom
-            finish = false;
-            takedTokens.Clear();
-            i = 1;
-            while (!finish)
-            {
-                finish = CheckOnePossibleMove(currentPlayerTokens, opponentPlayerTokens, token, takedTokens, i, i);
-                ++i;
-            }
-
-            // Bottom
-            finish = false;
-            takedTokens.Clear();
-            i = 1;
-            while (!finish)
-            {
-                finish = CheckOnePossibleMove(currentPlayerTokens, opponentPlayerTokens, token, takedTokens, 0, i);
-                ++i;
-            }
-
-            // Left-bottom
-            finish = false;
-            takedTokens.Clear();
-            i = 1;
-            while (!finish)
-            {
-                finish = CheckOnePossibleMove(currentPlayerTokens, opponentPlayerTokens, token, takedTokens, -i, i);
-                ++i;
-            }
-        }
-
-        /// <summary>
-        /// Check move in one direction
-        /// </summary>
-        /// <param name="token"></param>
-        /// <param name="tokens"></param>
-        /// <param name="offsetX"></param>
-        /// <param name="offsetY"></param>
-        /// <returns></returns>
-        private bool CheckOnePossibleMove(List<Tuple<int, int>> currentPlayerTokens, List<Tuple<int, int>> opponentPlayerTokens, Tuple<int, int> token, HashSet<Tuple<int, int>> tokens, int offsetX, int offsetY)
-        {
-            bool finished = false;
-
-            int x = token.Item1 + offsetX;
-            int y = token.Item2 + offsetY;
-
-            Tuple<int, int> newToken = new Tuple<int, int>(x, y);
-            tokens.Add(newToken);
-
-            // Is on board
-            if (x < 0 || x >= Board.GetLength(0) || y < 0 || y >= Board.GetLength(1) || CurrentPlayerTokens.Contains(newToken))
-            {
-                finished = true;
-            }
-            else if (!OpponentPlayerTokens.Contains(newToken))
-            {
-                // Check if there is token between the start and the current token
-                if (Math.Abs(offsetX) > 1 || Math.Abs(offsetY) > 1)
+                foreach (Tuple<int, int> direction in directions)
                 {
-                    SavePossibleMove(tokens, newToken); // save valid move
-                }
+                    Tuple<int, int> tokenPosition = null;
+                    HashSet<Tuple<int, int>> toReverse = new HashSet<Tuple<int, int>>();
+                    bool directionIsEligibleForAMove = true;
+                    int i = 1;
 
-                finished = true;
-            }
-
-            return finished;
-        }
-
-        /// <summary>
-        /// Save a valid move
-        /// </summary>
-        /// <param name="move"></param>
-        /// <param name="key"></param>
-        private void SavePossibleMove(HashSet<Tuple<int, int>> move, Tuple<int, int> key)
-        {
-            // add pieces affected for the case played
-            // with a depth copy
-
-            if (!ListPossibleMove.ContainsKey(key))
-                ListPossibleMove.Add(key, new HashSet<Tuple<int, int>>());
-
-
-            foreach (Tuple<int, int> tokenToAdd in move)
-            {
-                bool alreadyAdded = false;
-                foreach (Tuple<int, int> tokenAdded in ListPossibleMove[key])
-                {
-                    if (tokenToAdd.Item1 == tokenAdded.Item1 && tokenToAdd.Item2 == tokenAdded.Item2)
+                    while (true)
                     {
-                        alreadyAdded = true;
-                        break;
+                        tokenPosition = new Tuple<int, int>(tokenStart.Item1 + i * direction.Item1, tokenStart.Item2 + i * direction.Item2);
+
+                        if (!BoardContains(tokenPosition))
+                        {
+                            directionIsEligibleForAMove = false;
+                            break;
+                        }
+
+                        int valueOnBoardAtTokenPosition = Board[tokenPosition.Item1, tokenPosition.Item2];
+
+                        // The direct direction neighbour is empty or the 
+                        if (toReverse.Count == 0 && valueOnBoardAtTokenPosition == EmptyValue || valueOnBoardAtTokenPosition == CurrentValue)
+                        {
+                            directionIsEligibleForAMove = false;
+                            break;
+                        }
+                        else if (valueOnBoardAtTokenPosition == OpponentValue)
+                        {
+                            toReverse.Add(tokenPosition);
+                        }
+                        else if(valueOnBoardAtTokenPosition == EmptyValue)
+                        {
+                            toReverse.Add(tokenPosition);
+                            break;
+                        }
+                        i++;
+                    }
+
+                    if (directionIsEligibleForAMove)
+                    {
+                        if (ListPossibleMove.Keys.Contains(tokenPosition))
+                            ListPossibleMove[tokenPosition].UnionWith(toReverse);
+                        else
+                            ListPossibleMove.Add(tokenPosition, toReverse);
                     }
                 }
-                if (!alreadyAdded)
-                    ListPossibleMove[key].Add(new Tuple<int, int>(tokenToAdd.Item1, tokenToAdd.Item2));
             }
         }
 
-        public int EvaluatePositionsWithPonderation()
+        private bool BoardContains(Tuple<int, int> position)
+        {
+            return !(position.Item1 < 0 || position.Item2 < 0 || position.Item1 >= Board.GetLength(0) || position.Item2 >= Board.GetLength(1));
+        }
+        
+        public bool Final()
+        {
+            return GameIsFinished;
+        }
+
+        public int Evaluate()
+        {
+            if (IsVictory())
+                return int.MaxValue;
+            if (IsDefeate())
+                return int.MinValue;
+
+            return EvaluatePositionsWithPonderation();// + EvaluatePossibleMove() + EvaluateWeakBorder();
+        }
+
+        private bool IsVictory()
+        {
+            return GameIsFinished && CurrentToken.Count > OpponentToken.Count;
+        }
+
+        private bool IsDefeate()
+        {
+            return GameIsFinished && CurrentToken.Count < OpponentToken.Count;
+        }
+
+        private int EvaluatePositionsWithPonderation()
         {
             Tuple<int, int> gridDim = new Tuple<int, int>(Board.GetLength(0), Board.GetLength(1));
             if (!PonderationGrids.ContainsKey(gridDim))
@@ -336,18 +360,18 @@ namespace IAMargueronMottier
 
             int[,] ponderationGrid = PonderationGrids[gridDim];
             int sum = 0;
-            foreach (Tuple<int, int> pos in OpponentPlayerTokens)
-                sum += ponderationGrid[pos.Item1, pos.Item2];
-            foreach (Tuple<int, int> pos in CurrentPlayerTokens)
+            foreach (Tuple<int, int> pos in OpponentToken)
                 sum -= ponderationGrid[pos.Item1, pos.Item2];
+            foreach (Tuple<int, int> pos in CurrentToken)
+                sum += ponderationGrid[pos.Item1, pos.Item2];
             return sum;
         }
 
         private int EvaluatePossibleMove()
         {
-            GetListPossibleMove(OpponentPlayerTokens, CurrentPlayerTokens);
+            UpdateListPossibleMove();
             int value = - ListPossibleMove.Count();
-            GetListPossibleMove(CurrentPlayerTokens, OpponentPlayerTokens);
+            UpdateListPossibleMove();
             value += ListPossibleMove.Count();
             return value;
         }
@@ -356,8 +380,10 @@ namespace IAMargueronMottier
         {
             // Check if the opponent can take
             // the tokens on board of the current player
+
             int value = 0;
 
+            /*
             foreach (Tuple<int, int> token in CurrentPlayerTokens)
             {
                 if (token.Item1 == 0 || token.Item1 == Board.GetLength(0) - 1)
@@ -438,6 +464,7 @@ namespace IAMargueronMottier
                     }
                 }
             }
+            */
             return value;
         }
     }
