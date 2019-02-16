@@ -41,14 +41,16 @@ namespace ArcOthelloMM
                 return -1; //it's his turn, he will minimize your outcome
         }
 
+        private bool GetMinOrMax(TreeNode treeNode, bool b)
+        {
+            return treeNode.CurrentPlayerValue == AiMinMaxPlayerValue;
+        }
+
         public Tuple<int, int> GetNextMove(int[,] game, int level, bool whiteTurn)
         {
             AiMinMaxPlayerValue = (whiteTurn) ? Player.Player1.Value : Player.Player0.Value;
-
-            TreeNode root = new TreeNode(game, AiMinMaxPlayerValue);
-            root.Show();
-            return AlphaBeta(root, level, GetMinOrMax(root), int.MinValue).Item2;
-
+                        
+            return AlphaBetaWikipedia(game, 5);
             //return StupidAI(game, level, whiteTurn);
         }
 
@@ -62,7 +64,6 @@ namespace ArcOthelloMM
         /// <returns></returns>
         private Tuple<int, Tuple<int, int>> AlphaBeta(TreeNode root, int level, int minOrMax, int parentValue)
         {
-
             Console.WriteLine("Level : " + level + ", isFinal : " + root.Final());
 
             if (level <= 0 || root.Final())
@@ -91,6 +92,79 @@ namespace ArcOthelloMM
             }
 
             return new Tuple<int, Tuple<int, int>>(root.Evaluate(), optOp);
+        }
+
+        private Tuple<int, int> AlphaBetaWikipedia(int[,] game, int depth)
+        {
+            TreeNode root = new TreeNode(game, AiMinMaxPlayerValue);
+
+            _AlphaBetaWikipedia(root, depth, int.MinValue, int.MaxValue, true);
+
+            Tuple<int, Tuple<int, int>> res = _AlphaBetaWikipedia(root, depth);
+
+            if (res.Item2 == null)
+                throw new Exception("no moves possibles for this player");
+
+            return res.Item2;
+        }
+
+        private Tuple<int, Tuple<int, int>> _AlphaBetaWikipedia(TreeNode node, int depth, int alpha = int.MinValue, int beta = int.MaxValue, bool maximizingPlayer = true)
+        {
+            //Console.WriteLine("Level : " + depth);
+
+            Tuple<int, int> move = null;
+            int value;
+
+            if (depth <= 0 || node.Final())
+                return new Tuple<int, Tuple<int, int>>(node.Evaluate(), null);
+
+            if (maximizingPlayer)
+            {
+                value = int.MinValue;
+                foreach (Tuple<int, int> op in node.Ops())
+                {
+                    TreeNode child = node.Apply(op);
+                    //Console.WriteLine("move : " + op);
+                    //child.Show();
+                    Tuple<int, Tuple<int, int>> result = _AlphaBetaWikipedia(child, depth - 1, alpha, beta, GetMinOrMax(child, true));
+                    //Console.WriteLine("euristique : " + result.Item1);
+                    if (result.Item1 > value)
+                    {
+                        value = result.Item1;
+                        move = op;
+                    }
+                    if (value > alpha)
+                    {
+                        alpha = value;
+                    }
+                    if (alpha >= beta)
+                        break;
+                }
+            }
+            else
+            {
+                value = int.MaxValue;
+                foreach (Tuple<int, int> op in node.Ops())
+                {
+                    TreeNode child = node.Apply(op);
+                    //Console.WriteLine("move : " + op);
+                    //child.Show();
+                    Tuple<int, Tuple<int, int>> result = _AlphaBetaWikipedia(child, depth - 1, alpha, beta, GetMinOrMax(child, true));
+                    //Console.WriteLine("euristique : " + result.Item1);
+                    if (result.Item1 < value)
+                    {
+                        value = result.Item1;
+                        move = op;
+                    }
+                    if (value < alpha)
+                    {
+                        beta = value;
+                    }
+                    if (alpha >= beta)
+                        break;
+                }
+            }
+            return new Tuple<int, Tuple<int, int>>(value, move);
         }
 
         public Tuple<int, int> StupidAI(int[,] game, int level, bool whiteTurn)

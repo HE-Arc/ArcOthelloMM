@@ -19,7 +19,7 @@ namespace IAMargueronMottier
         {
             PonderationGrids = new Dictionary<Tuple<int, int>, int[,]>();
             PonderationGrids[new Tuple<int, int>(9, 7)] = new int[,] {
-                {20, 03, 09, 07, 09, 03, 20},
+                {100, 03, 09, 07, 09, 03, 100},
                 {03, 01, 03, 03, 03, 01, 03},
                 {09, 03, 07, 07, 07, 03, 09},
                 {07, 03, 07, 07, 07, 03, 07},
@@ -27,7 +27,7 @@ namespace IAMargueronMottier
                 {07, 03, 07, 07, 07, 03, 07},
                 {09, 03, 07, 07, 07, 03, 09},
                 {03, 01, 03, 03, 03, 01, 03},
-                {20, 03, 09, 07, 09, 03, 20},
+                {100, 03, 09, 07, 09, 03, 100},
             };
         }
 
@@ -45,14 +45,14 @@ namespace IAMargueronMottier
             // CurrentPlayerValue Copy
             CurrentPlayerValue = treeNode.CurrentPlayerValue;
 
-            // Inversion CurrentPlayerTokens Copy
+            // CurrentPlayerTokens Copy
             CurrentPlayerTokens = new List<Tuple<int, int>>();
-            foreach (Tuple<int, int> token in treeNode.OpponentPlayerTokens)
+            foreach (Tuple<int, int> token in treeNode.CurrentPlayerTokens)
                 CurrentPlayerTokens.Add(new Tuple<int, int>(token.Item1, token.Item2));
 
-            // Inversion OpponentPlayerTokens Copy
+            // OpponentPlayerTokens Copy
             OpponentPlayerTokens = new List<Tuple<int, int>>();
-            foreach (Tuple<int, int> token in treeNode.CurrentPlayerTokens)
+            foreach (Tuple<int, int> token in treeNode.OpponentPlayerTokens)
                 OpponentPlayerTokens.Add(new Tuple<int, int>(token.Item1, token.Item2));
         }
 
@@ -336,9 +336,9 @@ namespace IAMargueronMottier
 
             int[,] ponderationGrid = PonderationGrids[gridDim];
             int sum = 0;
-            foreach (Tuple<int, int> pos in CurrentPlayerTokens)
-                sum += ponderationGrid[pos.Item1, pos.Item2];
             foreach (Tuple<int, int> pos in OpponentPlayerTokens)
+                sum += ponderationGrid[pos.Item1, pos.Item2];
+            foreach (Tuple<int, int> pos in CurrentPlayerTokens)
                 sum -= ponderationGrid[pos.Item1, pos.Item2];
             return sum;
         }
