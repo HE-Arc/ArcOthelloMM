@@ -7,7 +7,7 @@
     <ProjectGuid>{6D448C2C-93B5-493C-BB08-ED5818E3E53D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>IAMargueronMottier</RootNamespace>
-    <AssemblyName>OthelloMargueronMottier</AssemblyName>
+    <AssemblyName>OthelloMargueronMottier2</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>D:\Desktop\Tournament\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
