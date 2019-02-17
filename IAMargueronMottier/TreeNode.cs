@@ -24,7 +24,8 @@ namespace IAMargueronMottier
         private bool GameIsFinished;
 
         private static readonly Dictionary<Tuple<int, int>, int[,]> PonderationGrids;
-        private static readonly List<Tuple<int, int>> directions;
+        private static readonly List<Tuple<int, int>> Directions;
+        private static readonly Dictionary<string, List<Tuple<int, int>>> Borders;
 
         static TreeNode()
         {
@@ -44,7 +45,7 @@ namespace IAMargueronMottier
             };
 
             //C# doesnt have a vector2 native class?
-            directions = new List<Tuple<int, int>>
+            Directions = new List<Tuple<int, int>>
             {
                 new Tuple<int, int>(1, 1),
                 new Tuple<int, int>(-1, -1),
@@ -54,6 +55,54 @@ namespace IAMargueronMottier
                 new Tuple<int, int>(-1, 0),
                 new Tuple<int, int>(1, -1),
                 new Tuple<int, int>(-1, 1)
+            };
+
+            Borders = new Dictionary<string, List<Tuple<int, int>>>
+            {
+                {
+                    "Top",
+                    new List<Tuple<int, int>>
+                    {
+                        new Tuple<int, int>(0, 2),
+                        new Tuple<int, int>(0, 3),
+                        new Tuple<int, int>(0, 4),
+                        new Tuple<int, int>(0, 5),
+                        new Tuple<int, int>(0, 6),
+                        new Tuple<int, int>(0, 7)
+                    }
+                },
+                {
+                    "Bottom",
+                    new List<Tuple<int, int>>
+                    {
+                        new Tuple<int, int>(6, 2),
+                        new Tuple<int, int>(6, 3),
+                        new Tuple<int, int>(6, 4),
+                        new Tuple<int, int>(6, 5),
+                        new Tuple<int, int>(6, 6),
+                        new Tuple<int, int>(6, 7)
+                    }
+                },
+                {
+                    "Left",
+                    new List<Tuple<int, int>>
+                    {
+                        new Tuple<int, int>(2, 0),
+                        new Tuple<int, int>(3, 0),
+                        new Tuple<int, int>(4, 0),
+                        new Tuple<int, int>(5, 0)
+                    }
+                },
+                {
+                    "Right",
+                    new List<Tuple<int, int>>
+                    {
+                        new Tuple<int, int>(2, 8),
+                        new Tuple<int, int>(3, 8),
+                        new Tuple<int, int>(4, 8),
+                        new Tuple<int, int>(5, 8)
+                    }
+                }
             };
 
             //TestMoveDetection();
@@ -110,7 +159,7 @@ namespace IAMargueronMottier
             treeNode.Show();
             Console.WriteLine("----");
             treeNode = treeNode.Apply(new Tuple<int, int>(2, 5));
-            treeNode.Show();            
+            treeNode.Show();
         }
 
         private static void ExempleMoveFinish()
@@ -279,7 +328,7 @@ namespace IAMargueronMottier
 
             foreach (Tuple<int, int> tokenStart in CurrentToken)
             {
-                foreach (Tuple<int, int> direction in directions)
+                foreach (Tuple<int, int> direction in Directions)
                 {
                     Tuple<int, int> tokenPosition = null;
                     HashSet<Tuple<int, int>> toReverse = new HashSet<Tuple<int, int>>();
@@ -308,7 +357,7 @@ namespace IAMargueronMottier
                         {
                             toReverse.Add(tokenPosition);
                         }
-                        else if(valueOnBoardAtTokenPosition == EmptyValue)
+                        else if (valueOnBoardAtTokenPosition == EmptyValue)
                         {
                             toReverse.Add(tokenPosition);
                             break;
@@ -331,7 +380,7 @@ namespace IAMargueronMottier
         {
             return !(position.Item1 < 0 || position.Item2 < 0 || position.Item1 >= Board.GetLength(0) || position.Item2 >= Board.GetLength(1));
         }
-        
+
         public bool Final()
         {
             return GameIsFinished;
@@ -343,7 +392,7 @@ namespace IAMargueronMottier
                 return int.MaxValue;
             if (IsDefeate())
                 return int.MinValue;
-            
+
             int heuristic = 0;
 
             heuristic = EvaluatePositionsWithPonderation();
@@ -367,7 +416,11 @@ namespace IAMargueronMottier
             if (!PonderationGrids.ContainsKey(gridDim))
                 throw new Exception("grid dim not handled for the AI");
 
-            int[,] ponderationGrid = PonderationGrids[gridDim];
+            int[,] ponderationGrid = new int[Board.GetLength(0), Board.GetLength(1)];
+            Array.Copy(PonderationGrids[gridDim], ponderationGrid, PonderationGrids[gridDim].Length);
+
+            EvaluateBorderFive(ponderationGrid);
+
             int sum = 0;
             foreach (Tuple<int, int> pos in OpponentToken)
                 sum -= ponderationGrid[pos.Item1, pos.Item2];
@@ -379,10 +432,106 @@ namespace IAMargueronMottier
         private int EvaluatePossibleMove()
         {
             UpdateListPossibleMove();
-            int value = - ListPossibleMove.Count();
+            int value = -ListPossibleMove.Count();
             UpdateListPossibleMove();
             value += ListPossibleMove.Count();
             return value;
+        }
+
+        private void EvaluateBorderFive(int[,] ponderationGrid)
+        {
+            Tuple<int, int> token00 = new Tuple<int, int>(0, 0);
+            Tuple<int, int> token01 = new Tuple<int, int>(0, 1);
+            Tuple<int, int> token05 = new Tuple<int, int>(0, 5);
+            Tuple<int, int> token06 = new Tuple<int, int>(0, 6);
+            Tuple<int, int> token10 = new Tuple<int, int>(1, 0);
+            Tuple<int, int> token11 = new Tuple<int, int>(1, 1);
+            Tuple<int, int> token15 = new Tuple<int, int>(1, 5);
+            Tuple<int, int> token16 = new Tuple<int, int>(1, 6);
+            Tuple<int, int> token70 = new Tuple<int, int>(7, 0);
+            Tuple<int, int> token71 = new Tuple<int, int>(7, 1);
+            Tuple<int, int> token75 = new Tuple<int, int>(7, 5);
+            Tuple<int, int> token76 = new Tuple<int, int>(7, 6);
+            Tuple<int, int> token80 = new Tuple<int, int>(8, 0);
+            Tuple<int, int> token81 = new Tuple<int, int>(8, 1);
+            Tuple<int, int> token85 = new Tuple<int, int>(8, 5);
+            Tuple<int, int> token86 = new Tuple<int, int>(8, 6);
+
+            if (OpponentToken.Contains(token00)
+                && (
+                    ListPossibleMove.Keys.Contains(token10)
+                    && (ListPossibleMove[token10].Contains(token11) || CurrentToken.Contains(token11))
+                    && Borders["Top"].Intersect(OpponentToken).Any()
+                    && OpponentToken.Contains(token70)
+                    && !OpponentToken.Contains(token80)
+                    || ListPossibleMove.Keys.Contains(token01)
+                    && (ListPossibleMove[token01].Contains(token11) || CurrentToken.Contains(token11))
+                    && Borders["Left"].Intersect(OpponentToken).Any()
+                    && OpponentToken.Contains(token05)
+                    && !OpponentToken.Contains(token06)
+                    )
+                )
+            {
+                ponderationGrid[1, 1] = 200;
+            }
+
+            
+            if (OpponentToken.Contains(token06)
+                && (
+                    ListPossibleMove.Keys.Contains(token05)
+                    && (ListPossibleMove[token05].Contains(token15) || CurrentToken.Contains(token15))
+                    && Borders["Left"].Intersect(OpponentToken).Any()
+                    && OpponentToken.Contains(token01)
+                    && !OpponentToken.Contains(token00)
+                    || ListPossibleMove.Keys.Contains(token16)
+                    && (ListPossibleMove[token16].Contains(token15) || CurrentToken.Contains(token15))
+                    && Borders["Bottom"].Intersect(OpponentToken).Any()
+                    && OpponentToken.Contains(token76)
+                    && !OpponentToken.Contains(token86)
+                    )
+                )
+            {
+                ponderationGrid[1, 5] = 200;
+            }
+
+            
+            if (
+                OpponentToken.Contains(token80)
+                && (
+                    ListPossibleMove.Keys.Contains(token70)
+                    && (ListPossibleMove[token70].Contains(token71) || CurrentToken.Contains(token71))
+                    && Borders["Top"].Intersect(OpponentToken).Any()
+                    && OpponentToken.Contains(token10)
+                    && !OpponentToken.Contains(token00)
+                    || ListPossibleMove.Keys.Contains(token81)
+                    && (ListPossibleMove[token81].Contains(token71) || CurrentToken.Contains(token71))
+                    && Borders["Right"].Intersect(OpponentToken).Any()
+                    && OpponentToken.Contains(token85)
+                    && !OpponentToken.Contains(token86)
+                    )
+                )
+            {
+                ponderationGrid[7, 1] = 200;
+            }
+
+            if (
+                OpponentToken.Contains(token86)
+                && (
+                    ListPossibleMove.Keys.Contains(token85)
+                    && (ListPossibleMove[token85].Contains(token75) || CurrentToken.Contains(token75))
+                    && Borders["Right"].Intersect(OpponentToken).Any()
+                    && OpponentToken.Contains(token81)
+                    && !OpponentToken.Contains(token80)
+                    || ListPossibleMove.Keys.Contains(token76)
+                    && (ListPossibleMove[token76].Contains(token75) || CurrentToken.Contains(token75))
+                    && Borders["Bottom"].Intersect(OpponentToken).Any()
+                    && OpponentToken.Contains(token16)
+                    && !OpponentToken.Contains(token06)
+                    )
+                )
+            {
+                ponderationGrid[7, 5] = 200;
+            }
         }
 
         private int EvaluateWeakBorder()
