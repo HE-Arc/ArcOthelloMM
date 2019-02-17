@@ -19,7 +19,7 @@ namespace IAMargueronMottier
         private List<Tuple<int, int>> CurrentToken { get { return CurrentValue == 0 ? TokenPlayer0 : TokenPlayer1; } }
         private List<Tuple<int, int>> OpponentToken { get { return CurrentValue == 1 ? TokenPlayer0 : TokenPlayer1; } }
 
-        private Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> ListPossibleMove { get; set; }
+        private Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>> ListPossibleMoves { get; set; }
 
         private bool GameIsFinished;
 
@@ -27,6 +27,9 @@ namespace IAMargueronMottier
         private static readonly List<Tuple<int, int>> Directions;
         private static readonly Dictionary<string, List<Tuple<int, int>>> Borders;
 
+        /// <summary>
+        /// Static field initalization
+        /// </summary>
         static TreeNode()
         {
             PonderationGrids = new Dictionary<Tuple<int, int>, int[,]>
@@ -108,13 +111,16 @@ namespace IAMargueronMottier
             //TestMoveDetection();
         }
 
+        /// <summary>
+        /// Test method for apply function
+        /// </summary>
         public static void TestMoveDetection()
         {
             ExempleMoveNormal();
             Console.WriteLine("-----------");
-            ExempleMoveSkip();
+            ExempleMoveSkipTurn();
             Console.WriteLine("-----------");
-            ExempleMoveFinish();
+            ExempleMoveFinishGame();
             Console.WriteLine("-----------");
         }
 
@@ -141,7 +147,7 @@ namespace IAMargueronMottier
             treeNode.Show();
         }
 
-        private static void ExempleMoveSkip()
+        private static void ExempleMoveSkipTurn()
         {
             int[,] board = new int[,]
             {
@@ -162,7 +168,7 @@ namespace IAMargueronMottier
             treeNode.Show();
         }
 
-        private static void ExempleMoveFinish()
+        private static void ExempleMoveFinishGame()
         {
             int[,] board = new int[,]
             {
@@ -185,12 +191,16 @@ namespace IAMargueronMottier
             Console.WriteLine("-----------");
         }
 
+        /// <summary>
+        /// Copy constructor
+        /// </summary>
+        /// <param name="treeNode"></param>
         public TreeNode(TreeNode treeNode)
         {
             // ListPossibleMove Copy
-            ListPossibleMove = new Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>>();
-            foreach (KeyValuePair<Tuple<int, int>, HashSet<Tuple<int, int>>> entry in treeNode.ListPossibleMove)
-                ListPossibleMove.Add(new Tuple<int, int>(entry.Key.Item1, entry.Key.Item2), new HashSet<Tuple<int, int>>(entry.Value));
+            ListPossibleMoves = new Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>>();
+            foreach (KeyValuePair<Tuple<int, int>, HashSet<Tuple<int, int>>> entry in treeNode.ListPossibleMoves)
+                ListPossibleMoves.Add(new Tuple<int, int>(entry.Key.Item1, entry.Key.Item2), new HashSet<Tuple<int, int>>(entry.Value));
 
             // Board copy
             Board = new int[treeNode.Board.GetLength(0), treeNode.Board.GetLength(1)];
@@ -214,12 +224,17 @@ namespace IAMargueronMottier
             GameIsFinished = treeNode.GameIsFinished;
         }
 
+        /// <summary>
+        /// Constructor for the root of the alphabeta
+        /// </summary>
+        /// <param name="board"></param>
+        /// <param name="currentPlayerValue"></param>
         public TreeNode(int[,] board, int currentPlayerValue)
         {
             GameIsFinished = false;
             Board = board;
             CurrentValue = currentPlayerValue;
-            ListPossibleMove = new Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>>();
+            ListPossibleMoves = new Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>>();
 
             // Simulation of token possession of players
             TokenPlayer0 = new List<Tuple<int, int>>();
@@ -236,15 +251,24 @@ namespace IAMargueronMottier
                 }
             }
 
-            UpdateListPossibleMove();
+            UpdateListPossibleMoves();
         }
 
+        /// <summary>
+        /// Return a list of possible moves at this TreeNode (game state)
+        /// </summary>
+        /// <returns></returns>
         public List<Tuple<int, int>> Ops()
         {
-            List<Tuple<int, int>> moves = ListPossibleMove.Keys.ToList<Tuple<int, int>>();
+            List<Tuple<int, int>> moves = ListPossibleMoves.Keys.ToList<Tuple<int, int>>();
             return moves;
         }
 
+        /// <summary>
+        /// Return a TreeNode from the current node after playing a move
+        /// </summary>
+        /// <param name="move"></param>
+        /// <returns></returns>
         public TreeNode Apply(Tuple<int, int> move)
         {
             if (GameIsFinished)
@@ -254,7 +278,7 @@ namespace IAMargueronMottier
                 throw new Exception("Can't play this move, the game is finished");
             }
 
-            if (!ListPossibleMove.Keys.Contains(move))
+            if (!ListPossibleMoves.Keys.Contains(move))
             {
                 Console.WriteLine("move : " + move);
                 Show();
@@ -263,7 +287,7 @@ namespace IAMargueronMottier
 
             TreeNode copy = new TreeNode(this);
 
-            foreach (Tuple<int, int> tokenToReverse in copy.ListPossibleMove[move])
+            foreach (Tuple<int, int> tokenToReverse in copy.ListPossibleMoves[move])
             {
                 copy.Board[tokenToReverse.Item1, tokenToReverse.Item2] = copy.CurrentValue;
                 if (!copy.CurrentToken.Contains(tokenToReverse))
@@ -274,27 +298,33 @@ namespace IAMargueronMottier
 
             copy.SwitchPlayer();
 
-            if (copy.ListPossibleMove.Count <= 0) //turn skiped
+            if (copy.ListPossibleMoves.Count <= 0) //turn skiped
             {
                 copy.SwitchPlayer();
-                if (copy.ListPossibleMove.Count <= 0)
+                if (copy.ListPossibleMoves.Count <= 0)
                     copy.GameIsFinished = true;
             }
 
             return copy;
         }
 
+        /// <summary>
+        /// Switch the turn of the player in this node (also update his move list)
+        /// </summary>
         public void SwitchPlayer()
         {
             CurrentValue = CurrentValue == Player.Player0.Value ? Player.Player1.Value : Player.Player0.Value;
-            UpdateListPossibleMove();
+            UpdateListPossibleMoves();
         }
 
+        /// <summary>
+        /// Debug function used to show the TreeNode (game state) in the console
+        /// </summary>
         public void Show()
         {
             Console.WriteLine("turn " + CurrentValue);
 
-            List<Tuple<int, int>> moves = ListPossibleMove.Keys.ToList<Tuple<int, int>>();
+            List<Tuple<int, int>> moves = ListPossibleMoves.Keys.ToList<Tuple<int, int>>();
             for (int y = 0; y < Board.GetLength(1); ++y)
             {
                 for (int x = 0; x < Board.GetLength(0); ++x)
@@ -322,9 +352,12 @@ namespace IAMargueronMottier
             }
         }
 
-        private void UpdateListPossibleMove()
+        /// <summary>
+        /// Find every possible move in the current game state and store them into ListPossibleMoves
+        /// </summary>
+        private void UpdateListPossibleMoves()
         {
-            ListPossibleMove.Clear();
+            ListPossibleMoves.Clear();
 
             foreach (Tuple<int, int> tokenStart in CurrentToken)
             {
@@ -367,26 +400,41 @@ namespace IAMargueronMottier
 
                     if (directionIsEligibleForAMove)
                     {
-                        if (ListPossibleMove.Keys.Contains(tokenPosition))
-                            ListPossibleMove[tokenPosition].UnionWith(toReverse);
+                        if (ListPossibleMoves.Keys.Contains(tokenPosition))
+                            ListPossibleMoves[tokenPosition].UnionWith(toReverse);
                         else
-                            ListPossibleMove.Add(tokenPosition, toReverse);
+                            ListPossibleMoves.Add(tokenPosition, toReverse);
                     }
                 }
             }
         }
 
+        /// <summary>
+        /// Return true if the postion specified is inside the board
+        /// </summary>
+        /// <param name="position"></param>
+        /// <returns></returns>
         private bool BoardContains(Tuple<int, int> position)
         {
             return !(position.Item1 < 0 || position.Item2 < 0 || position.Item1 >= Board.GetLength(0) || position.Item2 >= Board.GetLength(1));
         }
 
+        /// <summary>
+        /// Is the game finished? State updated when calling the Apply function (cant detect finished game on the root)
+        /// </summary>
+        /// <returns></returns>
         public bool Final()
         {
             return GameIsFinished;
         }
 
-        public int Evaluate()
+        /// <summary>
+        /// Return an heuristic of "How good is the current game state for the specified player"
+        /// The greater the return value the greater he has chance of winning
+        /// </summary>
+        /// <param name="playerValue"></param>
+        /// <returns></returns>
+        public int Evaluate(int playerValue)
         {
             if (IsVictory())
                 return int.MaxValue;
@@ -397,19 +445,35 @@ namespace IAMargueronMottier
 
             heuristic = EvaluatePositionsWithPonderation();
 
+            if (playerValue != CurrentValue)
+                heuristic *= -1;
+
             return heuristic;
         }
 
+        /// <summary>
+        /// Return true if it's a won state for the current player 
+        /// </summary>
+        /// <returns></returns>
         private bool IsVictory()
         {
             return GameIsFinished && CurrentToken.Count > OpponentToken.Count;
         }
 
+        /// <summary>
+        /// Return true if it's a lose state for the current player 
+        /// </summary>
+        /// <returns></returns>
         private bool IsDefeate()
         {
             return GameIsFinished && CurrentToken.Count < OpponentToken.Count;
         }
 
+        /// <summary>
+        /// Evaluate the state for the current player with a weighted sum
+        /// EvaluateBorderFive modify the ponderation grid to optimize it depending of board configuration
+        /// </summary>
+        /// <returns></returns>
         private int EvaluatePositionsWithPonderation()
         {
             Tuple<int, int> gridDim = new Tuple<int, int>(Board.GetLength(0), Board.GetLength(1));
@@ -429,15 +493,10 @@ namespace IAMargueronMottier
             return sum;
         }
 
-        private int EvaluatePossibleMove()
-        {
-            UpdateListPossibleMove();
-            int value = -ListPossibleMove.Count();
-            UpdateListPossibleMove();
-            value += ListPossibleMove.Count();
-            return value;
-        }
-
+        /// <summary>
+        /// todo
+        /// </summary>
+        /// <param name="ponderationGrid"></param>
         private void EvaluateBorderFive(int[,] ponderationGrid)
         {
             Tuple<int, int> token00 = new Tuple<int, int>(0, 0);
@@ -459,13 +518,13 @@ namespace IAMargueronMottier
 
             if (OpponentToken.Contains(token00)
                 && (
-                    ListPossibleMove.Keys.Contains(token10)
-                    && (ListPossibleMove[token10].Contains(token11) || CurrentToken.Contains(token11))
+                    ListPossibleMoves.Keys.Contains(token10)
+                    && (ListPossibleMoves[token10].Contains(token11) || CurrentToken.Contains(token11))
                     && Borders["Top"].Intersect(OpponentToken).Any()
                     && OpponentToken.Contains(token70)
                     && !OpponentToken.Contains(token80)
-                    || ListPossibleMove.Keys.Contains(token01)
-                    && (ListPossibleMove[token01].Contains(token11) || CurrentToken.Contains(token11))
+                    || ListPossibleMoves.Keys.Contains(token01)
+                    && (ListPossibleMoves[token01].Contains(token11) || CurrentToken.Contains(token11))
                     && Borders["Left"].Intersect(OpponentToken).Any()
                     && OpponentToken.Contains(token05)
                     && !OpponentToken.Contains(token06)
@@ -478,13 +537,13 @@ namespace IAMargueronMottier
             
             if (OpponentToken.Contains(token06)
                 && (
-                    ListPossibleMove.Keys.Contains(token05)
-                    && (ListPossibleMove[token05].Contains(token15) || CurrentToken.Contains(token15))
+                    ListPossibleMoves.Keys.Contains(token05)
+                    && (ListPossibleMoves[token05].Contains(token15) || CurrentToken.Contains(token15))
                     && Borders["Left"].Intersect(OpponentToken).Any()
                     && OpponentToken.Contains(token01)
                     && !OpponentToken.Contains(token00)
-                    || ListPossibleMove.Keys.Contains(token16)
-                    && (ListPossibleMove[token16].Contains(token15) || CurrentToken.Contains(token15))
+                    || ListPossibleMoves.Keys.Contains(token16)
+                    && (ListPossibleMoves[token16].Contains(token15) || CurrentToken.Contains(token15))
                     && Borders["Bottom"].Intersect(OpponentToken).Any()
                     && OpponentToken.Contains(token76)
                     && !OpponentToken.Contains(token86)
@@ -498,13 +557,13 @@ namespace IAMargueronMottier
             if (
                 OpponentToken.Contains(token80)
                 && (
-                    ListPossibleMove.Keys.Contains(token70)
-                    && (ListPossibleMove[token70].Contains(token71) || CurrentToken.Contains(token71))
+                    ListPossibleMoves.Keys.Contains(token70)
+                    && (ListPossibleMoves[token70].Contains(token71) || CurrentToken.Contains(token71))
                     && Borders["Top"].Intersect(OpponentToken).Any()
                     && OpponentToken.Contains(token10)
                     && !OpponentToken.Contains(token00)
-                    || ListPossibleMove.Keys.Contains(token81)
-                    && (ListPossibleMove[token81].Contains(token71) || CurrentToken.Contains(token71))
+                    || ListPossibleMoves.Keys.Contains(token81)
+                    && (ListPossibleMoves[token81].Contains(token71) || CurrentToken.Contains(token71))
                     && Borders["Right"].Intersect(OpponentToken).Any()
                     && OpponentToken.Contains(token85)
                     && !OpponentToken.Contains(token86)
@@ -517,13 +576,13 @@ namespace IAMargueronMottier
             if (
                 OpponentToken.Contains(token86)
                 && (
-                    ListPossibleMove.Keys.Contains(token85)
-                    && (ListPossibleMove[token85].Contains(token75) || CurrentToken.Contains(token75))
+                    ListPossibleMoves.Keys.Contains(token85)
+                    && (ListPossibleMoves[token85].Contains(token75) || CurrentToken.Contains(token75))
                     && Borders["Right"].Intersect(OpponentToken).Any()
                     && OpponentToken.Contains(token81)
                     && !OpponentToken.Contains(token80)
-                    || ListPossibleMove.Keys.Contains(token76)
-                    && (ListPossibleMove[token76].Contains(token75) || CurrentToken.Contains(token75))
+                    || ListPossibleMoves.Keys.Contains(token76)
+                    && (ListPossibleMoves[token76].Contains(token75) || CurrentToken.Contains(token75))
                     && Borders["Bottom"].Intersect(OpponentToken).Any()
                     && OpponentToken.Contains(token16)
                     && !OpponentToken.Contains(token06)
@@ -532,98 +591,6 @@ namespace IAMargueronMottier
             {
                 ponderationGrid[7, 5] = 200;
             }
-        }
-
-        private int EvaluateWeakBorder()
-        {
-            // Check if the opponent can take
-            // the tokens on board of the current player
-
-            int value = 0;
-
-            /*
-            foreach (Tuple<int, int> token in CurrentPlayerTokens)
-            {
-                if (token.Item1 == 0 || token.Item1 == Board.GetLength(0) - 1)
-                {
-                    bool emptyCase = false;
-                    bool opponentToken = false;
-
-                    for (int i = token.Item1 - 1; i >= 0; --i)
-                    {
-                        if (Board[i, token.Item2] == -1)
-                        {
-                            emptyCase = true;
-                            i = 0;
-                        }
-                        else if (Board[i, token.Item2] != CurrentPlayerValue)
-                        {
-                            opponentToken = true;
-                            i = 0;
-                        }
-                    }
-
-                    for (int i = token.Item1 + 1; i < Board.GetLength(0); ++i)
-                    {
-                        if (Board[i, token.Item2] == -1)
-                        {
-                            emptyCase = true;
-                            i = Board.GetLength(0);
-                        }
-                        else if (Board[i, token.Item2] != CurrentPlayerValue)
-                        {
-                            opponentToken = true;
-                            i = Board.GetLength(0);
-                        }
-                    }
-
-                    if (emptyCase && opponentToken)
-                    {
-                        value -= 5;
-                    }
-                }
-
-                if (token.Item2 == 0 || token.Item2 == Board.GetLength(1) - 1)
-                {
-                    bool emptyCase = false;
-                    bool opponentToken = false;
-
-                    for (int i = token.Item2 - 1; i >= 0; --i)
-                    {
-                        if (Board[token.Item1, i] == -1)
-                        {
-                            emptyCase = true;
-                            i = 0;
-                        }
-                        else if (Board[token.Item1, i] != CurrentPlayerValue)
-                        {
-                            opponentToken = true;
-                            i = 0;
-                        }
-                    }
-
-                    for (int i = token.Item2 + 1; i < Board.GetLength(1); ++i)
-                    {
-                        if (Board[token.Item1, i] == -1)
-                        {
-                            emptyCase = true;
-                            i = Board.GetLength(1);
-                        }
-                        else if (Board[token.Item1, i] != CurrentPlayerValue)
-                        {
-                            opponentToken = true;
-                            i = Board.GetLength(1);
-                        }
-                    }
-
-                    if (emptyCase && opponentToken)
-                    {
-                        value -= 5;
-                    }
-                }
-            }
-            */
-            return value;
         }
     }
 }
