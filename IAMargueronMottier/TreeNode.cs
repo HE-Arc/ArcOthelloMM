@@ -396,6 +396,7 @@ namespace IAMargueronMottier
             int heuristic = 0;
 
             heuristic = EvaluatePositionsWithPonderation();
+            heuristic += 50 * ((OpponentToken.Count + CurrentToken.Count + 1) % 2); // Check if the current player play the last token
 
             return heuristic;
         }

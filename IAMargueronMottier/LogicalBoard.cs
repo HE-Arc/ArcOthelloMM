@@ -153,7 +153,7 @@ namespace ArcOthelloMM
             int px = COLUMN / 2 - 1;
             int py = ROW / 2;
 
-            Board[px, py + 1] = Player.Player0.Value;
+            /*Board[px, py + 1] = Player.Player0.Value;
             Player.Player0.Tokens.Add(new Tuple<int, int>(px, py + 1));
             Board[px + 1, py] = Player.Player0.Value;
             Player.Player0.Tokens.Add(new Tuple<int, int>(px + 1, py));
@@ -161,7 +161,129 @@ namespace ArcOthelloMM
             Board[px, py] = Player.Player1.Value;
             Player.Player1.Tokens.Add(new Tuple<int, int>(px, py));
             Board[px + 1, py + 1] = Player.Player1.Value;
-            Player.Player1.Tokens.Add(new Tuple<int, int>(px + 1, py + 1));
+            Player.Player1.Tokens.Add(new Tuple<int, int>(px + 1, py + 1));*/
+
+            Board[0, 0] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(0, 0));
+            Board[1, 0] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(1, 0));
+            Board[2, 0] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(2, 0));
+            Board[3, 0] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(3, 0));
+            Board[4, 0] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(4, 0));
+            Board[5, 0] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(5, 0));
+            Board[6, 0] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(6, 0));
+            Board[7, 0] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(7, 0));
+            Board[8, 0] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(8, 0));
+            Board[0, 1] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(0, 1));
+            Board[1, 1] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(1, 1));
+            Board[2, 1] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(2, 1));
+            Board[3, 1] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(3, 1));
+            Board[4, 1] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(4, 1));
+            Board[5, 1] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(5, 1));
+            Board[6, 1] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(6, 1));
+            Board[0, 2] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(0, 2));
+            Board[2, 2] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(2, 2));
+            Board[4, 2] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(4, 2));
+            Board[5, 2] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(5, 2));
+            Board[6, 2] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(6, 2));
+            Board[0, 3] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(0, 3));
+            Board[2, 3] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(2, 3));
+            Board[3, 3] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(3, 3));
+            Board[4, 3] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(4, 3));
+            Board[5, 3] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(5, 3));
+            Board[0, 4] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(0, 4));
+            Board[3, 4] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(3, 4));
+            Board[4, 4] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(4, 4));
+            Board[8, 4] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(8, 4));
+            Board[0, 5] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(0, 5));
+            Board[1, 5] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(1, 5));
+            Board[7, 5] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(7, 5));
+            Board[8, 5] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(8, 5));
+            Board[0, 6] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(0, 6));
+            Board[1, 6] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(1, 6));
+            Board[2, 6] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(2, 6));
+            Board[3, 6] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(3, 6));
+            Board[4, 6] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(4, 6));
+            Board[5, 6] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(5, 6));
+            Board[6, 6] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(6, 6));
+            Board[7, 6] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(7, 6));
+            Board[8, 6] = Player.Player1.Value;
+            Player.Player1.Tokens.Add(new Tuple<int, int>(8, 6));
+
+            Board[1, 2] = Player.Player0.Value;
+            Player.Player0.Tokens.Add(new Tuple<int, int>(1, 2));
+            Board[3, 2] = Player.Player0.Value;
+            Player.Player0.Tokens.Add(new Tuple<int, int>(3, 2));
+            Board[7, 2] = Player.Player0.Value;
+            Player.Player0.Tokens.Add(new Tuple<int, int>(7, 2));
+            Board[1, 3] = Player.Player0.Value;
+            Player.Player0.Tokens.Add(new Tuple<int, int>(1, 3));
+            Board[6, 3] = Player.Player0.Value;
+            Player.Player0.Tokens.Add(new Tuple<int, int>(6, 3));
+            Board[7, 3] = Player.Player0.Value;
+            Player.Player0.Tokens.Add(new Tuple<int, int>(7, 3));
+            Board[8, 3] = Player.Player0.Value;
+            Player.Player0.Tokens.Add(new Tuple<int, int>(8, 3));
+            Board[1, 4] = Player.Player0.Value;
+            Player.Player0.Tokens.Add(new Tuple<int, int>(1, 4));
+            Board[2, 4] = Player.Player0.Value;
+            Player.Player0.Tokens.Add(new Tuple<int, int>(2, 4));
+            Board[5, 4] = Player.Player0.Value;
+            Player.Player0.Tokens.Add(new Tuple<int, int>(5, 4));
+            Board[6, 4] = Player.Player0.Value;
+            Player.Player0.Tokens.Add(new Tuple<int, int>(6, 4));
+            Board[7, 4] = Player.Player0.Value;
+            Player.Player0.Tokens.Add(new Tuple<int, int>(7, 4));
+            Board[2, 5] = Player.Player0.Value;
+            Player.Player0.Tokens.Add(new Tuple<int, int>(2, 5));
+            Board[3, 5] = Player.Player0.Value;
+            Player.Player0.Tokens.Add(new Tuple<int, int>(3, 5));
+            Board[4, 5] = Player.Player0.Value;
+            Player.Player0.Tokens.Add(new Tuple<int, int>(4, 5));
+            Board[5, 5] = Player.Player0.Value;
+            Player.Player0.Tokens.Add(new Tuple<int, int>(5, 5));
+            Board[6, 5] = Player.Player0.Value;
+            Player.Player0.Tokens.Add(new Tuple<int, int>(6, 5));
 
             // Init others
             ListPossibleMove = new Dictionary<Tuple<int, int>, HashSet<Tuple<int, int>>>();
@@ -384,7 +506,7 @@ namespace ArcOthelloMM
                     {
                         alreadyAdded = true;
                         break;
-                    }    
+                    }
                 }
                 if (!alreadyAdded)
                     ListPossibleMove[key].Add(new Tuple<int, int>(tokenToAdd.Item1, tokenToAdd.Item2));
@@ -549,7 +671,7 @@ namespace ArcOthelloMM
             }
 
             // Archive copy
-            Archive.Add(new Tuple<bool, int[,], Tuple<int,int>>(CurrentPlayerTurn, BoardCopy, LastMovePosition));
+            Archive.Add(new Tuple<bool, int[,], Tuple<int, int>>(CurrentPlayerTurn, BoardCopy, LastMovePosition));
         }
 
         /// <summary>
@@ -588,7 +710,7 @@ namespace ArcOthelloMM
         /// </summary>
         /// <returns></returns>
         public int GetWhiteScore()
-        { 
+        {
             return Player1Score;
         }
 
