@@ -8,7 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArcOthelloMM", "ArcOthelloM
 		{6FA8FB8C-F2AB-4CB1-BF65-64975D20906C} = {6FA8FB8C-F2AB-4CB1-BF65-64975D20906C}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IAMargueronMottier", "IAMargueronMottier\IAMargueronMottier.csproj", "{6FA8FB8C-F2AB-4CB1-BF65-64975D20906C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OthelloMM", "OthelloMM\OthelloMM.csproj", "{6FA8FB8C-F2AB-4CB1-BF65-64975D20906C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

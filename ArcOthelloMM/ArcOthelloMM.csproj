@@ -139,12 +139,6 @@
     <Resource Include="icon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\IAMargueronMottier\IAMargueronMottier.csproj">
-      <Project>{6fa8fb8c-f2ab-4cb1-bf65-64975d20906c}</Project>
-      <Name>IAMargueronMottier</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
       <Visible>False</Visible>
       <ProductName>Microsoft .NET Framework 4.6.1 %28x86 and x64%29</ProductName>
@@ -155,6 +149,12 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OthelloMM\OthelloMM.csproj">
+      <Project>{6fa8fb8c-f2ab-4cb1-bf65-64975d20906c}</Project>
+      <Name>OthelloMM</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

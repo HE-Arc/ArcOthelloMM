@@ -437,9 +437,9 @@ namespace IAMargueronMottier
         public int Evaluate(int playerValue)
         {
             if (IsVictory())
-                return int.MaxValue;
+                return int.MaxValue - 1;
             if (IsDefeate())
-                return int.MinValue;
+                return int.MinValue + 1;
 
             int heuristic = 0;
 
@@ -495,7 +495,9 @@ namespace IAMargueronMottier
         }
 
         /// <summary>
-        /// todo
+        /// It's a classic tactic which consist to
+        /// offer an angle to the opponent
+        /// to take an other angle and a complete bord
         /// </summary>
         /// <param name="ponderationGrid"></param>
         private void EvaluateBorderFive(int[,] ponderationGrid)

@@ -69,8 +69,6 @@ namespace ArcOthelloMM
         {
             TreeNode root = new TreeNode(game, AIValueOnBoard);
 
-            _AlphaBeta(root, depth, int.MinValue, int.MaxValue, true);
-
             Tuple<int, Tuple<int, int>> res = _AlphaBeta(root, depth);
 
             if (res.Item2 == null)
