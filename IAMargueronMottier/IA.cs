@@ -42,18 +42,18 @@ namespace ArcOthelloMM
         {
             Console.WriteLine("Next move");
             AiMinMaxPlayerValue = (whiteTurn) ? Player.Player1.Value : Player.Player0.Value;
-                        
-            return AlphaBetaWikipedia(game, 5);
+
+            return AlphaBeta(game, level - 1); // -1 because its from 0 to 4 (depth is 5)
             //return StupidAI(game, level, whiteTurn);
         }
 
-        private Tuple<int, int> AlphaBetaWikipedia(int[,] game, int depth)
+        private Tuple<int, int> AlphaBeta(int[,] game, int depth)
         {
             TreeNode root = new TreeNode(game, AiMinMaxPlayerValue);
 
-            _AlphaBetaWikipedia(root, depth, int.MinValue, int.MaxValue, true);
+            _AlphaBeta(root, depth, int.MinValue, int.MaxValue, true);
 
-            Tuple<int, Tuple<int, int>> res = _AlphaBetaWikipedia(root, depth);
+            Tuple<int, Tuple<int, int>> res = _AlphaBeta(root, depth);
 
             if (res.Item2 == null)
                 throw new Exception("no moves possibles for this player");
@@ -63,7 +63,7 @@ namespace ArcOthelloMM
             return res.Item2;
         }
 
-        private Tuple<int, Tuple<int, int>> _AlphaBetaWikipedia(TreeNode node, int depth, int alpha = int.MinValue, int beta = int.MaxValue, bool maximizingPlayer = true)
+        private Tuple<int, Tuple<int, int>> _AlphaBeta(TreeNode node, int depth, int alpha = int.MinValue, int beta = int.MaxValue, bool maximizingPlayer = true)
         {
             Tuple<int, int> move = null;
             int value;
@@ -77,7 +77,7 @@ namespace ArcOthelloMM
                 foreach (Tuple<int, int> op in node.Ops())
                 {
                     TreeNode child = node.Apply(op);
-                    Tuple<int, Tuple<int, int>> result = _AlphaBetaWikipedia(child, depth - 1, alpha, beta, GetMinOrMax(child));
+                    Tuple<int, Tuple<int, int>> result = _AlphaBeta(child, depth - 1, alpha, beta, GetMinOrMax(child));
                     if (result.Item1 > value)
                     {
                         value = result.Item1;
@@ -97,7 +97,7 @@ namespace ArcOthelloMM
                 foreach (Tuple<int, int> op in node.Ops())
                 {
                     TreeNode child = node.Apply(op);
-                    Tuple<int, Tuple<int, int>> result = _AlphaBetaWikipedia(child, depth - 1, alpha, beta, GetMinOrMax(child));
+                    Tuple<int, Tuple<int, int>> result = _AlphaBeta(child, depth - 1, alpha, beta, GetMinOrMax(child));
                     if (result.Item1 < value)
                     {
                         value = result.Item1;

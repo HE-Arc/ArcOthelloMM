@@ -31,7 +31,7 @@ namespace IAMargueronMottier
             PonderationGrids = new Dictionary<Tuple<int, int>, int[,]>
             {
                 [new Tuple<int, int>(9, 7)] = new int[,] {
-                {200, 03, 09, 07, 09, 03, 200},
+                {1000, 03, 09, 07, 09, 03, 1000},
                 {03, -200, 03, 03, 03, -200, 03},
                 {09, 03, 07, 07, 07, 03, 09},
                 {07, 03, 07, 07, 07, 03, 07},
@@ -39,11 +39,11 @@ namespace IAMargueronMottier
                 {07, 03, 07, 07, 07, 03, 07},
                 {09, 03, 07, 07, 07, 03, 09},
                 {03, -200, 03, 03, 03, -200, 03},
-                {200, 01, 09, 07, 09, 03, 200},
+                {1000, 01, 09, 07, 09, 03, 1000},
             }
             };
 
-            //C# dont have native vector2 class?
+            //C# doesnt have a vector2 native class?
             directions = new List<Tuple<int, int>>
             {
                 new Tuple<int, int>(1, 1),
@@ -56,17 +56,17 @@ namespace IAMargueronMottier
                 new Tuple<int, int>(-1, 1)
             };
 
-            TestMoveDetection();
+            //TestMoveDetection();
         }
 
         public static void TestMoveDetection()
         {
-            //ExempleMoveNormal();
-            //Console.WriteLine("-----------");
-            //ExempleMoveSkip();
-            //Console.WriteLine("-----------");
-            //ExempleMoveFinish();
-            //Console.WriteLine("-----------");
+            ExempleMoveNormal();
+            Console.WriteLine("-----------");
+            ExempleMoveSkip();
+            Console.WriteLine("-----------");
+            ExempleMoveFinish();
+            Console.WriteLine("-----------");
         }
 
         private static void ExempleMoveNormal()
@@ -200,12 +200,17 @@ namespace IAMargueronMottier
         {
             if (GameIsFinished)
             {
+                Console.WriteLine("move : " + move);
                 Show();
                 throw new Exception("Can't play this move, the game is finished");
             }
 
             if (!ListPossibleMove.Keys.Contains(move))
+            {
+                Console.WriteLine("move : " + move);
+                Show();
                 throw new Exception("Can't play this move, not a possible move");
+            }
 
             TreeNode copy = new TreeNode(this);
 
@@ -338,8 +343,12 @@ namespace IAMargueronMottier
                 return int.MaxValue;
             if (IsDefeate())
                 return int.MinValue;
+            
+            int heuristic = 0;
 
-            return EvaluatePositionsWithPonderation();// + EvaluatePossibleMove() + EvaluateWeakBorder();
+            heuristic = EvaluatePositionsWithPonderation();
+
+            return heuristic;
         }
 
         private bool IsVictory()
